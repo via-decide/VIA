@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>VIA · Bharat's Feed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Devanagari:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --saffron:#FF6B00;
+  --saffron2:#FF9500;
+  --deep:#0B0B1A;
+  --deep2:#13132A;
+  --deep3:#1C1C38;
+  --indigo:#2D2B69;
+  --violet:#6C63FF;
+  --gold:#F5C518;
+  --cream:#FFF8F0;
+  --white:#FFFFFF;
+  --muted:#8B8BAD;
+  --border:rgba(255,255,255,.08);
+  --r:20px;
+}
+html,body{
+  height:100%;width:100%;
+  background:var(--deep);
+  color:var(--white);
+  font-family:'DM Sans',sans-serif;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  touch-action:none;
+}
+
+/* ── BOOT SCREEN ── */
+#boot{
+  position:fixed;inset:0;
+  background:var(--deep);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  z-index:1000;
+  transition:opacity .6s ease, transform .6s ease;
+}
+#boot.exit{opacity:0;transform:scale(1.04);pointer-events:none}
+
+.boot-logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(5rem,20vw,9rem);
+  letter-spacing:-.02em;
+  line-height:1;
+  background:linear-gradient(135deg,var(--saffron),var(--gold),var(--saffron2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  position:relative;
+}
+.boot-logo::after{
+  content:'';
+  position:absolute;bottom:-8px;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--saffron),var(--gold),transparent);
+}
+.boot-tagline{
+  font-family:'Noto Sans Devanagari',sans-serif;
+  font-size:.95rem;color:var(--muted);letter-spacing:.15em;
+  margin-top:1.5rem;text-transform:uppercase;
+}
+.boot-line{
+  font-family:'DM Sans',monospace;
+  font-size:.7rem;color:rgba(255,107,0,.5);
+  margin-top:2.5rem;letter-spacing:.08em;
+  opacity:0;animation:bootLine .4s ease forwards;
+}
+.boot-line:nth-child(3){animation-delay:.3s}
+.boot-line:nth-child(4){animation-delay:.7s}
+.boot-line:nth-child(5){animation-delay:1.1s}
+.boot-line:nth-child(6){animation-delay:1.5s}
+@keyframes bootLine{to{opacity:1}}
+
+.boot-bar{
+  width:200px;height:2px;background:rgba(255,255,255,.08);
+  border-radius:99px;margin-top:1.5rem;overflow:hidden;
+}
+.boot-bar-fill{
+  height:100%;width:0;
+  background:linear-gradient(90deg,var(--saffron),var(--gold));
+  border-radius:99px;
+  animation:bootFill 1.8s ease forwards 1.6s;
+}
+@keyframes bootFill{to{width:100%}}
+
+/* ── APP SHELL ── */
+#app{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  opacity:0;transition:opacity .5s ease;
+  overflow:hidden;
+}
+#app.visible{opacity:1}
+
+/* ── STATUS BAR ── */
+.status-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.5rem 1.2rem;
+  position:absolute;top:0;left:0;right:0;z-index:50;
+  background:linear-gradient(to bottom,rgba(11,11,26,.9),transparent);
+}
+.status-logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.6rem;letter-spacing:.04em;
+  background:linear-gradient(135deg,var(--saffron),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.status-xp{
+  display:flex;align-items:center;gap:.4rem;
+  font-size:.7rem;font-weight:600;color:var(--gold);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.xp-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── LAYER TABS ── */
+.layer-tabs{
+  position:absolute;top:2.8rem;left:50%;transform:translateX(-50%);
+  display:flex;gap:.4rem;z-index:50;
+  background:rgba(11,11,26,.6);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--border);
+  border-radius:99px;padding:.3rem;
+}
+.layer-tab{
+  font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:.38rem .9rem;border-radius:99px;cursor:pointer;
+  color:var(--muted);transition:all .2s ease;border:none;background:transparent;
+  font-family:'DM Sans',sans-serif;
+}
+.layer-tab.active{
+  background:linear-gradient(135deg,var(--saffron),var(--saffron2));
+  color:#fff;
+  box-shadow:0 4px 16px rgba(255,107,0,.4);
+}
+
+/* ── SWIPE DECK ── */
+#deck{
+  position:absolute;inset:0;
+  overflow:hidden;
+}
+
+.card{
+  position:absolute;
+  inset:0;
+  border-radius:0;
+  overflow:hidden;
+  cursor:grab;
+  transition:transform .35s cubic-bezier(.16,1,.3,1), opacity .35s ease;
+  will-change:transform;
+  touch-action:none;
+}
+.card:active{cursor:grabbing}
+
+.card-bg{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+}
+.card-bg::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(11,11,26,.97) 0%,rgba(11,11,26,.5) 40%,rgba(11,11,26,.1) 70%,transparent 100%);
+}
+
+.card-content{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:1.5rem 1.2rem 5.5rem;
+  z-index:2;
+}
+
+.card-category{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.62rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  padding:.28rem .75rem;border-radius:99px;margin-bottom:.75rem;
+}
+.cat-viral{background:rgba(255,107,0,.2);color:var(--saffron);border:1px solid rgba(255,107,0,.3)}
+.cat-bharat{background:rgba(245,197,24,.15);color:var(--gold);border:1px solid rgba(245,197,24,.25)}
+.cat-tech{background:rgba(108,99,255,.2);color:#a89fff;border:1px solid rgba(108,99,255,.3)}
+.cat-sport{background:rgba(0,200,100,.15);color:#00e676;border:1px solid rgba(0,200,100,.25)}
+.cat-culture{background:rgba(255,100,180,.15);color:#ff64b4;border:1px solid rgba(255,100,180,.25)}
+.cat-create{background:rgba(41,182,246,.15);color:#29b6f6;border:1px solid rgba(41,182,246,.25)}
+
+.card-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.5rem,5vw,2.2rem);
+  font-weight:700;line-height:1.15;
+  margin-bottom:.6rem;
+  color:#fff;
+}
+.card-title em{
+  font-style:italic;
+  color:var(--saffron2);
+}
+
+.card-meta{
+  display:flex;align-items:center;gap:.75rem;
+  font-size:.75rem;color:rgba(255,255,255,.6);font-weight:500;
+}
+.card-avatar{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid var(--saffron);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;flex-shrink:0;
+  background:var(--deep3);
+}
+.card-dot{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.3)}
+
+/* ── CARD ACTIONS (right rail) ── */
+.card-actions{
+  position:absolute;right:1rem;bottom:5rem;
+  display:flex;flex-direction:column;gap:1.2rem;
+  z-index:3;
+}
+.action-btn{
+  display:flex;flex-direction:column;align-items:center;gap:.25rem;
+  cursor:pointer;transition:transform .2s ease;
+}
+.action-btn:active{transform:scale(.88)}
+.action-icon{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.1);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;
+  transition:all .2s ease;
+}
+.action-btn:active .action-icon{background:rgba(255,107,0,.25);border-color:var(--saffron)}
+.action-label{font-size:.58rem;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.04em}
+
+/* ── SWIPE HINT ── */
+.swipe-hint{
+  position:absolute;bottom:4.8rem;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:.4rem;
+  font-size:.62rem;font-weight:600;color:rgba(255,255,255,.3);
+  letter-spacing:.1em;text-transform:uppercase;
+  z-index:10;pointer-events:none;
+  animation:hintFade 3s ease forwards 2s;
+}
+@keyframes hintFade{to{opacity:0}}
+.hint-arrow{animation:hintBounce 1s ease infinite}
+@keyframes hintBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* ── PROGRESS DOTS ── */
+.progress-dots{
+  position:absolute;right:.7rem;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:.35rem;
+  z-index:20;pointer-events:none;
+}
+.pdot{
+  width:3px;height:3px;border-radius:99px;
+  background:rgba(255,255,255,.2);
+  transition:all .3s ease;
+}
+.pdot.active{
+  height:18px;
+  background:linear-gradient(to bottom,var(--saffron),var(--saffron2));
+  box-shadow:0 0 8px rgba(255,107,0,.5);
+}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:absolute;bottom:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:space-around;
+  padding:.75rem 1rem 1.2rem;
+  background:linear-gradient(to top,rgba(11,11,26,.98),rgba(11,11,26,.85));
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  z-index:50;
+}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:.25rem;
+  cursor:pointer;transition:all .2s ease;flex:1;
+  border:none;background:transparent;
+}
+.nav-item:active{transform:scale(.9)}
+.nav-icon{
+  font-size:1.3rem;
+  filter:grayscale(1) opacity(.4);
+  transition:filter .2s ease;
+}
+.nav-item.active .nav-icon{filter:none}
+.nav-label{
+  font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);transition:color .2s ease;
+}
+.nav-item.active .nav-label{color:var(--saffron)}
+
+/* CREATE BUTTON */
+.nav-create{
+  width:52px;height:52px;border-radius:16px;
+  background:linear-gradient(135deg,var(--saffron),var(--saffron2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+  box-shadow:0 8px 24px rgba(255,107,0,.45);
+  cursor:pointer;transition:all .2s ease;
+  border:none;
+  margin-top:-.5rem;
+}
+.nav-create:active{transform:scale(.92)}
+
+/* ── SLIDE-IN SHEET ── */
+.sheet-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);z-index:200;
+  opacity:0;pointer-events:none;transition:opacity .3s ease;
+}
+.sheet-overlay.open{opacity:1;pointer-events:auto}
+
+.sheet{
+  position:fixed;bottom:0;left:0;right:0;
+  background:linear-gradient(to top,var(--deep2),var(--deep3));
+  border-top:1px solid var(--border);
+  border-radius:24px 24px 0 0;
+  padding:1.25rem 1.2rem 2.5rem;
+  z-index:201;
+  transform:translateY(100%);
+  transition:transform .4s cubic-bezier(.16,1,.3,1);
+  max-height:80vh;overflow-y:auto;
+}
+.sheet.open{transform:translateY(0)}
+
+.sheet-handle{
+  width:36px;height:3px;border-radius:99px;
+  background:rgba(255,255,255,.2);margin:0 auto 1.2rem;
+}
+.sheet-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.4rem;font-weight:700;margin-bottom:.4rem;
+}
+.sheet-sub{font-size:.82rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+
+.sheet-actions{display:flex;flex-direction:column;gap:.75rem}
+.sheet-btn{
+  display:flex;align-items:center;gap:.9rem;
+  padding:1rem;border-radius:14px;cursor:pointer;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  transition:all .2s ease;
+  font-family:'DM Sans',sans-serif;
+}
+.sheet-btn:active{transform:scale(.97);background:rgba(255,107,0,.08);border-color:rgba(255,107,0,.3)}
+.sheet-btn-icon{font-size:1.3rem;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sheet-btn-text{flex:1}
+.sheet-btn-title{font-weight:700;font-size:.9rem;color:#fff}
+.sheet-btn-sub{font-size:.75rem;color:var(--muted);margin-top:2px}
+.sheet-btn-arrow{color:var(--muted);font-size:.9rem}
+
+/* ── LAYER TRANSITION ── */
+.layer-enter{animation:layerIn .4s cubic-bezier(.16,1,.3,1) forwards}
+.layer-exit{animation:layerOut .3s ease forwards}
+@keyframes layerIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes layerOut{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
+
+/* ── CARD SWIPE STATES ── */
+.card.swipe-up{animation:swipeUp .35s ease forwards}
+.card.swipe-prev{animation:swipePrev .35s ease forwards}
+@keyframes swipeUp{to{transform:translateY(-110vh);opacity:0}}
+@keyframes swipePrev{to{transform:translateY(110vh);opacity:0}}
+
+/* ── LIKE BURST ── */
+.like-burst{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:5rem;pointer-events:none;z-index:300;
+  animation:likeBurst .6s ease forwards;
+}
+@keyframes likeBurst{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}
+  40%{opacity:1;transform:translate(-50%,-50%) scale(1.3)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1)}
+}
+
+/* ── DISCOVER LAYER ── */
+.discover-grid{
+  position:absolute;inset:0;
+  padding:7rem 1rem 5rem;
+  overflow-y:auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.75rem;
+  align-content:start;
+}
+.discover-card{
+  border-radius:16px;overflow:hidden;
+  aspect-ratio:9/11;
+  position:relative;cursor:pointer;
+  transition:transform .2s ease;
+}
+.discover-card:active{transform:scale(.96)}
+.discover-card-bg{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:3rem;
+  background:var(--deep3);
+}
+.discover-card-label{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:.75rem .7rem;
+  background:linear-gradient(to top,rgba(11,11,26,.95),transparent);
+}
+.discover-card-cat{font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--saffron);margin-bottom:.2rem}
+.discover-card-name{font-size:.82rem;font-weight:700;color:#fff;line-height:1.2}
+
+/* ── PROFILE LAYER ── */
+.profile-wrap{
+  position:absolute;inset:0;
+  padding:4rem 1.2rem 5rem;
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+  align-items:center;
+}
+.profile-avatar-lg{
+  width:90px;height:90px;border-radius:50%;
+  background:linear-gradient(135deg,var(--saffron),var(--violet));
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;margin-bottom:1rem;
+  border:3px solid rgba(255,107,0,.4);
+  box-shadow:0 0 30px rgba(255,107,0,.3);
+}
+.profile-name{
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;font-weight:700;margin-bottom:.25rem;
+}
+.profile-handle{font-size:.82rem;color:var(--muted);margin-bottom:1.2rem}
+.profile-stats{
+  display:flex;gap:2rem;margin-bottom:1.5rem;
+}
+.pstat{text-align:center}
+.pstat-n{font-size:1.3rem;font-weight:700;color:var(--white);font-family:'Bebas Neue',sans-serif;letter-spacing:.04em}
+.pstat-l{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+.xp-bar{
+  width:100%;background:rgba(255,255,255,.07);
+  border-radius:99px;height:6px;margin-bottom:1.5rem;overflow:hidden;
+}
+.xp-fill{
+  height:100%;width:68%;
+  background:linear-gradient(90deg,var(--saffron),var(--gold));
+  border-radius:99px;
+  animation:xpFill 1.2s ease forwards;
+}
+@keyframes xpFill{from{width:0%}}
+
+.profile-grid{
+  width:100%;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:2px;
+  border-radius:12px;overflow:hidden;
+}
+.pgrid-item{
+  aspect-ratio:1;background:var(--deep3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;cursor:pointer;
+  transition:opacity .2s;
+}
+.pgrid-item:active{opacity:.7}
+
+/* ── RESPONSIVE ── */
+@media(min-width:500px){
+  #app{max-width:430px;left:50%;transform:translateX(-50%);right:auto;width:430px}
+  .sheet{max-width:430px;left:50%;transform:translateX(-50%) translateY(100%);right:auto;width:430px}
+  .sheet.open{transform:translateX(-50%) translateY(0)}
+  .sheet-overlay{background:rgba(0,0,0,.7)}
+}
+</style>
+</head>
+<body>
+
+<!-- BOOT SCREEN -->
+<div id="boot">
+  <div class="boot-logo">VIA</div>
+  <div class="boot-tagline">Bharat का अपना Feed</div>
+  <div class="boot-line">> INITIALIZING VIA CORE...</div>
+  <div class="boot-line">> LOADING BHARAT CONTENT MESH...</div>
+  <div class="boot-line">> CALIBRATING SWIPE ENGINE v2.4...</div>
+  <div class="boot-line">> WELCOME TO VIA ✦</div>
+  <div class="boot-bar"><div class="boot-bar-fill"></div></div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="status-bar">
+    <div class="status-logo">VIA</div>
+    <div class="status-xp"><div class="xp-dot"></div><span id="xp-counter">0 XP</span></div>
+  </div>
+
+  <!-- LAYER TABS -->
+  <div class="layer-tabs" id="layer-tabs">
+    <button class="layer-tab active" data-layer="feed">Feed</button>
+    <button class="layer-tab" data-layer="discover">Discover</button>
+    <button class="layer-tab" data-layer="profile">Profile</button>
+  </div>
+
+  <!-- DECK -->
+  <div id="deck"></div>
+
+  <!-- DISCOVER LAYER -->
+  <div id="layer-discover" style="display:none;position:absolute;inset:0">
+    <div class="discover-grid" id="discover-grid"></div>
+  </div>
+
+  <!-- PROFILE LAYER -->
+  <div id="layer-profile" style="display:none;position:absolute;inset:0">
+    <div class="profile-wrap">
+      <div class="profile-avatar-lg">🌟</div>
+      <div class="profile-name">Arjun Verma</div>
+      <div class="profile-handle">@arjun.via · Noida, UP</div>
+      <div class="profile-stats">
+        <div class="pstat"><div class="pstat-n">247</div><div class="pstat-l">Posts</div></div>
+        <div class="pstat"><div class="pstat-n" id="follower-count">12.4K</div><div class="pstat-l">Followers</div></div>
+        <div class="pstat"><div class="pstat-n" id="xp-profile">0</div><div class="pstat-l">XP</div></div>
+      </div>
+      <div style="width:100%;font-size:.72rem;color:var(--muted);margin-bottom:.5rem;display:flex;justify-content:space-between">
+        <span>Level 7 · Storyteller</span><span id="xp-bar-label">0 / 500 XP</span>
+      </div>
+      <div class="xp-bar"><div class="xp-fill" id="xp-fill-bar"></div></div>
+      <div class="profile-grid" id="profile-grid"></div>
+    </div>
+  </div>
+
+  <!-- SWIPE HINT -->
+  <div class="swipe-hint">
+    <span class="hint-arrow">↑</span>
+    <span>swipe up</span>
+  </div>
+
+  <!-- PROGRESS DOTS -->
+  <div class="progress-dots" id="progress-dots"></div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-nav="feed" onclick="switchNav('feed',this)">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Feed</div>
+    </button>
+    <button class="nav-item" data-nav="discover" onclick="switchNav('discover',this)">
+      <div class="nav-icon">🔍</div>
+      <div class="nav-label">Explore</div>
+    </button>
+    <button class="nav-create" onclick="openSheet('create')">＋</button>
+    <button class="nav-item" data-nav="notifications" onclick="openSheet('notif')">
+      <div class="nav-icon">🔔</div>
+      <div class="nav-label">Alerts</div>
+    </button>
+    <button class="nav-item" data-nav="profile" onclick="switchNav('profile',this)">
+      <div class="nav-icon">👤</div>
+      <div class="nav-label">Profile</div>
+    </button>
+  </nav>
+</div>
+
+<!-- SHEET OVERLAY -->
+<div id="sheet-overlay" class="sheet-overlay" onclick="closeSheet()"></div>
+<div id="sheet" class="sheet">
+  <div class="sheet-handle"></div>
+  <div id="sheet-body"></div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+const CARDS = [
+  {
+    id:1, cat:'viral', catLabel:'🔥 Viral',
+    bg:'linear-gradient(160deg,#1a0a3a 0%,#0B0B1A 60%)',
+    emoji:'🎪',
+    title:'Mumbai की <em>street food</em> revolution जो दिल्ली तक पहुँची',
+    author:'Priya Sharma', authorEmoji:'👩‍🍳', location:'Mumbai',
+    time:'2h ago', views:'2.4M', likes:'184K',
+    redirect:'viral-story',
+  },
+  {
+    id:2, cat:'bharat', catLabel:'🇮🇳 Bharat',
+    bg:'linear-gradient(160deg,#0a1a00 0%,#0B0B1A 60%)',
+    emoji:'🌾',
+    title:'Bihar के किसान ने बनाया <em>drone tech</em> जो पूरे गाँव बदल रहा है',
+    author:'Rahul Kumar', authorEmoji:'👨‍🌾', location:'Patna',
+    time:'5h ago', views:'890K', likes:'67K',
+    redirect:'bharat-story',
+  },
+  {
+    id:3, cat:'tech', catLabel:'⚡ Tech',
+    bg:'linear-gradient(160deg,#0a0a2a 0%,#0B0B1A 60%)',
+    emoji:'🤖',
+    title:'IIT Bombay startup ने बनाया <em>AI doctor</em> — 5 रुपये में diagnosis',
+    author:'Dev Patel', authorEmoji:'🧑‍💻', location:'Bangalore',
+    time:'1h ago', views:'3.1M', likes:'221K',
+    redirect:'tech-story',
+  },
+  {
+    id:4, cat:'sport', catLabel:'🏏 Sport',
+    bg:'linear-gradient(160deg,#001a0a 0%,#0B0B1A 60%)',
+    emoji:'🏏',
+    title:'15 साल की <em>Riya Singh</em> — India की next batting sensation',
+    author:'Sports VIA', authorEmoji:'🎙️', location:'Hyderabad',
+    time:'3h ago', views:'5.2M', likes:'412K',
+    redirect:'sport-story',
+  },
+  {
+    id:5, cat:'culture', catLabel:'🎨 Culture',
+    bg:'linear-gradient(160deg,#1a001a 0%,#0B0B1A 60%)',
+    emoji:'🎭',
+    title:'Rajasthan की <em>folk art</em> जो NFT market में छा गई',
+    author:'Meera Joshi', authorEmoji:'🎨', location:'Jaipur',
+    time:'8h ago', views:'1.8M', likes:'93K',
+    redirect:'culture-story',
+  },
+  {
+    id:6, cat:'create', catLabel:'✦ Create',
+    bg:'linear-gradient(160deg,#001a1a 0%,#0B0B1A 60%)',
+    emoji:'💡',
+    title:'अपनी story VIA पर शेयर करो — <em>Bharat सुनेगा</em>',
+    author:'VIA Team', authorEmoji:'✦', location:'India',
+    time:'Now', views:'—', likes:'—',
+    redirect:'create',
+    cta: true,
+  },
+];
+
+const DISCOVER_ITEMS = [
+  {emoji:'🏏',cat:'Sport',name:'Cricket World'},
+  {emoji:'🎵',cat:'Music',name:'Desi Beats'},
+  {emoji:'🌾',cat:'Bharat',name:'Kisan Stories'},
+  {emoji:'🤖',cat:'Tech',name:'Startup India'},
+  {emoji:'🎭',cat:'Culture',name:'Rang Manch'},
+  {emoji:'🍛',cat:'Food',name:'Desi Khana'},
+  {emoji:'📚',cat:'Education',name:'Siksha'},
+  {emoji:'🌏',cat:'Travel',name:'Desh Ghoom'},
+];
+
+const PROFILE_EMOJIS = ['🌅','🎪','🌾','🤖','🏏','🎨','💡','🌟','🔥','🎵','🌺','🎭'];
+
+const REDIRECT_MAP = {
+  'viral-story':   'https://via-decide.github.io/decide.engine-tools/',
+  'bharat-story':  'https://via-decide.github.io/decide.engine-tools/',
+  'tech-story':    'https://via-decide.github.io/decide.engine-tools/',
+  'sport-story':   'https://via-decide.github.io/decide.engine-tools/',
+  'culture-story': 'https://via-decide.github.io/decide.engine-tools/',
+  'create':        'https://t.me/GN8RBot',
+};
+
+// ── STATE ────────────────────────────────────────────────────
+let currentCard = 0;
+let xp = 0;
+let isAnimating = false;
+let activeLayer = 'feed';
+let touchStartY = 0;
+let touchStartX = 0;
+let isDragging = false;
+let dragDeltaY = 0;
+
+// ── BOOT ─────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('boot').classList.add('exit');
+    document.getElementById('app').classList.add('visible');
+    buildDeck();
+    buildDiscover();
+    buildProfile();
+    buildProgressDots();
+    updateXP(0);
+  }, 2600);
+});
+
+// ── DECK ─────────────────────────────────────────────────────
+function buildDeck() {
+  const deck = document.getElementById('deck');
+  deck.innerHTML = '';
+  // Render next 3 cards stacked
+  for (let i = Math.min(currentCard + 2, CARDS.length - 1); i >= currentCard; i--) {
+    deck.appendChild(makeCard(i));
+  }
+  updateProgressDots();
+}
+
+function makeCard(index) {
+  const d = CARDS[index];
+  if (!d) return document.createDocumentFragment();
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.index = index;
+
+  const scale = index === currentCard ? 1 : 0.96 - (index - currentCard) * 0.02;
+  const ty = index === currentCard ? 0 : (index - currentCard) * 12;
+  card.style.transform = `scale(${scale}) translateY(${ty}px)`;
+  card.style.zIndex = CARDS.length - index;
+
+  const catClass = {'viral':'cat-viral','bharat':'cat-bharat','tech':'cat-tech','sport':'cat-sport','culture':'cat-culture','create':'cat-create'}[d.cat];
+
+  card.innerHTML = `
+    <div class="card-bg" style="background:${d.bg}">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(6rem,30vw,12rem);opacity:.15;pointer-events:none">${d.emoji}</div>
+    </div>
+    <div class="card-actions">
+      <div class="action-btn" onclick="handleLike(event,${index})">
+        <div class="action-icon">🔥</div>
+        <div class="action-label">${d.likes}</div>
+      </div>
+      <div class="action-btn" onclick="openSheet('share')">
+        <div class="action-icon">📤</div>
+        <div class="action-label">Share</div>
+      </div>
+      <div class="action-btn" onclick="openSheet('comment')">
+        <div class="action-icon">💬</div>
+        <div class="action-label">Discuss</div>
+      </div>
+      ${d.cta ? '' : `<div class="action-btn" onclick="handleRedirect('${d.redirect}')"><div class="action-icon">🔗</div><div class="action-label">Open</div></div>`}
+    </div>
+    <div class="card-content">
+      <div class="chip card-category ${catClass}">${d.catLabel}</div>
+      <div class="card-title">${d.title}</div>
+      <div class="card-meta">
+        <div class="card-avatar">${d.authorEmoji}</div>
+        <span>${d.author}</span>
+        <div class="card-dot"></div>
+        <span>${d.location}</span>
+        <div class="card-dot"></div>
+        <span>${d.time}</span>
+      </div>
+    </div>
+  `;
+
+  // Touch events
+  card.addEventListener('touchstart', onTouchStart, {passive:true});
+  card.addEventListener('touchmove', onTouchMove, {passive:false});
+  card.addEventListener('touchend', onTouchEnd);
+  // Mouse events
+  card.addEventListener('mousedown', onMouseDown);
+
+  return card;
+}
+
+// ── SWIPE LOGIC ───────────────────────────────────────────────
+function onTouchStart(e) {
+  if (isAnimating) return;
+  touchStartY = e.touches[0].clientY;
+  touchStartX = e.touches[0].clientX;
+  isDragging = true;
+  dragDeltaY = 0;
+}
+function onTouchMove(e) {
+  if (!isDragging) return;
+  e.preventDefault();
+  dragDeltaY = e.touches[0].clientY - touchStartY;
+  const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+  if (Math.abs(dragDeltaY) < deltaX) return;
+  const card = getTopCard();
+  if (card) {
+    const progress = Math.max(0, -dragDeltaY / window.innerHeight);
+    card.style.transform = `translateY(${Math.min(0, dragDeltaY)}px) rotate(${dragDeltaY * 0.01}deg)`;
+    card.style.opacity = 1 - progress * 0.5;
+  }
+}
+function onTouchEnd() {
+  if (!isDragging) return;
+  isDragging = false;
+  if (dragDeltaY < -80) {
+    nextCard();
+  } else if (dragDeltaY > 80) {
+    prevCard();
+  } else {
+    const card = getTopCard();
+    if (card) {
+      card.style.transition = 'transform .3s ease, opacity .3s ease';
+      card.style.transform = 'translateY(0) rotate(0deg)';
+      card.style.opacity = '1';
+    }
+  }
+}
+
+// Mouse drag
+let mouseStart = 0;
+function onMouseDown(e) {
+  mouseStart = e.clientY;
+  const move = (ev) => {
+    const delta = ev.clientY - mouseStart;
+    const card = getTopCard();
+    if (card) card.style.transform = `translateY(${Math.min(0,delta)}px)`;
+  };
+  const up = (ev) => {
+    const delta = ev.clientY - mouseStart;
+    if (delta < -80) nextCard();
+    else if (delta > 80) prevCard();
+    else { const card = getTopCard(); if (card) { card.style.transition = 'transform .3s ease'; card.style.transform = 'translateY(0)'; }}
+    window.removeEventListener('mousemove', move);
+    window.removeEventListener('mouseup', up);
+  };
+  window.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', up);
+}
+
+function getTopCard() {
+  return document.querySelector(`.card[data-index="${currentCard}"]`);
+}
+
+function nextCard() {
+  if (isAnimating || currentCard >= CARDS.length - 1) return;
+  isAnimating = true;
+  const card = getTopCard();
+  if (card) {
+    card.classList.add('swipe-up');
+    addXP(15);
+    setTimeout(() => {
+      currentCard++;
+      buildDeck();
+      isAnimating = false;
+    }, 350);
+  }
+}
+
+function prevCard() {
+  if (isAnimating || currentCard <= 0) return;
+  isAnimating = true;
+  currentCard--;
+  buildDeck();
+  const card = getTopCard();
+  if (card) {
+    card.style.transform = 'translateY(110vh)';
+    requestAnimationFrame(() => {
+      card.style.transition = 'transform .4s cubic-bezier(.16,1,.3,1)';
+      card.style.transform = 'translateY(0)';
+    });
+  }
+  setTimeout(() => { isAnimating = false; }, 400);
+}
+
+// ── KEYBOARD ─────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (activeLayer !== 'feed') return;
+  if (e.key === 'ArrowUp' || e.key === 'ArrowRight') nextCard();
+  if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') prevCard();
+});
+
+// ── PROGRESS DOTS ─────────────────────────────────────────────
+function buildProgressDots() {
+  const wrap = document.getElementById('progress-dots');
+  wrap.innerHTML = '';
+  CARDS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'pdot' + (i === currentCard ? ' active' : '');
+    d.dataset.i = i;
+    wrap.appendChild(d);
+  });
+}
+function updateProgressDots() {
+  document.querySelectorAll('.pdot').forEach((d, i) => {
+    d.classList.toggle('active', i === currentCard);
+  });
+}
+
+// ── XP SYSTEM ────────────────────────────────────────────────
+function addXP(amount) {
+  xp += amount;
+  updateXP(xp);
+}
+function updateXP(val) {
+  document.getElementById('xp-counter').textContent = `${val} XP`;
+  document.getElementById('xp-profile').textContent = val;
+  document.getElementById('xp-bar-label').textContent = `${val} / 500 XP`;
+  const pct = Math.min(100, (val / 500) * 100);
+  const fill = document.getElementById('xp-fill-bar');
+  if (fill) fill.style.width = pct + '%';
+}
+
+// ── LIKE ─────────────────────────────────────────────────────
+function handleLike(e, index) {
+  e.stopPropagation();
+  addXP(5);
+  const burst = document.createElement('div');
+  burst.className = 'like-burst';
+  burst.textContent = '🔥';
+  document.body.appendChild(burst);
+  setTimeout(() => burst.remove(), 700);
+}
+
+// ── REDIRECT ─────────────────────────────────────────────────
+function handleRedirect(key) {
+  addXP(25);
+  const url = REDIRECT_MAP[key];
+  if (url) {
+    openSheet('redirect', { url, key });
+  }
+}
+
+// ── LAYERS ───────────────────────────────────────────────────
+function switchLayer(layer) {
+  activeLayer = layer;
+  const deck = document.getElementById('deck');
+  const discover = document.getElementById('layer-discover');
+  const profile = document.getElementById('layer-profile');
+  const dots = document.getElementById('progress-dots');
+  const hint = document.querySelector('.swipe-hint');
+
+  deck.style.display = layer === 'feed' ? 'block' : 'none';
+  discover.style.display = layer === 'discover' ? 'block' : 'none';
+  profile.style.display = layer === 'profile' ? 'block' : 'none';
+  dots.style.display = layer === 'feed' ? 'flex' : 'none';
+  if (hint) hint.style.display = layer === 'feed' ? 'flex' : 'none';
+
+  document.querySelectorAll('.layer-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.layer === layer);
+  });
+}
+
+document.querySelectorAll('.layer-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchLayer(tab.dataset.layer));
+});
+
+// ── NAV ──────────────────────────────────────────────────────
+function switchNav(name, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  if (name === 'feed') switchLayer('feed');
+  else if (name === 'discover') switchLayer('discover');
+  else if (name === 'profile') switchLayer('profile');
+  else if (name === 'notifications') openSheet('notif');
+}
+
+// ── DISCOVER ─────────────────────────────────────────────────
+function buildDiscover() {
+  const colors = ['#1a0a2a','#0a1a00','#0a0a2a','#001a0a','#1a000a','#001a1a','#1a1a00','#0a001a'];
+  const grid = document.getElementById('discover-grid');
+  grid.innerHTML = '';
+  DISCOVER_ITEMS.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'discover-card';
+    card.innerHTML = `
+      <div class="discover-card-bg" style="background:${colors[i]}">${item.emoji}</div>
+      <div class="discover-card-label">
+        <div class="discover-card-cat">${item.cat}</div>
+        <div class="discover-card-name">${item.name}</div>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      addXP(10);
+      openSheet('discover-detail', { item });
+    });
+    grid.appendChild(card);
+  });
+}
+
+// ── PROFILE GRID ─────────────────────────────────────────────
+function buildProfile() {
+  const grid = document.getElementById('profile-grid');
+  grid.innerHTML = '';
+  PROFILE_EMOJIS.forEach(e => {
+    const item = document.createElement('div');
+    item.className = 'pgrid-item';
+    item.textContent = e;
+    item.addEventListener('click', () => addXP(2));
+    grid.appendChild(item);
+  });
+}
+
+// ── SHEET ────────────────────────────────────────────────────
+const SHEETS = {
+  create: {
+    title: 'Create on VIA',
+    sub: 'Share your story with Bharat',
+    actions: [
+      { icon:'📹', iconBg:'rgba(255,107,0,.15)', title:'Video', sub:'Short film, reel, vlog', url:'https://t.me/GN8RBot' },
+      { icon:'📸', iconBg:'rgba(245,197,24,.15)', title:'Photo Story', sub:'Images + caption', url:null },
+      { icon:'✍️', iconBg:'rgba(108,99,255,.15)', title:'Write', sub:'Article, blog, opinion', url:null },
+      { icon:'🎙️', iconBg:'rgba(0,200,100,.15)', title:'Voice Note', sub:'Audio story or podcast', url:null },
+    ]
+  },
+  share: {
+    title: 'Share this Story',
+    sub: 'Spread the word across Bharat',
+    actions: [
+      { icon:'💬', iconBg:'rgba(0,200,100,.15)', title:'WhatsApp', sub:'Share to contacts', url:'https://wa.me/?text=Check%20this%20on%20VIA!' },
+      { icon:'📲', iconBg:'rgba(41,182,246,.15)', title:'Telegram', sub:'Share to groups', url:'https://t.me/share/url?url=https://via.in' },
+      { icon:'🐦', iconBg:'rgba(29,161,242,.15)', title:'Twitter/X', sub:'Post to your feed', url:null },
+      { icon:'📋', iconBg:'rgba(255,255,255,.08)', title:'Copy Link', sub:'via.in/story/123', url:null },
+    ]
+  },
+  comment: {
+    title: 'Join the Discussion',
+    sub: 'What do you think about this?',
+    actions: [
+      { icon:'🔥', iconBg:'rgba(255,107,0,.15)', title:'React', sub:'Express your vibe' },
+      { icon:'💬', iconBg:'rgba(108,99,255,.15)', title:'Comment', sub:'Share your thoughts' },
+      { icon:'🔁', iconBg:'rgba(0,200,100,.15)', title:'Repost', sub:'Spread this story' },
+    ]
+  },
+  notif: {
+    title: 'Alerts',
+    sub: 'Your VIA notifications',
+    actions: [
+      { icon:'🔥', iconBg:'rgba(255,107,0,.15)', title:'Priya liked your post', sub:'2 min ago' },
+      { icon:'👤', iconBg:'rgba(108,99,255,.15)', title:'Rahul started following you', sub:'1h ago' },
+      { icon:'💬', iconBg:'rgba(0,200,100,.15)', title:'New comment on your story', sub:'3h ago' },
+      { icon:'⭐', iconBg:'rgba(245,197,24,.15)', title:'You earned 50 XP today!', sub:'Keep going' },
+    ]
+  },
+};
+
+function openSheet(type, extra = {}) {
+  const overlay = document.getElementById('sheet-overlay');
+  const sheet = document.getElementById('sheet');
+  const body = document.getElementById('sheet-body');
+
+  let html = '';
+
+  if (type === 'redirect' && extra.url) {
+    html = `
+      <div class="sheet-title">Open Full Story</div>
+      <div class="sheet-sub">यह story VIA ecosystem में open होगी। Ready?</div>
+      <div class="sheet-actions">
+        <div class="sheet-btn" onclick="window.open('${extra.url}','_blank');closeSheet();addXP(30)">
+          <div class="sheet-btn-icon" style="background:rgba(255,107,0,.15)">🚀</div>
+          <div class="sheet-btn-text"><div class="sheet-btn-title">Open Story</div><div class="sheet-btn-sub">+30 XP earned</div></div>
+          <div class="sheet-btn-arrow">›</div>
+        </div>
+        <div class="sheet-btn" onclick="closeSheet()">
+          <div class="sheet-btn-icon" style="background:rgba(255,255,255,.06)">✕</div>
+          <div class="sheet-btn-text"><div class="sheet-btn-title">Stay here</div><div class="sheet-btn-sub">Continue swiping</div></div>
+          <div class="sheet-btn-arrow">›</div>
+        </div>
+      </div>`;
+  } else if (type === 'discover-detail' && extra.item) {
+    const { item } = extra;
+    html = `
+      <div class="sheet-title">${item.emoji} ${item.name}</div>
+      <div class="sheet-sub">${item.cat} · Trending on VIA right now</div>
+      <div class="sheet-actions">
+        <div class="sheet-btn" onclick="switchLayer('feed');closeSheet()">
+          <div class="sheet-btn-icon" style="background:rgba(255,107,0,.15)">▶</div>
+          <div class="sheet-btn-text"><div class="sheet-btn-title">Watch ${item.name} Feed</div><div class="sheet-btn-sub">Top stories in this category</div></div>
+          <div class="sheet-btn-arrow">›</div>
+        </div>
+        <div class="sheet-btn" onclick="addXP(20);closeSheet()">
+          <div class="sheet-btn-icon" style="background:rgba(108,99,255,.15)">➕</div>
+          <div class="sheet-btn-text"><div class="sheet-btn-title">Follow ${item.name}</div><div class="sheet-btn-sub">+20 XP · Get updates</div></div>
+          <div class="sheet-btn-arrow">›</div>
+        </div>
+      </div>`;
+  } else {
+    const s = SHEETS[type];
+    if (!s) return;
+    html = `
+      <div class="sheet-title">${s.title}</div>
+      <div class="sheet-sub">${s.sub}</div>
+      <div class="sheet-actions">
+        ${s.actions.map(a => `
+          <div class="sheet-btn" onclick="${a.url ? `window.open('${a.url}','_blank');closeSheet()` : `addXP(5);closeSheet()`}">
+            <div class="sheet-btn-icon" style="background:${a.iconBg}">${a.icon}</div>
+            <div class="sheet-btn-text"><div class="sheet-btn-title">${a.title}</div><div class="sheet-btn-sub">${a.sub}</div></div>
+            <div class="sheet-btn-arrow">›</div>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  body.innerHTML = html;
+  overlay.classList.add('open');
+  sheet.classList.add('open');
+}
+
+function closeSheet() {
+  document.getElementById('sheet-overlay').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+}
+</script>
+</body>
+</html>

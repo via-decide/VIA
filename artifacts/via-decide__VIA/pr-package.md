@@ -1,9 +1,9 @@
-Branch: simba/implement-a-core-backend-module-called-via-socke
-Title: Implement a core backend module called via-socket-mesh to handle mass...
+Branch: simba/implement-a-core-backend-module-called-via-distr
+Title: Implement a core backend module called via-distributed-lock-manager (...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Establish the high-throughput, low-latency gateway required for real-time AI ecosystems. This infrastructure is essential for maintaining persistent, bi-directional communication channels-perfect for streaming live autonomous agent outputs or handling high-frequency webhooks (like real-time messaging integrations) without the overhead of continuous HTTP polling.
+- Goal: Establish "Concurrency Safety" for the planetary-scale backend. As the AI swarm grows, multiple agents will inevitably collide while trying to access the same data; this DLM ensures that the VIA engine remains ACID-compliant and prevents "Lost Update" bugs during high-frequency social interactions.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

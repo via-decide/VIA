@@ -1,9 +1,9 @@
-Branch: simba/implement-a-core-backend-module-called-via-socke
-Title: Implement a core backend module called via-socket-mesh to handle mass...
+Branch: simba/implement-a-core-backend-module-called-via-adapt
+Title: Implement a core backend module called via-adaptive-heartbeat-manager...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Establish the high-throughput, low-latency gateway required for real-time AI ecosystems. This infrastructure is essential for maintaining persistent, bi-directional communication channels-perfect for streaming live autonomous agent outputs or handling high-frequency webhooks (like real-time messaging integrations) without the overhead of continuous HTTP polling.
+- Goal: Achieve "Biomimetic Resource Efficiency." Instead of agents wasting compute by checking for updates at fixed intervals, the adaptive heartbeat allows the swarm to "sleep" during quiet periods and "rev up" instantly when social trends or user needs demand attention. This maximizes responsiveness while minimizing idle API costs and CPU overhead.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

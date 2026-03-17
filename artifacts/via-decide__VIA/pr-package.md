@@ -1,3 +1,9 @@
+Branch: simba/implement-a-core-backend-module-called-via-dynam
+Title: Implement a core backend module called via-dynamic-payload-validator ...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Ensure absolute data integrity across the decentralized AI swarm. By strictly enforcing contracts between micro-agents, you prevent cascading failures caused by malformed data, ensuring that "Agent A" always receives exactly what it expects from "Agent B."
 Branch: simba/implement-a-core-backend-module-called-via-shado
 Title: Implement a core backend module called via-shadow-router to enable A/...
 

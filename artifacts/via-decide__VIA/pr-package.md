@@ -1,9 +1,9 @@
-Branch: simba/implement-a-core-backend-module-called-via-socke
-Title: Implement a core backend module called via-socket-mesh to handle mass...
+Branch: simba/implement-a-core-backend-module-called-via-block
+Title: Implement a core backend module called via-blockchain-notary to provi...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Establish the high-throughput, low-latency gateway required for real-time AI ecosystems. This infrastructure is essential for maintaining persistent, bi-directional communication channels-perfect for streaming live autonomous agent outputs or handling high-frequency webhooks (like real-time messaging integrations) without the overhead of continuous HTTP polling.
+- Goal: Establish "Truth at Scale." In an era of AI-generated misinformation, this module provides a tamper-proof audit trail. By anchoring agent signatures to a public or private ledger, VIA ensures that every social post, message, or decision can be mathematically proven as authentic, protecting the ecosystem against deepfakes and unauthorized tampering.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

@@ -1,9 +1,9 @@
-Branch: simba/implement-a-core-backend-middleware-module-calle
-Title: Implement a core backend middleware module called via-predictive-rout...
+Branch: simba/implement-a-core-backend-module-called-via-edge-
+Title: Implement a core backend module called via-edge-cache-manager to hand...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Upgrade the VIA core architecture into a robust, highly scalable backend capable of intelligently load-balancing massive concurrent agent or user requests. This lays the infrastructural foundation necessary to support advanced, dynamic social-media-style engine tools.
+- Goal: Dramatically reduce database load and latency for read-heavy social/agent graphs by serving frequently accessed data directly from memory. This mimics the edge-caching architecture used by major social platforms to serve news feeds instantly.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

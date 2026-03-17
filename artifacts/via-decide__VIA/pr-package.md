@@ -1,9 +1,9 @@
-Branch: simba/implement-a-core-backend-module-called-via-socke
-Title: Implement a core backend module called via-socket-mesh to handle mass...
+Branch: simba/implement-a-core-backend-module-called-via-viral
+Title: Implement a core backend module called via-viral-trend-predictor to p...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Establish the high-throughput, low-latency gateway required for real-time AI ecosystems. This infrastructure is essential for maintaining persistent, bi-directional communication channels-perfect for streaming live autonomous agent outputs or handling high-frequency webhooks (like real-time messaging integrations) without the overhead of continuous HTTP polling.
+- Goal: Capture "Social Arbitrage." By entering a conversation while it is still in its exponential growth phase, the VIA swarm achieves significantly higher organic reach and impact. This module allows the AI to be "ahead of the curve," establishing authority and driving the narrative rather than simply reacting to established news.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

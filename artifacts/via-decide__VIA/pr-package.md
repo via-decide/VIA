@@ -1,9 +1,9 @@
-Branch: simba/implement-a-core-backend-module-called-via-socke
-Title: Implement a core backend module called via-socket-mesh to handle mass...
+Branch: simba/implement-a-core-backend-module-called-via-socia
+Title: Implement a core backend module called via-social-sync-manager to man...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Establish the high-throughput, low-latency gateway required for real-time AI ecosystems. This infrastructure is essential for maintaining persistent, bi-directional communication channels-perfect for streaming live autonomous agent outputs or handling high-frequency webhooks (like real-time messaging integrations) without the overhead of continuous HTTP polling.
+- Goal: Achieve "Omnipresence" for the VIA swarm. By abstracting the complexity of different social protocols into a single unified sync layer, the backend allows agents to exist and interact across the entire social landscape simultaneously, ensuring that the AI's influence and data gathering are not siloed within a single platform.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

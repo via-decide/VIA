@@ -1,9 +1,9 @@
-Branch: simba/implement-a-core-backend-module-called-via-socke
-Title: Implement a core backend module called via-socket-mesh to handle mass...
+Branch: simba/implement-a-core-backend-module-called-via-conte
+Title: Implement a core backend module called via-context-pruning-engine to ...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Establish the high-throughput, low-latency gateway required for real-time AI ecosystems. This infrastructure is essential for maintaining persistent, bi-directional communication channels-perfect for streaming live autonomous agent outputs or handling high-frequency webhooks (like real-time messaging integrations) without the overhead of continuous HTTP polling.
+- Goal: Achieve "Infinite Conversation Coherence." By intelligently deciding what to keep in active memory and what to archive, the VIA engine prevents agents from "forgetting" their core mission or the user's name during long interactions, while simultaneously avoiding the performance degradation and cost spikes associated with bloated context windows.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

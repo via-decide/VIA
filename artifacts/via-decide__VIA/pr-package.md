@@ -1,9 +1,9 @@
-Branch: simba/implement-a-core-backend-module-called-via-socke
-Title: Implement a core backend module called via-socket-mesh to handle mass...
+Branch: simba/implement-a-core-backend-module-called-via-cross
+Title: Implement a core backend module called via-cross-agent-knowledge-grap...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Establish the high-throughput, low-latency gateway required for real-time AI ecosystems. This infrastructure is essential for maintaining persistent, bi-directional communication channels-perfect for streaming live autonomous agent outputs or handling high-frequency webhooks (like real-time messaging integrations) without the overhead of continuous HTTP polling.
+- Goal: Achieve "Collective Intelligence." In a standard multi-agent system, knowledge is often siloed within individual conversation contexts. This module turns the entire swarm into a single, massive brain where a fact learned by a "SocialAgent" on X is instantly available to a "ResearchAgent" deep-diving into technical docs, creating a seamless and omniscient user experience.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

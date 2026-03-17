@@ -1,9 +1,9 @@
-Branch: simba/implement-a-core-backend-module-called-via-socke
-Title: Implement a core backend module called via-socket-mesh to handle mass...
+Branch: simba/implement-a-core-backend-module-called-via-distr
+Title: Implement a core backend module called via-distributed-rate-limiter t...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Establish the high-throughput, low-latency gateway required for real-time AI ecosystems. This infrastructure is essential for maintaining persistent, bi-directional communication channels-perfect for streaming live autonomous agent outputs or handling high-frequency webhooks (like real-time messaging integrations) without the overhead of continuous HTTP polling.
+- Goal: Ensure the absolute survivability of the ViaDecide backend. By ruthlessly dropping bad traffic or runaway internal agent requests before they consume CPU cycles or hit the database, the system remains stable and responsive for legitimate users under any load.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

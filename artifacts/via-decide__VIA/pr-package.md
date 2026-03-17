@@ -1,9 +1,9 @@
-Branch: simba/implement-a-core-backend-module-called-via-socke
-Title: Implement a core backend module called via-socket-mesh to handle mass...
+Branch: simba/implement-a-core-backend-module-called-via-agent
+Title: Implement a core backend module called via-agent-peer-review-pipeline...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Establish the high-throughput, low-latency gateway required for real-time AI ecosystems. This infrastructure is essential for maintaining persistent, bi-directional communication channels-perfect for streaming live autonomous agent outputs or handling high-frequency webhooks (like real-time messaging integrations) without the overhead of continuous HTTP polling.
+- Goal: Establish "Internal Social Proof." By forcing agents to justify their outputs to their peers, the VIA engine significantly reduces the risk of embarrassing hallucinations or off-brand behavior. This "Internal Democracy" ensures that only the highest-signal content reaches the public, maintaining the swarm's collective authority and user trust.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

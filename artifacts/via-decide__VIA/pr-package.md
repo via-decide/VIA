@@ -1,9 +1,9 @@
-Branch: simba/implement-a-core-backend-module-called-via-socke
-Title: Implement a core backend module called via-socket-mesh to handle mass...
+Branch: simba/implement-a-core-backend-module-called-via-local
+Title: Implement a core backend module called via-local-vector-store to give...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Establish the high-throughput, low-latency gateway required for real-time AI ecosystems. This infrastructure is essential for maintaining persistent, bi-directional communication channels-perfect for streaming live autonomous agent outputs or handling high-frequency webhooks (like real-time messaging integrations) without the overhead of continuous HTTP polling.
+- Goal: Provide agents with instant, lightweight "short-term memory." By keeping recent semantic context entirely in local RAM, agents can perform rapid reasoning and context retrieval without the massive latency of querying an external vector database over the network.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

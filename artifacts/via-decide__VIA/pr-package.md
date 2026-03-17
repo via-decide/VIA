@@ -1,3 +1,9 @@
+Branch: simba/implement-a-core-backend-module-called-via-local
+Title: Implement a core backend module called via-local-vector-store to give...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Provide agents with instant, lightweight "short-term memory." By keeping recent semantic context entirely in local RAM, agents can perform rapid reasoning and context retrieval without the massive latency of querying an external vector database over the network.
 Branch: simba/implement-a-core-backend-module-called-via-dynam
 Title: Implement a core backend module called via-dynamic-payload-validator ...
 

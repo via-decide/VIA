@@ -5,6 +5,10 @@ Implement a "Decision Graph Engine" to convert all user inputs into structured r
 
 CONSTRAINTS
 No external graph libraries. Use adjacency lists with optimized traversal.
+Implement the foundational "Feed Intelligence Layer" for VIA to transition from manually curated content to a self-evolving social system. Create directory src/core/feed/intelligence-layer/. Create feed-schema.json defining core post types aligned with VIA's Decision OS: - post_Decision (structured reasoning outputs) - post_StudyPlan (StudyOS generated learning flows) - post_ToolOutput (GN8R-generated execution artifacts) - post_Insight (human-authored frameworks and breakdowns) Implement FeedComposer.js. This module must: - Normalize all incoming content (manual + tool-generated) into a unified post schema - Support expandable structured blocks (sections, steps, code, reasoning layers) - Assign "Execution Hooks" to each post (Run, Modify, Fork actions) Implement ContentOriginTracker.js.
+
+CONSTRAINTS
+Do NOT over-engineer real-time infra yet. Use simple JSON store or Supabase-lite mock for persistence. All modules must remain stateless and composable for future agent injection. Feed rendering must support structured content (not plain text blobs).
 
 PROCESS (MANDATORY)
 1. Read README.md and AGENTS.md before editing.

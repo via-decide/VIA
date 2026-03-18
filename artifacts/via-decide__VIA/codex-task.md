@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Implement ExecutionHooksEngine to attach actions to posts.
+
+CONSTRAINTS
+Hooks must be idempotent.
 Implement ContentOriginTracker for tagging and tracking post origin.
 
 CONSTRAINTS

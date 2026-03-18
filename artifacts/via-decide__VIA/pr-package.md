@@ -1,3 +1,9 @@
+Branch: simba/implement-a-core-backend-module-called-via-block
+Title: Implement a core backend module called via-blockchain-notary to provi...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Establish "Truth at Scale." In an era of AI-generated misinformation, this module provides a tamper-proof audit trail. By anchoring agent signatures to a public or private ledger, VIA ensures that every social post, message, or decision can be mathematically proven as authentic, protecting the ecosystem against deepfakes and unauthorized tampering.
 Branch: simba/implement-a-core-backend-module-called-via-human
 Title: Implement a core backend module called via-human-handover-manager to ...
 

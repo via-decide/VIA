@@ -1,3 +1,9 @@
+Branch: simba/implement-a-core-backend-module-called-via-predi
+Title: Implement a core backend module called via-predictive-personalization...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Master the "Attention Economy." By tailoring the AI swarm's output to the specific emotional and intellectual needs of each user, the VIA engine maximizes retention and value. This personalization ensures that the social experience feels intuitive and relevant, effectively turning a raw data stream into a curated, high-value knowledge environment.
 Branch: simba/implement-a-core-backend-module-called-via-gover
 Title: Implement a core backend module called via-governance-auditor to enfo...
 

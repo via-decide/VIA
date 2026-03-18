@@ -1,3 +1,9 @@
+Branch: simba/implement-content-freshness-scorer-create-srccor
+Title: Implement "Content Freshness Scorer". Create src/core/feed/freshness/...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Keep feed dynamic and relevant.
 Branch: simba/build-lightweight-notification-engine-create-src
 Title: Build "Lightweight Notification Engine". Create src/core/notification...
 

@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Implement "Content Freshness Scorer". Create src/core/feed/freshness/. Score posts based on recency + interaction velocity. Decay older posts dynamically.
+
+CONSTRAINTS
+Simple exponential decay function only.
 Build "Lightweight Notification Engine". Create src/core/notifications/. Trigger events for likes, saves, forks. Batch notifications to avoid spam.
 
 CONSTRAINTS

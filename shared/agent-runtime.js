@@ -44,6 +44,18 @@ ${rawPrompt}`;
     }
   }
 
+  function indexAgentMemory(agent, prompt, result, context = {}) {
+    if (!global.AgentBackend || typeof global.AgentBackend.indexMemory !== 'function') return;
+    const promptText = String(prompt || '').trim();
+    const resultText = result && typeof result.text === 'string' ? result.text.trim() : '';
+    const memoryText = [promptText, resultText].filter(Boolean).join('\n\n');
+    if (!memoryText) return;
+    global.AgentBackend.indexMemory(`agent-runtime:${agent && agent.id ? agent.id : 'agent'}`, memoryText, {
+      source: context.source || 'agent-runtime',
+      userId: context.userId || ''
+    });
+  }
+
   function run(agent, tools, options) {
     const payload = global.WorkflowEngine.runWorkflow(agent, tools, options);
     persistRun(agent, payload, { source: options && options.source ? options.source : 'workflow-engine' });
@@ -103,6 +115,7 @@ ${rawPrompt}`;
           prompt: identityPrompt
         });
         output.result = result;
+        indexAgentMemory(agent, identityPrompt, result, context);
       }
 
       logs.push({ index, step, output, timestamp: new Date().toISOString() });

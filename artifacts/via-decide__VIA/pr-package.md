@@ -1,3 +1,9 @@
+Branch: simba/implement-user-action-heatmap-tracker-create-src
+Title: Implement "User Action Heatmap Tracker". Create src/core/analytics/he...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Understand what users actually engage with.
 Branch: simba/build-insight-compression-engine-create-srccorei
 Title: Build "Insight Compression Engine". Create src/core/insight/compressi...
 

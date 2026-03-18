@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Implement "User Action Heatmap Tracker". Create src/core/analytics/heatmap/. Track clicks, scroll depth, execution triggers. Aggregate into interaction zones. Expose data to feed ranking logic.
+
+CONSTRAINTS
+Batch processing only. No real-time streaming yet.
 Build "Insight Compression Engine". Create src/core/insight/compression-engine/. Convert long outputs into concise summaries + key bullets. Add Expand/Collapse support. Implement CompressionRatio tracking.
 
 CONSTRAINTS

@@ -1,6 +1,7 @@
 {
   "repo": "via-decide/VIA",
   "mode": "codex_then_antigravity",
+  "branch": "simba/implement-user-action-heatmap-tracker-create-src",
   "branch": "simba/build-insight-compression-engine-create-srccorei",
   "branch": "simba/implement-context-memory-layer-create-srccoremem",
   "branch": "simba/create-tool-output-normalizer-create-srccoretool",

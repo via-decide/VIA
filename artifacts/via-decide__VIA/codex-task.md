@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Implement PostRemixEngine for forking content.
+
+CONSTRAINTS
+Store only diffs.
 Implement ContextMemoryLayer for session continuity.
 
 CONSTRAINTS

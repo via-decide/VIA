@@ -1,3 +1,9 @@
+Branch: simba/implement-postremixengine-for-forking-content
+Title: Implement PostRemixEngine for forking content.
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Enable collaborative content evolution.
 Branch: simba/implement-contextmemorylayer-for-session-continu
 Title: Implement ContextMemoryLayer for session continuity.
 

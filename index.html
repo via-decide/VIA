@@ -823,6 +823,8 @@ function resolveCardUrl(card) {
   if (card.redirect && REDIRECT_MAP[card.redirect]) return REDIRECT_MAP[card.redirect];
   if (card.sourceUrl) return card.sourceUrl;
   return '';
+  if (card.sourceUrl) return card.sourceUrl;
+  return REDIRECT_MAP[card.redirect] || '';
 }
 
 function buildCardContext(card) {
@@ -874,6 +876,7 @@ function hydrateFeedCards() {
       views: post.views || 'Live',
       likes: post.reaction_count ? formatCount(post.reaction_count) : 'New',
       redirect: redirectKey || (sourceUrl ? null : 'about'),
+      redirect: sourceUrl ? null : 'about',
       sourceUrl,
       feedContext: {
         title: post.context_title || 'Feed context',

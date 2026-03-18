@@ -1,3 +1,9 @@
+Branch: simba/implement-a-core-backend-module-called-via-viral
+Title: Implement a core backend module called via-viral-trend-predictor to p...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Capture "Social Arbitrage." By entering a conversation while it is still in its exponential growth phase, the VIA swarm achieves significantly higher organic reach and impact. This module allows the AI to be "ahead of the curve," establishing authority and driving the narrative rather than simply reacting to established news.
 Branch: simba/implement-a-core-backend-module-called-via-agent
 Title: Implement a core backend module called via-agent-peer-review-pipeline...
 

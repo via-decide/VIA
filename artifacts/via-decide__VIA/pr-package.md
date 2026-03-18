@@ -1,3 +1,9 @@
+Branch: simba/implement-studyos-adaptive-path-engine-create-sr
+Title: Implement "StudyOS Adaptive Path Engine". Create src/modules/studyos/...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Make StudyOS feel intelligent without heavy infra.
 Branch: simba/build-execution-hooks-engine-to-make-every-post-
 Title: Build "Execution Hooks Engine" to make every post actionable. Create ...
 

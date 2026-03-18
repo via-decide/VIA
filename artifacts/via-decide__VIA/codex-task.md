@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Implement "StudyOS Adaptive Path Engine". Create src/modules/studyos/adaptive-engine/. Track user progress and dynamically adjust learning sequences. Use difficulty scaling + time-to-completion heuristics. Add "Knowledge Retention Score" metric.
+
+CONSTRAINTS
+No ML models. Use deterministic heuristics only.
 Build "Execution Hooks Engine" to make every post actionable. Create src/core/execution/hooks-engine/.
 
 CONSTRAINTS

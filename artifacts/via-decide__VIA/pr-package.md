@@ -1,3 +1,9 @@
+Branch: simba/implement-a-decision-graph-engine-to-convert-all
+Title: Implement a "Decision Graph Engine" to convert all user inputs into s...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Transform VIA into a reasoning-first platform where every output is structurally explorable.
 Branch: simba/implement-the-foundational-feed-intelligence-lay
 Title: Implement the foundational "Feed Intelligence Layer" for VIA to trans...
 

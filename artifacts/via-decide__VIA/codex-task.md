@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Create "Tool Output Normalizer". Create src/core/tools/output-normalizer/. Standardize outputs from all tools into a unified schema. Support text, structured JSON, and hybrid outputs. Implement OutputFormatter.js.
+
+CONSTRAINTS
+Avoid deep nesting beyond 3 levels.
 Implement "StudyOS Adaptive Path Engine". Create src/modules/studyos/adaptive-engine/. Track user progress and dynamically adjust learning sequences. Use difficulty scaling + time-to-completion heuristics. Add "Knowledge Retention Score" metric.
 
 CONSTRAINTS

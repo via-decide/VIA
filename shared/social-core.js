@@ -66,6 +66,40 @@
     return profile;
   }
 
+  function storeUserProfile(state, profile) {
+    state.users[profile.id] = {
+      id: profile.id,
+      username: profile.username,
+      display_name: profile.display_name,
+      city: profile.city,
+      avatar_emoji: profile.avatar_emoji
+    };
+  }
+
+  function saveLocalUserIfCurrent(profile) {
+    const current = getCurrentUser();
+    if (current && current.id === profile.id) {
+      saveLocalUser(profile);
+    }
+    return profile;
+  }
+
+  async function insertRemote(table, payload) {
+    const client = getClient();
+    if (!client) return false;
+    try {
+      const { error } = await client.from(table).insert(payload);
+      if (error) {
+        console.warn('SocialCore remote insert failed:', table, error.message || error);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.warn('SocialCore remote insert failed:', table, error && error.message ? error.message : error);
+      return false;
+    }
+  }
+
   function normalizeProfile(profile) {
     if (!profile || typeof profile !== 'object') return null;
     return {
@@ -96,6 +130,9 @@
     const state = readState();
     const counts = getProfileCounts(normalized.id, state);
     const merged = { ...normalized, ...counts };
+    storeUserProfile(state, merged);
+    writeState(state);
+    saveLocalUserIfCurrent(merged);
     state.users[merged.id] = {
       id: merged.id,
       username: merged.username,
@@ -112,6 +149,7 @@
     const normalized = normalizeProfile(profile);
     if (!normalized || !normalized.id) return normalized;
     const state = readState();
+    storeUserProfile(state, normalized);
     state.users[normalized.id] = {
       id: normalized.id,
       username: normalized.username,
@@ -155,6 +193,13 @@
     writeState(state);
 
     const merged = syncProfileCounts(author);
+    await insertRemote('via_posts', {
+      id: post.id,
+      author_id: post.author_id,
+      body: post.body,
+      visibility: post.visibility,
+      created_at: post.created_at
+    });
     const client = getClient();
     if (client) {
       try {
@@ -194,6 +239,7 @@
     syncProfileCounts(source);
     syncProfileCounts(target);
 
+    await insertRemote('via_follows', relation);
     const client = getClient();
     if (client) {
       try {
@@ -225,6 +271,7 @@
     state.reactions.push(entry);
     writeState(state);
 
+    await insertRemote('via_reactions', entry);
     const client = getClient();
     if (client) {
       try {
@@ -265,6 +312,15 @@
     });
     writeState(state);
 
+    const member = {
+      circle_id: circle.id,
+      user_id: owner.id,
+      role: 'owner',
+      created_at: circle.created_at
+    };
+    const createdCircle = await insertRemote('via_circles', circle);
+    if (createdCircle) {
+      await insertRemote('via_circle_members', member);
     const client = getClient();
     if (client) {
       try {
@@ -302,6 +358,7 @@
     state.moderation_flags.push(flag);
     writeState(state);
 
+    await insertRemote('via_moderation_queue', flag);
     const client = getClient();
     if (client) {
       try {

@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Build "Insight Compression Engine". Create src/core/insight/compression-engine/. Convert long outputs into concise summaries + key bullets. Add Expand/Collapse support. Implement CompressionRatio tracking.
+
+CONSTRAINTS
+No external summarization APIs. Rule-based only.
 Implement "Context Memory Layer". Create src/core/memory/context-layer/. Store short-lived session context for users. Enable cross-tool continuity (Decision → Study → Execution). Add MemoryPruner.js for cleanup.
 
 CONSTRAINTS

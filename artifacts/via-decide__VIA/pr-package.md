@@ -1,3 +1,9 @@
+Branch: simba/build-insight-compression-engine-create-srccorei
+Title: Build "Insight Compression Engine". Create src/core/insight/compressi...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Improve readability of dense outputs in feed.
 Branch: simba/implement-context-memory-layer-create-srccoremem
 Title: Implement "Context Memory Layer". Create src/core/memory/context-laye...
 

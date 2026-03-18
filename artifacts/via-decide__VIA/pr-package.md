@@ -1,9 +1,9 @@
-Branch: simba/we-need-to-replace-the-static-cards-array-with-a
-Title: We need to replace the static CARDS array with a dynamic, self-learni...
+Branch: simba/we-need-to-finalize-the-content-layer-by-replaci
+Title: We need to finalize the content layer by replacing the hardcoded mock...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Create a TikTok-level addictive, personalized feed that runs entirely on the edge (the user's device). By using a Web Worker and an Affinity Matrix, VIA provides hyper-personalized content instantly, with zero server-side tracking, adhering to our sovereign, Bharat-first ethos.
+- Goal: Hydrate the VIA ecosystem with a massive, structured dataset. By mapping a secure Supabase backend to our fast DOM-recycling frontend, we ensure that as the user swipes, they get a continuous, highly performant stream of authentic Bharat stories that VibeRank can seamlessly sort.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

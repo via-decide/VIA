@@ -1,3 +1,9 @@
+Branch: simba/implement-a-core-backend-module-called-via-distr
+Title: Implement a core backend module called via-distributed-search-indexer...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Enable "Infinite Recall" for the AI swarm. While vector stores are great for meaning, keyword search is essential for finding specific names, dates, or technical terms. This module ensures agents can instantly navigate millions of historical records to find the exact needle in the haystack.
 Branch: simba/implement-a-core-backend-module-called-via-block
 Title: Implement a core backend module called via-blockchain-notary to provi...
 

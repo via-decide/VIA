@@ -1,3 +1,9 @@
+Branch: simba/implement-contextmemorylayer-for-session-continu
+Title: Implement ContextMemoryLayer for session continuity.
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Enable cross-tool context persistence.
 Branch: simba/implement-tooloutputnormalizer-for-standardizing
 Title: Implement ToolOutputNormalizer for standardizing tool outputs.
 

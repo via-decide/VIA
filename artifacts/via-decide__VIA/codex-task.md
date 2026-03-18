@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Implement ContextMemoryLayer for session continuity.
+
+CONSTRAINTS
+In-memory only.
 Implement ToolOutputNormalizer for standardizing tool outputs.
 
 CONSTRAINTS

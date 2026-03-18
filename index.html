@@ -8,8 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Devanagari:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="./shared/tool-storage.js"></script>
-<script src="./shared/social-core.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -30,7 +28,6 @@
   --r:20px;
 }
 
-/* 🚀 FIX: Bulletproof mobile scrolling (no elastic bounce) */
 html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-family:'DM Sans',sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased;touch-action:none;overscroll-behavior:none;}
 
 /* ── BOOT ── */
@@ -126,20 +123,8 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 .sheet-title{font-size:22px;line-height:1.2;font-weight:700;color:#fff;margin-bottom:4px;}
 .sheet-subtitle,.sheet-sub{font-size:14px;line-height:1.45;color:rgba(255,255,255,.7);margin-bottom:16px;}
 .sheet-actions{display:flex;flex-direction:column;gap:10px}
-.sheet-context-card{background:rgba(255,255,255,.04);border-radius:16px;padding:14px;margin-bottom:16px;}
-.sheet-context-title{font-size:14px;font-weight:600;color:#fff;margin-bottom:8px;}
-.sheet-context-list{list-style:none;display:flex;flex-direction:column;gap:6px;padding:0;margin:0;}
-.sheet-context-item{position:relative;padding-left:16px;font-size:13px;line-height:1.5;color:rgba(255,255,255,.8);}
-.sheet-context-item::before{content:'•';position:absolute;left:0;top:0;color:rgba(255,255,255,.65);}
-.sheet-context-summary{font-size:13px;line-height:1.5;color:rgba(255,255,255,.8);margin-bottom:8px;}
-.sheet-btn{display:flex;align-items:center;gap:.9rem;padding:1rem;border-radius:16px;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);transition:transform .2s ease,opacity .2s ease,background .2s ease;border-radius:16px;font-family:'DM Sans',sans-serif;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);}
-.sheet-btn:active{transform:scale(.98)}
-.sheet-btn-primary,.sheet-btn-secondary,.sheet-btn-tertiary{justify-content:center;width:100%;gap:0;border:none;box-shadow:none;}
-.sheet-btn-primary{height:48px;padding:0;background:linear-gradient(135deg,#6366F1,#8B5CF6);font-size:15px;font-weight:600;color:#fff;border-radius:12px;}
-.sheet-btn-secondary{height:44px;padding:0;background:rgba(255,255,255,.08);font-size:14px;font-weight:500;color:#fff;border-radius:12px;}
-.sheet-btn-tertiary{background:transparent;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;padding:6px 0 0;border-radius:0;}
-.sheet-btn-tertiary:active{opacity:.82}
-.sheet-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.sheet-btn{display:flex;align-items:center;gap:.9rem;padding:1rem;border-radius:16px;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);transition:transform .2s ease,opacity .2s ease,background .2s ease;font-family:'DM Sans',sans-serif;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);}
+.sheet-btn:active{transform:scale(.98); background:rgba(255,107,0,.06);}
 .sheet-btn-icon{font-size:1.3rem;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .sheet-btn-text{flex:1}
 .sheet-btn-title{font-weight:700;font-size:.9rem;color:#fff}
@@ -150,22 +135,19 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 .like-burst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:5rem;pointer-events:none;z-index:300;animation:likeBurst .6s ease forwards;}
 @keyframes likeBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}40%{opacity:1;transform:translate(-50%,-50%) scale(1.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
 
-/* ── DISCOVER ── */
-.discover-grid{position:absolute;inset:0;padding:7rem 1rem 5rem;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:.75rem;align-content:start;}
-.discover-card{border-radius:20px;overflow:hidden;aspect-ratio:9/11;position:relative;cursor:pointer;transition:transform .25s cubic-bezier(.16,1,.3,1);border:1px solid var(--border);box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);}
-.discover-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(255,255,255,0.1),transparent);opacity:0;transition:opacity .3s;pointer-events:none;z-index:2;}
-.discover-card:active{transform:scale(.96)}
-.discover-card:active::before{opacity:1}
-.discover-card-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3.5rem;background:var(--deep3);}
-.discover-card-label{position:absolute;bottom:0;left:0;right:0;padding:1rem .7rem;background:linear-gradient(to top,rgba(11,11,26,.95),transparent);z-index:3;}
-.discover-card-cat{font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--saffron);margin-bottom:.2rem}
-.discover-card-name{font-size:.9rem;font-weight:700;color:#fff;line-height:1.2}
+/* ── DISCOVER BENTO GRID (TOOLS) ── */
+.discover-grid{position:absolute;inset:0;padding:6rem 1rem 5rem;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:.85rem;align-content:start;}
+.discover-card{border-radius:20px;padding:1.2rem;display:flex;flex-direction:column;gap:0.5rem;background:rgba(255,255,255,0.03);position:relative;cursor:pointer;transition:transform .25s cubic-bezier(.16,1,.3,1), background .2s;border:1px solid var(--border);box-shadow:inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 12px rgba(0,0,0,0.15);}
+.discover-card:active{transform:scale(.94); background:rgba(255,255,255,0.06); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05), 0 2px 6px rgba(0,0,0,0.3);}
+.discover-card-bg{font-size:2.4rem;line-height:1;margin-bottom:0.4rem;}
+.discover-card-cat{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--saffron);}
+.discover-card-name{font-size:1.05rem;font-weight:700;color:#fff;line-height:1.2;}
+.discover-card-desc{font-size:0.75rem;color:rgba(255,255,255,0.6);line-height:1.4;margin-top:0.2rem;}
 
-/* Stagger Animation for Grids */
 .stagger-enter{animation:staggerFade .5s cubic-bezier(.16,1,.3,1) both;opacity:0;transform:translateY(15px);}
 @keyframes staggerFade{to{opacity:1;transform:translateY(0)}}
 
-/* ── PROFILE ── */
+/* ── PROFILE POSTERS (SAVED CONTENT) ── */
 .profile-wrap{position:absolute;inset:0;padding:4rem 1.2rem 5rem;overflow-y:auto;display:flex;flex-direction:column;align-items:center;}
 .profile-avatar-lg{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),var(--violet));display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin-bottom:1rem;border:3px solid rgba(255,107,0,.4);box-shadow:0 0 30px rgba(255,107,0,.3);}
 .profile-name{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,5vw,2rem);font-weight:700;margin-bottom:.25rem;}
@@ -176,10 +158,19 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 .pstat-l{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 .xp-bar{width:100%;background:rgba(255,255,255,.07);border-radius:99px;height:6px;margin-bottom:1.5rem;overflow:hidden;}
 .xp-fill{height:100%;width:0;background:linear-gradient(90deg,var(--saffron),var(--gold));border-radius:99px;transition:width .6s ease;}
-.profile-grid{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;border-radius:16px;overflow:hidden;}
-.pgrid-item{aspect-ratio:1;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;transition:all .2s cubic-bezier(.16,1,.3,1);border-radius:8px;}
-.pgrid-item:active{transform:scale(0.92);background:rgba(255,107,0,0.1);}
-.signout-btn{margin-top:2rem;width:100%;padding:1rem;border-radius:16px;background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.2);color:#ff6b6b;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:all .25s cubic-bezier(.16,1,.3,1);box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);}
+
+.profile-grid{width:100%;display:grid;grid-template-columns:repeat(auto-fit, minmax(135px, 1fr));gap:.85rem;margin-bottom:1.5rem;}
+.pgrid-item{border-radius:20px;overflow:hidden;aspect-ratio:4/5;position:relative;cursor:pointer;transition:transform .25s cubic-bezier(.16,1,.3,1);border:1px solid var(--border);box-shadow:inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 12px rgba(0,0,0,0.15);}
+.pgrid-item::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(255,255,255,0.1),transparent);opacity:0;transition:opacity .3s;pointer-events:none;z-index:2;}
+.pgrid-item:active{transform:scale(.94); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05), 0 2px 6px rgba(0,0,0,0.3);}
+.pgrid-item:active::before{opacity:1;}
+.pgrid-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3.5rem;background:var(--deep3);}
+.pgrid-label{position:absolute;bottom:0;left:0;right:0;padding:1.2rem .8rem .8rem;background:linear-gradient(to top,rgba(11,11,26,.95) 0%,rgba(11,11,26,.8) 40%,transparent 100%);z-index:3;}
+.pgrid-type{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--saffron);margin-bottom:.3rem;}
+.pgrid-title{font-size:.95rem;font-weight:700;color:#fff;line-height:1.25;}
+.pgrid-views{font-size:0.7rem;color:rgba(255,255,255,0.6);margin-top:0.3rem;}
+
+.signout-btn{margin-top:1rem;width:100%;padding:1rem;border-radius:16px;background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.2);color:#ff6b6b;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:all .25s cubic-bezier(.16,1,.3,1);box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);}
 .signout-btn.guest{background:rgba(255,107,0,.08);border-color:rgba(255,107,0,.25);color:var(--saffron);}
 .signout-btn:active{transform:scale(.97);opacity:.9}
 
@@ -218,9 +209,9 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 
 /* ── GESTURE CSS ── */
 .card-tilt-overlay{position:absolute;inset:0;pointer-events:none;z-index:4;border-radius:0;transition:background .08s ease;}
-.card-dir-hint{position:absolute;top:5rem;pointer-events:none;z-index:5;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:0;padding:.35rem .85rem;border-radius:8px;border:2px solid currentColor;transition:opacity .08s ease;}
-.card-dir-hint.like{left:1.2rem;color:#FF6B00;background:rgba(255,107,0,.18);}
-.card-dir-hint.more{right:1.2rem;color:#6C63FF;background:rgba(108,99,255,.18);}
+.card-dir-hint{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;z-index:5;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:0;padding:.5rem 1rem;border-radius:99px;border:2px solid currentColor;transition:all .2s ease;}
+.card-dir-hint.like{left:1.5rem;color:#FF6B00;background:rgba(255,107,0,.18);backdrop-filter:blur(8px);}
+.card-dir-hint.more{right:1.5rem;color:#6C63FF;background:rgba(108,99,255,.18);backdrop-filter:blur(8px);}
 .affirmation-ripple{position:fixed;pointer-events:none;z-index:500;transform:translate(-50%,-50%);}
 .ripple-ring{position:absolute;border-radius:50%;border:2.5px solid #FF6B00;opacity:0;animation:rippleExpand .65s ease-out forwards;}
 .ripple-ring:nth-child(2){animation-delay:.12s}.ripple-ring:nth-child(3){animation-delay:.24s}
@@ -236,14 +227,6 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 .ribbon-btn{flex:1;max-width:90px;height:52px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(28,28,56,.95);color:var(--white);font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;cursor:pointer;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:background .25s,transform .25s cubic-bezier(.16,1,.3,1);box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);}
 .ribbon-btn:active{transform:scale(.93);background:rgba(255,107,0,.18);border-color:var(--saffron);box-shadow:inset 0 1px 0 rgba(255,107,0,0.1);}
 .rb-icon{font-size:1.1rem}
-.a11y-toggle{background:transparent;border:none;cursor:pointer;font-size:.95rem;opacity:.35;transition:opacity .2s;padding:.4rem;line-height:1;}
-.a11y-toggle.active{opacity:1}
-.card-a11y-actions{display:none;position:absolute;bottom:5.5rem;left:0;right:0;justify-content:center;gap:1rem;padding:0 1.5rem;z-index:5;}
-body.a11y-mode .card-a11y-actions{display:flex !important}
-body.a11y-mode .card-actions{opacity:0;pointer-events:none}
-.a11y-btn{width:64px;height:64px;border-radius:16px;border:2px solid rgba(255,255,255,.25);background:rgba(11,11,26,.88);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .2s;}
-.a11y-btn:active{transform:scale(.92);}
-.a11y-btn:focus-visible{outline:3px solid #F5C518;outline-offset:3px}
 
 /* ── RESPONSIVE ── */
 @media(min-width:500px){
@@ -274,7 +257,6 @@ body.a11y-mode .card-actions{opacity:0;pointer-events:none}
     <div class="status-actions">
       <div class="status-xp"><div class="xp-dot"></div><span id="xp-counter">0 XP</span></div>
       <button class="status-auth-btn" id="status-auth-btn" onclick="VIA.openAuth()">Sign In</button>
-      <button class="a11y-toggle" id="a11y-toggle" onclick="toggleA11y()" aria-label="Toggle accessible mode">♿</button>
     </div>
   </div>
 
@@ -362,27 +344,12 @@ body.a11y-mode .card-actions{opacity:0;pointer-events:none}
       </div>
 
       <div class="about-section">
-        <div class="about-section-title">👥 Team</div>
-        <div class="about-team">
-          <div class="about-team-item">
-            <div class="about-team-avatar">⚡</div>
-            <div><div class="about-team-name">Engi</div><div class="about-team-role">Builder · ViaDecide</div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="about-section">
         <div class="about-section-title">🔗 Links</div>
         <div class="about-links">
           <a class="about-link-btn" href="https://github.com/via-decide" target="_blank" rel="noopener">⭐ GitHub</a>
           <a class="about-link-btn" href="https://t.me/GN8RBot" target="_blank" rel="noopener">✈ Telegram</a>
           <a class="about-link-btn" href="https://via-decide.github.io/decide.engine-tools/" target="_blank" rel="noopener">⚙️ Tools</a>
         </div>
-      </div>
-
-      <div class="about-footer-note">
-        © 2026 ViaDecide · Open Source · MIT License<br/>
-        Built for Bharat Vishwaguru 2030 🇮🇳
       </div>
     </div>
   </div>
@@ -402,7 +369,10 @@ body.a11y-mode .card-actions{opacity:0;pointer-events:none}
         <span id="level-label">Level 1 · Explorer</span><span id="xp-bar-label">0 / 500 XP</span>
       </div>
       <div class="xp-bar"><div class="xp-fill" id="xp-fill-bar"></div></div>
+      
+      <!-- 🚀 FIX: UPGRADED BENTO PROFILE GRID -->
       <div class="profile-grid" id="profile-grid"></div>
+      
       <button class="signout-btn guest" id="profile-auth-btn" onclick="VIA.openAuth()">Sign In to Save Progress</button>
     </div>
   </div>
@@ -436,7 +406,7 @@ body.a11y-mode .card-actions{opacity:0;pointer-events:none}
 <div id="sheet" class="sheet"><div class="sheet-handle"></div><div id="sheet-body"></div></div>
 
 <script>
-// ── SUPABASE (replace with real creds) ───────────────────────
+// ── SUPABASE ───────────────────────
 const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
 const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
 const SUPABASE_CONFIGURED = !SUPABASE_URL.includes('YOUR_PROJECT');
@@ -451,56 +421,28 @@ function formatCount(n) {
   return String(n);
 }
 function escapeHTML(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+  return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 function stripTags(value) {
   return String(value ?? '').replace(/<[^>]*>/g, '').trim();
 }
 function getGuestProfile() {
-  return { id:'', username:'guest', display_name:'Guest Explorer',
-    city:'Preview Mode', avatar_emoji:'👀', xp:0,
-    followers:0, following:0, posts:0, is_guest:true };
+  return { id:'', username:'guest', display_name:'Guest Explorer', city:'Preview Mode', avatar_emoji:'👀', xp:0, followers:0, following:0, posts:0, is_guest:true };
 }
 function updateAuthUI(user) {
   const guest = !user || user.is_guest || !user.id;
   const sb = document.getElementById('status-auth-btn');
-  if (sb) { sb.textContent = guest ? 'Sign In' : 'Account';
-    sb.onclick = guest ? ()=>VIA.openAuth() : ()=>switchLayer('profile'); }
+  if (sb) { sb.textContent = guest ? 'Sign In' : 'Account'; sb.onclick = guest ? ()=>VIA.openAuth() : ()=>switchLayer('profile'); }
   const pb = document.getElementById('profile-auth-btn');
-  if (pb) { pb.textContent = guest ? 'Sign In to Save Progress' : 'Sign Out';
-    pb.classList.toggle('guest', guest);
-    pb.onclick = guest ? ()=>VIA.openAuth() : ()=>VIA.signOut(); }
+  if (pb) { pb.textContent = guest ? 'Sign In to Save Progress' : 'Sign Out'; pb.classList.toggle('guest', guest); pb.onclick = guest ? ()=>VIA.openAuth() : ()=>VIA.signOut(); }
 }
 
 // ── VIA AUTH ─────────────────────────────────────────────────
 const VIA = {
   user: null,
   async init() {
-    if (_sb) {
-      try {
-        const { data: { session } } = await _sb.auth.getSession();
-        if (session?.user?.id) {
-          const { data: profile, error } = await _sb
-            .from('via_users').select('*').eq('id', session.user.id).single();
-          if (!error && profile) { this.user = profile; return; }
-          this.user = { id: session.user.id,
-            display_name: session.user.user_metadata?.name || 'VIA User',
-            username: session.user.user_metadata?.username || 'user',
-            city: '', avatar_emoji: '🌟', xp: 0,
-            followers: 0, following: 0, posts: 0 };
-          return;
-        }
-      } catch(e) { console.warn('Supabase auth:', e); }
-    }
     const stored = localStorage.getItem('via_user');
-    if (stored) {
-      try { this.user = JSON.parse(stored); return; } catch(e) {}
-    }
+    if (stored) { try { this.user = JSON.parse(stored); return; } catch(e) {} }
     this.user = getGuestProfile();
   },
   applyToUI() {
@@ -517,21 +459,15 @@ const VIA = {
     if (fc) fc.textContent = formatCount(this.user.followers || 0);
     const pp = document.getElementById('profile-posts');
     if (pp) pp.textContent = this.user.posts || 0;
-    if (!this.user.is_guest) localStorage.setItem('via_user', JSON.stringify(this.user));
   },
   async saveXP(v) {
     if (!this.user) return;
     this.user.xp = v;
-    if (_sb && this.user.id) {
-      try { await _sb.from('via_users').update({xp:v}).eq('id',this.user.id); } catch(e) {}
-    }
     if (!this.user.is_guest) localStorage.setItem('via_user', JSON.stringify(this.user));
   },
   openAuth() { window.location.href = './auth.html'; },
   async signOut() {
-    if (_sb) { try { await _sb.auth.signOut(); } catch(e) {} }
     localStorage.removeItem('via_user');
-    localStorage.removeItem('via_session');
     this.user = getGuestProfile();
     this.applyToUI();
     switchLayer('feed');
@@ -544,65 +480,40 @@ const DEFAULT_CARDS = [
   { id:1, cat:'viral', catLabel:'🔥 Viral', bg:'linear-gradient(160deg,#1a0a3a 0%,#0B0B1A 60%)', emoji:'🎪',
     title:'Mumbai की <em>street food</em> revolution जो दिल्ली तक पहुँची',
     author:'Priya Sharma', authorEmoji:'👩‍🍳', location:'Mumbai', time:'2h ago', views:'2.4M', likes:'184K', redirect:'viral-story',
-    sourceUrl:'https://via-decide.github.io/decide.engine-tools/', feedContext:{
-      title:'Why this is trending',
-      summary:'Street vendors in Mumbai are blending digital discovery, delivery, and local recipes into a creator-led food economy.',
-      bullets:['Hyperlocal menus are turning into shareable short-form stories.','Affordable pricing plus visual branding is pulling in Gen Z audiences.','Delhi creators are copying the format, pushing the trend nationwide.']
-    } },
+    sourceUrl:'https://via-decide.github.io/decide.engine-tools/'},
   { id:2, cat:'bharat', catLabel:'🇮🇳 Bharat', bg:'linear-gradient(160deg,#0a1a00 0%,#0B0B1A 60%)', emoji:'🌾',
     title:'Bihar के किसान ने बनाया <em>drone tech</em> जो पूरे गाँव बदल रहा है',
     author:'Rahul Kumar', authorEmoji:'👨‍🌾', location:'Patna', time:'5h ago', views:'890K', likes:'67K', redirect:'bharat-story',
-    sourceUrl:'./interview-prep/index.html', feedContext:{
-      title:'Ground context',
-      summary:'A low-cost drone workflow is helping nearby farms reduce pesticide waste and monitor crop health faster than manual scouting.',
-      bullets:['Shared ownership keeps the operating cost within village budgets.','Local repairability makes the drone practical beyond pilot demos.','The model spreads because neighbouring farmers can see output differences quickly.']
-    } },
+    sourceUrl:'./interview-prep/index.html' },
   { id:3, cat:'tech', catLabel:'⚡ Tech', bg:'linear-gradient(160deg,#0a0a2a 0%,#0B0B1A 60%)', emoji:'🤖',
     title:'IIT Bombay startup ने बनाया <em>AI doctor</em> — 5 रुपये में diagnosis',
     author:'Dev Patel', authorEmoji:'🧑‍💻', location:'Bangalore', time:'1h ago', views:'3.1M', likes:'221K', redirect:'tech-story',
-    sourceUrl:'./tools/spec-builder/index.html', feedContext:{
-      title:'Startup context',
-      summary:'The promise is not just cheaper diagnosis — it is triage at scale for clinics that cannot keep specialist staff on-site.',
-      bullets:['The first win is routing patients faster, not replacing doctors.','Low-ticket screening expands access in tier-2 and tier-3 cities.','Regulatory trust and clinical validation will decide adoption speed.']
-    } },
-  { id:4, cat:'sport', catLabel:'🏏 Sport', bg:'linear-gradient(160deg,#001a0a 0%,#0B0B1A 60%)', emoji:'🏏',
-    title:'15 साल की <em>Riya Singh</em> — India की next batting sensation',
-    author:'Sports VIA', authorEmoji:'🎙️', location:'Hyderabad', time:'3h ago', views:'5.2M', likes:'412K', redirect:'sport-story',
-    sourceUrl:'./tools/context-packager/index.html', feedContext:{
-      title:'Performance context',
-      summary:'Selectors are noticing game awareness, timing under pressure, and unusually calm finishing in youth tournaments.',
-      bullets:['Her shot selection stands out more than raw power.','Coaches are tracking consistency across back-to-back fixtures.','Regional clips are accelerating her visibility far beyond local circuits.']
-    } },
-  { id:5, cat:'culture', catLabel:'🎨 Culture', bg:'linear-gradient(160deg,#1a001a 0%,#0B0B1A 60%)', emoji:'🎭',
-    title:'Rajasthan की <em>folk art</em> जो NFT market में छा गई',
-    author:'Meera Joshi', authorEmoji:'🎨', location:'Jaipur', time:'8h ago', views:'1.8M', likes:'93K', redirect:'culture-story',
-    sourceUrl:'./prompt-alchemy/index.html', feedContext:{
-      title:'Creator context',
-      summary:'Collectors are responding to the story around preservation, provenance, and digital ownership — not only the art itself.',
-      bullets:['Traditional motifs gain reach when artists explain meaning in simple language.','Digital drops create recurring revenue for artisans beyond festival seasons.','Authenticity and artist credit remain the main trust signals for buyers.']
-    } },
-  { id:6, cat:'about', catLabel:'✦ ViaDecide', bg:'linear-gradient(160deg,#1a1000 0%,#0B0B1A 60%)', emoji:'⚡',
-    title:'<em>44+ tools</em> that help you think, build, decide — free forever',
-    author:'ViaDecide', authorEmoji:'✦', location:'Bharat', time:'Always', views:'—', likes:'—', redirect:'about', cta:true },
-  { id:7, cat:'create', catLabel:'✦ Create', bg:'linear-gradient(160deg,#001a1a 0%,#0B0B1A 60%)', emoji:'💡',
-    title:'अपनी story VIA पर शेयर करो — <em>Bharat सुनेगा</em>',
-    author:'VIA Team', authorEmoji:'✦', location:'India', time:'Now', views:'—', likes:'—', redirect:'create', cta:true },
+    sourceUrl:'./tools/spec-builder/index.html' },
 ];
 
 let CARDS = DEFAULT_CARDS.slice();
 
+// 🚀 UPDATED DISCOVER ITEMS
 const DISCOVER_ITEMS = [
-  {emoji:'🏏',cat:'Sport',name:'Cricket World',toolPath:'./tools/context-packager/index.html'},
-  {emoji:'🎵',cat:'Music',name:'Desi Beats',toolPath:'./prompt-alchemy/index.html'},
-  {emoji:'🌾',cat:'Bharat',name:'Kisan Stories',toolPath:'./student-research/index.html'},
-  {emoji:'🤖',cat:'Tech',name:'Startup India',toolPath:'./tools/spec-builder/index.html'},
-  {emoji:'🎭',cat:'Culture',name:'Rang Manch',toolPath:'./tools/idea-remixer/index.html'},
-  {emoji:'🍛',cat:'Food',name:'Desi Khana',toolPath:'./tools/output-evaluator/index.html'},
-  {emoji:'📚',cat:'Education',name:'Siksha',toolPath:'./interview-prep/index.html'},
-  {emoji:'🌏',cat:'Travel',name:'Desh Ghoom',toolPath:'./tools/context-packager/index.html'},
+  {emoji:'📦', cat:'Context', name:'Context Packager', desc:'Bundle text, code, and links into a single file payload for AI models.', toolPath:'./tools/context-packager/index.html'},
+  {emoji:'⚗️', cat:'AI', name:'Prompt Alchemy', desc:'Refine and optimize raw ideas into structured, high-yield system prompts.', toolPath:'./prompt-alchemy/index.html'},
+  {emoji:'⚙️', cat:'Dev', name:'Spec Builder', desc:'Generate production-ready feature specs and architecture documents instantly.', toolPath:'./tools/spec-builder/index.html'},
+  {emoji:'🧩', cat:'Ideation', name:'Idea Remixer', desc:'Cross-pollinate business concepts to discover unique market pivots.', toolPath:'./tools/idea-remixer/index.html'},
+  {emoji:'⚖️', cat:'Audit', name:'Output Evaluator', desc:'Grade AI responses against strict rubrics and constraint checklists.', toolPath:'./tools/output-evaluator/index.html'},
+  {emoji:'🎯', cat:'Career', name:'Interview Prep', desc:'Run simulated, high-pressure technical and behavioral interviews.', toolPath:'./interview-prep/index.html'},
+  {emoji:'🔬', cat:'Academia', name:'Student Research', desc:'Deep-dive academic workflows and thesis structuring environments.', toolPath:'./student-research/index.html'},
+  {emoji:'📚', cat:'Learning', name:'StudyOS', desc:'A modular, offline learning OS for intensive UPSC and tech study.', toolPath:'../StudyOS/index.html'},
 ];
 
-const PROFILE_EMOJIS = ['🌅','🎪','🌾','🤖','🏏','🎨','💡','🌟','🔥','🎵','🌺','🎭'];
+// 🚀 PROFILE POSTER ITEMS
+const PROFILE_ITEMS = [
+  {emoji:'🎪', title:'Street Food Rev', type:'Saved', views: '2.4M', color: '#1a0a3a'},
+  {emoji:'🌾', title:'AgriTech Drone', type:'Liked', views: '890K', color: '#0a1a00'},
+  {emoji:'🤖', title:'AI Doctor', type:'Saved', views: '3.1M', color: '#0a0a2a'},
+  {emoji:'🏏', title:'Next Sensation', type:'Posted', views: '5.2M', color: '#001a0a'},
+  {emoji:'🎨', title:'Rajasthan Art', type:'Liked', views: '1.8M', color: '#1a001a'},
+  {emoji:'💡', title:'My First Story', type:'Draft', views: '—', color: '#1a1000'}
+];
 
 const REDIRECT_MAP = {
   'viral-story':   './student-research/index.html',
@@ -636,8 +547,8 @@ function makeCard(index) {
     sport:'cat-sport',culture:'cat-culture',create:'cat-create',about:'cat-about'}[d.cat]||'cat-viral';
   card.innerHTML =
     '<div class="card-tilt-overlay"></div>' +
-    '<div class="card-dir-hint like">❤ LIKE</div>' +
-    '<div class="card-dir-hint more">⚡ MORE</div>' +
+    '<div class="card-dir-hint like">🔥 LIKE</div>' +
+    '<div class="card-dir-hint more">📤 SHARE</div>' +
     '<div class="card-bg" style="background:'+d.bg+'">' +
       '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(6rem,30vw,12rem);opacity:.15;pointer-events:none">'+d.emoji+'</div>' +
     '</div>' +
@@ -649,11 +560,6 @@ function makeCard(index) {
         '<div class="action-icon">📤</div><div class="action-label">Share</div>' +
       '</div>' +
       (!d.cta ? '<div class="action-btn" onclick="openStorySheet('+index+')"><div class="action-icon">🔗</div><div class="action-label">Open</div></div>' : '') +
-    '</div>' +
-    '<div class="card-a11y-actions">' +
-      '<button class="a11y-btn" onclick="likeCard('+index+')" aria-label="Like">❤️</button>' +
-      '<button class="a11y-btn" onclick="openRibbon('+index+')" aria-label="Options">⚡</button>' +
-      '<button class="a11y-btn" onclick="nextCard()" aria-label="Next">↑</button>' +
     '</div>' +
     '<div class="card-content">' +
       '<div class="chip card-category '+catClass+'">'+d.catLabel+'</div>' +
@@ -685,11 +591,11 @@ function positionAllCards(animated) {
 
 function getTopCard() { return document.getElementById('card-'+currentCard); }
 
-// ── GESTURE CONTROLLER ───────────────────────────────────────
+// ── 🚀 GESTURE CONTROLLER (iOS Style Horizontal Physics + Auto-Close) ──
 const GC = {
-  VT:0.3, LOCK:8, VTH:0.17, HTH:0.22, PF_MS:50,
+  VT:0.3, LOCK:8, VTH:0.17, HTH:0.25, PF_MS:50,
   active:false, startX:0, startY:0, startTime:0,
-  curX:0, curY:0, axis:null, pfFired:false,
+  curX:0, curY:0, axis:null, pfFired:false, ribbonWasOpen: false,
 
   init() {
     const deck = document.getElementById('deck');
@@ -703,21 +609,18 @@ const GC = {
     }, {passive:false});
     deck.addEventListener('touchend',    () => this.commit(), {passive:true});
     deck.addEventListener('touchcancel', () => this.reset(),  {passive:true});
-    deck.addEventListener('mousedown', e => {
-      if (e.target.closest('.action-btn,.a11y-btn,.action-ribbon,.ribbon-btn')) return;
-      if (isAnimating || activeLayer !== 'feed') return;
-      this.begin(e.clientX, e.clientY);
-      const mv = ev => this.track(ev.clientX, ev.clientY);
-      const up = () => { this.commit(); window.removeEventListener('mousemove',mv); window.removeEventListener('mouseup',up); };
-      window.addEventListener('mousemove', mv);
-      window.addEventListener('mouseup', up);
-    });
   },
 
   begin(x, y) {
     this.active=true; this.axis=null; this.pfFired=false;
     this.startX=this.curX=x; this.startY=this.curY=y; this.startTime=Date.now();
     const card = getTopCard(); if (card) card.style.transition='none';
+    
+    const ribbon = document.getElementById('action-ribbon');
+    this.ribbonWasOpen = ribbon.classList.contains('open');
+    if (this.ribbonWasOpen) {
+        closeRibbon();
+    }
   },
 
   track(x, y) {
@@ -727,11 +630,9 @@ const GC = {
     const adx=Math.abs(dx), ady=Math.abs(dy);
     if (!this.axis && Math.max(adx,ady) > this.LOCK) this.axis = ady>adx ? 'v' : 'h';
     if (!this.axis) return;
-    if (!this.pfFired && (Date.now()-this.startTime) >= this.PF_MS) {
-      const dom = this._dominant(Math.atan2(dy,dx)*180/Math.PI);
-      if (dom) { this._prefetch(dom); this.pfFired=true; }
-    }
+    
     const card = getTopCard(); if (!card) return;
+    
     if (this.axis === 'v') {
       const ty = dy>0 ? dy*0.38 : dy;
       const op = dy<0 ? Math.max(0.35, 1+dy/(window.innerHeight*0.55)) : 1;
@@ -741,15 +642,26 @@ const GC = {
         if (pi) { pi.classList.add('visible'); pi.style.transform='translateX(-50%) translateY('+Math.min(dy*0.4,50)+'px)'; }
       }
     } else {
-      const rot=Math.max(-8,Math.min(8,dx*0.06));
-      const op=Math.max(0.4, 1-Math.abs(dx)/(window.innerWidth*0.7));
-      card.style.transform='translateX('+dx+'px) rotate('+rot+'deg)'; card.style.opacity=op;
-      const ov=card.querySelector('.card-tilt-overlay');
-      if (ov) ov.style.background = dx>30 ? 'rgba(255,107,0,'+Math.min(dx/window.innerWidth*0.6,0.32)+')'
-        : dx<-30 ? 'rgba(108,99,255,'+Math.min(-dx/window.innerWidth*0.6,0.32)+')' : 'transparent';
-      const lh=card.querySelector('.card-dir-hint.like'), mh=card.querySelector('.card-dir-hint.more');
-      if (lh) lh.style.opacity = dx>0 ? Math.min(dx/80,1) : 0;
-      if (mh) mh.style.opacity = dx<0 ? Math.min(-dx/80,1) : 0;
+      // 🚀 iOS list item friction (No Rotation)
+      const resistDx = dx * 0.45; 
+      card.style.transform = `translateX(${resistDx}px)`; 
+      card.style.opacity = 1; 
+
+      const ov = card.querySelector('.card-tilt-overlay');
+      if (ov) {
+        ov.style.background = (dx > 20 && !this.ribbonWasOpen) ? `linear-gradient(to right, rgba(255,107,0,${Math.min(dx/400, 0.4)}), transparent)`
+          : dx < -20 ? `linear-gradient(to left, rgba(108,99,255,${Math.min(-dx/400, 0.4)}), transparent)` : 'transparent';
+      }
+      
+      const lh = card.querySelector('.card-dir-hint.like'), mh = card.querySelector('.card-dir-hint.more');
+      if (lh) {
+        lh.style.opacity = (dx > 40 && !this.ribbonWasOpen) ? 1 : 0;
+        lh.style.transform = `translateY(-50%) scale(${dx > 100 ? 1.1 : 1})`;
+      }
+      if (mh) {
+        mh.style.opacity = dx < -40 ? 1 : 0;
+        mh.style.transform = `translateY(-50%) scale(${dx < -100 ? 1.1 : 1})`;
+      }
     }
   },
 
@@ -760,7 +672,9 @@ const GC = {
     const dx=this.curX-this.startX, dy=this.curY-this.startY;
     const speed=Math.sqrt(dx*dx+dy*dy)/Math.max(1,Date.now()-this.startTime);
     this._clearOverlays(card);
+    
     if (speed < this.VT) { this._snap(card); this.axis=null; return; }
+    
     if (this.axis==='v') {
       const th=window.innerHeight*this.VTH;
       if (dy < -th) this._up(card); else if (dy > th) this._down(card); else this._snap(card);
@@ -768,6 +682,7 @@ const GC = {
       const th=window.innerWidth*this.HTH;
       if (dx > th) this._right(card); else if (dx < -th) this._left(card); else this._snap(card);
     } else this._snap(card);
+    
     this.axis=null;
   },
 
@@ -776,17 +691,25 @@ const GC = {
     const card=getTopCard(); if (card) { this._clearOverlays(card); this._snap(card); }
   },
 
-  _dominant(a) {
-    if (a>-45&&a<=45) return 'right'; if (a>45&&a<=135) return 'down';
-    if (a>135||a<=-135) return 'left'; return 'up';
+  _snap(card) { 
+    // 🚀 Spring snap-back
+    card.style.transition = 'transform .4s cubic-bezier(0.25, 1, 0.5, 1.1), opacity .25s ease'; 
+    card.style.transform = 'translateY(0) scale(1)'; 
+    card.style.opacity = '1'; 
   },
-  _prefetch(dir) {
-    const h=s=>{let h=0;for(let c of s)h=((h<<5)-h)+c.charCodeAt(0)|0;return(h>>>0).toString(16)};
-    sessionStorage.setItem('via_prefetch',JSON.stringify({dir,index:currentCard,hash:h(dir+':'+currentCard+':'+Math.floor(Date.now()/1000)),ts:Date.now()}));
+  
+  _clearOverlays(card) { 
+    const ov=card.querySelector('.card-tilt-overlay'); if(ov)ov.style.background='transparent'; 
+    card.querySelectorAll('.card-dir-hint').forEach(h=> {
+       h.style.opacity=0;
+       h.style.transform='translateY(-50%) scale(1)';
+    }); 
   },
-  _snap(card) { card.style.transition='transform .3s cubic-bezier(.16,1,.3,1), opacity .25s ease'; card.style.transform='translateY(0) scale(1)'; card.style.opacity='1'; },
-  _clearOverlays(card) { const ov=card.querySelector('.card-tilt-overlay'); if(ov)ov.style.background='transparent'; card.querySelectorAll('.card-dir-hint').forEach(h=>h.style.opacity=0); },
-  _hidePull() { const pi=document.getElementById('pull-indicator'); if(pi){pi.classList.remove('visible');pi.style.transform='translateX(-50%) translateY(-20px)';} },
+  
+  _hidePull() { 
+    const pi=document.getElementById('pull-indicator'); 
+    if(pi){pi.classList.remove('visible');pi.style.transform='translateX(-50%) translateY(-20px)';} 
+  },
 
   _up(card) {
     if (currentCard>=CARDS.length-1) { this._snap(card); return; }
@@ -813,8 +736,13 @@ const GC = {
     }); });
   },
 
-  _right(card) { likeCard(currentCard); this._snap(card); },
-  _left(card)  { this._snap(card); openRibbon(currentCard); }
+  _right(card) { 
+    if (!this.ribbonWasOpen) {
+        likeCard(currentCard); 
+    }
+    this._snap(card); 
+  },
+  _left(card)  { openRibbon(currentCard); this._snap(card); }
 };
 
 function nextCard() { if(isAnimating||currentCard>=CARDS.length-1)return; const c=getTopCard(); if(c)GC._up(c); }
@@ -832,72 +760,11 @@ function openDiscoverTool(toolPath) {
     switchLayer('feed');
   }
 }
+
 function resolveCardUrl(card) {
   if (!card) return '';
-  if (card.redirect && REDIRECT_MAP[card.redirect]) return REDIRECT_MAP[card.redirect];
-  if (card.sourceUrl) return card.sourceUrl;
-  return '';
   if (card.sourceUrl) return card.sourceUrl;
   return REDIRECT_MAP[card.redirect] || '';
-}
-
-function buildCardContext(card) {
-  if (!card) return null;
-  const ctx = card.feedContext || {};
-  const summary = String(ctx.summary || card.context || card.body || '').trim();
-  const bullets = Array.isArray(ctx.bullets)
-    ? ctx.bullets.map(item => String(item || '').trim()).filter(Boolean).slice(0, 4)
-    : [];
-  const title = String(ctx.title || 'Feed context').trim();
-  return { title, summary, bullets };
-}
-
-function buildTrendingInsightText(card, context) {
-  const safeTitle = stripTags(card && card.title ? card.title : 'Story');
-  const lines = [safeTitle];
-  if (context && context.summary) lines.push(context.summary);
-  if (context && context.bullets && context.bullets.length) {
-    context.bullets.forEach(item => lines.push('• ' + item));
-  }
-  return lines.filter(Boolean).join('\n');
-}
-
-function handleExplore(cardIndex) {
-  const card = CARDS[cardIndex];
-  const targetUrl = resolveCardUrl(card);
-  if (!targetUrl) return;
-  closeSheet();
-  addXP(30);
-  if (targetUrl.startsWith('http')) window.open(targetUrl, '_blank');
-  else window.location.href = targetUrl;
-}
-
-async function handleUseInsight(cardIndex) {
-  const card = CARDS[cardIndex];
-  const context = buildCardContext(card);
-  const insightText = buildTrendingInsightText(card, context);
-  if (!insightText) return;
-  try {
-    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-      await navigator.clipboard.writeText(insightText);
-    }
-    addXP(20);
-  } catch (err) {
-    console.warn('Clipboard unavailable', err);
-  }
-}
-
-function handleGenerateSimilar(cardIndex) {
-  const card = CARDS[cardIndex];
-  if (!card) return;
-  const nextMatch = CARDS.findIndex((item, index) => index !== cardIndex && item && item.cat === card.cat);
-  closeSheet();
-  if (nextMatch >= 0) {
-    currentCard = nextMatch;
-    buildDeck();
-    return;
-  }
-  if (cardIndex < CARDS.length - 1) nextCard();
 }
 
 function openStorySheet(index) {
@@ -907,70 +774,6 @@ function openStorySheet(index) {
   openSheet('story', { cardIndex: index });
 }
 
-function hydrateFeedCards() {
-  if (!window.SocialCore || typeof window.SocialCore.listFeed !== 'function') return;
-  const feed = window.SocialCore.listFeed(5);
-  if (!Array.isArray(feed) || !feed.length) return;
-
-  const dynamicCards = feed.map((post, index) => {
-    const body = String(post.title || post.body || '').trim();
-    if (!body) return null;
-    const sourceUrl = String(post.source_url || post.sourceUrl || post.link_url || post.linkUrl || post.url || '').trim();
-    const contextSummary = String(post.context_summary || post.contextSummary || post.summary || '').trim();
-    const bulletSource = post.context_points || post.contextPoints || post.bullets || [];
-    const bullets = Array.isArray(bulletSource)
-      ? bulletSource.map(item => String(item || '').trim()).filter(Boolean)
-      : String(bulletSource || '').split(/\n+/).map(item => item.replace(/^[-•]\s*/, '').trim()).filter(Boolean);
-    const author = post.author || {};
-    const redirectKey = String(post.redirect_key || post.redirect || post.redirectKey || '').trim();
-    return {
-      id: post.id || 'social-' + index,
-      cat: String(post.category || 'viral').toLowerCase(),
-      catLabel: post.category_label || '📰 Community',
-      bg: 'linear-gradient(160deg,#1a0f33 0%,#0B0B1A 60%)',
-      emoji: post.emoji || '📰',
-      title: escapeHTML(body),
-      author: author.display_name || author.username || post.author_name || 'VIA Community',
-      authorEmoji: author.avatar_emoji || post.author_emoji || '🌟',
-      location: post.location || post.visibility || 'Community',
-      time: post.relative_time || post.time || 'Now',
-      views: post.views || 'Live',
-      likes: post.reaction_count ? formatCount(post.reaction_count) : 'New',
-      redirect: redirectKey || (sourceUrl ? null : 'about'),
-      redirect: sourceUrl ? null : 'about',
-      sourceUrl,
-      feedContext: {
-        title: post.context_title || 'Feed context',
-        summary: contextSummary || body,
-        bullets
-      }
-    };
-  }).filter(Boolean);
-
-  if (!dynamicCards.length) return;
-  const fallbackCards = DEFAULT_CARDS.filter(card => card.cta);
-  CARDS = dynamicCards.concat(fallbackCards);
-}
-
-
-function copyShareLink(url) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => {
-      const toast = document.createElement('div');
-      toast.textContent = 'Link copied!';
-      toast.style.cssText = 'position:fixed;bottom:7rem;left:50%;transform:translateX(-50%);background:rgba(255,107,0,.9);color:#fff;padding:.5rem 1.2rem;border-radius:99px;font-size:.78rem;font-weight:700;z-index:400;pointer-events:none;';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    });
-  } else {
-    const el = document.createElement('textarea');
-    el.value = url; el.style.position = 'fixed'; el.style.opacity = '0';
-    document.body.appendChild(el); el.select();
-    document.execCommand('copy'); document.body.removeChild(el);
-  }
-}
-
-// ── LIKE ─────────────────────────────────────────────────────
 function likeCard(index) {
   addXP(5);
   const wrap=document.createElement('div'); wrap.className='affirmation-ripple'; wrap.style.left='50%'; wrap.style.top='50%';
@@ -979,31 +782,20 @@ function likeCard(index) {
   document.body.appendChild(wrap); setTimeout(()=>wrap.remove(),850);
 }
 
-// ── RIBBON ───────────────────────────────────────────────────
 function openRibbon(index) { activeRibbonCard = index; document.getElementById('action-ribbon').classList.add('open'); }
-function closeRibbon() { document.getElementById('action-ribbon').classList.remove('open'); }
+function closeRibbon() { 
+  const ribbon = document.getElementById('action-ribbon');
+  ribbon.style.transform = '';
+  ribbon.classList.remove('open'); 
+}
 function ribbonAction(type) {
   closeRibbon();
   addXP(5);
-  if (type === 'share') {
-    openSheet('share', { cardIndex: activeRibbonCard });
-  } else if (type === 'save') {
-    openStorySheet(activeRibbonCard);
-  } else {
-    openSheet('comment');
-  }
+  if (type === 'share') openSheet('share', { cardIndex: activeRibbonCard });
+  else if (type === 'save') openStorySheet(activeRibbonCard);
+  else openSheet('comment');
 }
 
-// ── A11Y ─────────────────────────────────────────────────────
-let a11yMode=false;
-function toggleA11y() {
-  a11yMode=!a11yMode;
-  document.body.classList.toggle('a11y-mode',a11yMode);
-  document.getElementById('a11y-toggle').classList.toggle('active',a11yMode);
-  localStorage.setItem('via_a11y',a11yMode);
-}
-
-// ── XP ───────────────────────────────────────────────────────
 function addXP(n) { xp+=n; updateXP(xp); VIA.saveXP(xp); }
 function updateXP(v) {
   const xc=document.getElementById('xp-counter'); if(xc)xc.textContent=v+' XP';
@@ -1014,20 +806,6 @@ function updateXP(v) {
   const ll=document.getElementById('level-label'); if(ll)ll.textContent='Level '+lv+' · '+(lv<3?'Explorer':lv<5?'Storyteller':'Creator');
 }
 
-// ── REDIRECT ─────────────────────────────────────────────────
-function handleRedirect(key) {
-  addXP(25);
-
-  // Special cases handled inline
-  if (key === 'about') { switchLayer('about'); return; }
-  if (key === 'profile') { switchLayer('profile'); return; }
-
-  const url=REDIRECT_MAP[key]; if(!url)return;
-  if(VIA.user)localStorage.setItem('via_context',JSON.stringify({userId:VIA.user.id,username:VIA.user.username,xp,returnTo:'./index.html'}));
-  openSheet('redirect',{url,key});
-}
-
-// ── LAYERS ───────────────────────────────────────────────────
 function switchLayer(layer) {
   activeLayer=layer;
   const deck=document.getElementById('deck');
@@ -1040,13 +818,12 @@ function switchLayer(layer) {
   if(hint) hint.style.display = layer==='feed' ? 'flex' : 'none';
   document.querySelectorAll('.layer-tab').forEach(t=>t.classList.toggle('active',t.dataset.layer===layer));
   
-  if (layer === 'discover') buildDiscover(); // Re-trigger stagger animation
-  if (layer === 'profile') buildProfile(); // Re-trigger stagger animation
+  if (layer === 'discover') buildDiscover(); 
+  if (layer === 'profile') buildProfile(); 
 }
 
 document.querySelectorAll('.layer-tab').forEach(tab=>tab.addEventListener('click',()=>switchLayer(tab.dataset.layer)));
 
-// ── NAV ──────────────────────────────────────────────────────
 function switchNav(name, el) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
@@ -1054,266 +831,162 @@ function switchNav(name, el) {
   else switchLayer(name);
 }
 
-// ── DISCOVER ─────────────────────────────────────────────────
+// ── BENTO GRIDS ──
 function buildDiscover() {
-  const colors=['#1a0a2a','#0a1a00','#0a0a2a','#001a0a','#1a000a','#001a1a','#1a1a00','#0a001a'];
   const grid=document.getElementById('discover-grid'); grid.innerHTML='';
   DISCOVER_ITEMS.forEach((item,i)=>{
-    const card=document.createElement('div'); card.className='discover-card stagger-enter';
-    card.style.animationDelay = (i * 0.05) + 's';
-    card.innerHTML='<div class="discover-card-bg" style="background:'+colors[i]+'">'+item.emoji+'</div><div class="discover-card-label"><div class="discover-card-cat">'+item.cat+'</div><div class="discover-card-name">'+item.name+'</div></div>';
+    const card=document.createElement('div'); 
+    card.className='discover-card stagger-enter';
+    card.style.animationDelay = (i * 0.04) + 's';
+    card.innerHTML=`
+      <div class="discover-card-bg">${item.emoji}</div>
+      <div>
+        <div class="discover-card-cat">${item.cat}</div>
+        <div class="discover-card-name">${item.name}</div>
+        <div class="discover-card-desc">${item.desc}</div>
+      </div>
+    `;
     card.addEventListener('click',()=>{ addXP(10); openSheet('discover-detail',{item}); });
     grid.appendChild(card);
   });
 }
 
+// 🚀 PROFILE GRID UPGRADED TO POSTER STYLE
 function buildProfile() {
   const grid=document.getElementById('profile-grid'); grid.innerHTML='';
-  PROFILE_EMOJIS.forEach((e, i)=>{ 
-      const item=document.createElement('div'); 
-      item.className='pgrid-item stagger-enter'; 
-      item.style.animationDelay = (i * 0.03) + 's';
-      item.textContent=e; 
-      item.addEventListener('click',()=>addXP(2)); 
-      grid.appendChild(item); 
+  PROFILE_ITEMS.forEach((item, i)=>{ 
+      const div=document.createElement('div'); 
+      div.className='pgrid-item stagger-enter'; 
+      div.style.animationDelay = (i * 0.04) + 's';
+      div.innerHTML=`
+        <div class="pgrid-bg" style="background:${item.color}">${item.emoji}</div>
+        <div class="pgrid-label">
+            <div class="pgrid-type">${item.type}</div>
+            <div class="pgrid-title">${item.title}</div>
+            <div class="pgrid-views">${item.views === '—' ? 'Draft' : item.views + ' views'}</div>
+        </div>
+      `;
+      div.addEventListener('click',()=>{
+          addXP(5);
+          openSheet('profile-detail', { item });
+      }); 
+      grid.appendChild(div); 
   });
 }
 
-// ── PROGRESS DOTS ────────────────────────────────────────────
 function buildProgressDots() {
   const wrap=document.getElementById('progress-dots'); wrap.innerHTML='';
   CARDS.forEach((_,i)=>{ const d=document.createElement('div'); d.className='pdot'+(i===currentCard?' active':''); wrap.appendChild(d); });
 }
 function updateProgressDots() { document.querySelectorAll('.pdot').forEach((d,i)=>d.classList.toggle('active',i===currentCard)); }
 
-// ── SHEETS ───────────────────────────────────────────────────
 const SHEETS = {
   create:{title:'Create on VIA',sub:'Share your story with Bharat',actions:[
     {icon:'📹',iconBg:'rgba(255,107,0,.15)',title:'Video',sub:'Short film, reel, vlog',url:'https://t.me/GN8RBot'},
     {icon:'📸',iconBg:'rgba(245,197,24,.15)',title:'Photo Story',sub:'Images + caption',url:null},
     {icon:'✍️',iconBg:'rgba(108,99,255,.15)',title:'Write',sub:'Article, blog, opinion',url:null},
-    {icon:'🎙️',iconBg:'rgba(0,200,100,.15)',title:'Voice Note',sub:'Audio story or podcast',url:null},
-  ]},
-  share:{title:'Share this Story',sub:'Spread the word across Bharat',actions:[
-    {icon:'💬',iconBg:'rgba(0,200,100,.15)',title:'WhatsApp',sub:'Share to contacts',url:'https://wa.me/?text=Check%20this%20on%20VIA!'},
-    {icon:'📲',iconBg:'rgba(41,182,246,.15)',title:'Telegram',sub:'Share to groups',url:'https://t.me/share/url?url=https://viadecide.com'},
-    {icon:'📋',iconBg:'rgba(255,255,255,.08)',title:'Copy Link',sub:'viadecide.com',url:null},
-  ]},
-  comment:{title:'Join the Discussion',sub:'What do you think?',actions:[
-    {icon:'🔥',iconBg:'rgba(255,107,0,.15)',title:'React',sub:'Express your vibe'},
-    {icon:'💬',iconBg:'rgba(108,99,255,.15)',title:'Comment',sub:'Share your thoughts'},
-    {icon:'🔁',iconBg:'rgba(0,200,100,.15)',title:'Repost',sub:'Spread this story'},
-  ]},
-  notif:{title:'Alerts',sub:'Your VIA notifications',actions:[
-    {icon:'🔥',iconBg:'rgba(255,107,0,.15)',title:'Someone liked your post',sub:'2 min ago'},
-    {icon:'👤',iconBg:'rgba(108,99,255,.15)',title:'New follower',sub:'1h ago'},
-    {icon:'⭐',iconBg:'rgba(245,197,24,.15)',title:'You earned XP today!',sub:'Keep going'},
-  ]},
+  ]}
 };
 
 function openSheet(type, extra={}) {
   const overlay=document.getElementById('sheet-overlay'), sheet=document.getElementById('sheet'), body=document.getElementById('sheet-body');
   let html='';
+  
   if (type==='story' && extra.cardIndex !== undefined) {
     const card = CARDS[extra.cardIndex];
-    const context = buildCardContext(card);
     const targetUrl = resolveCardUrl(card);
     const safeTitle = escapeHTML(stripTags(card && card.title ? card.title : 'Story'));
     html = '<div class="sheet-title">Story Actions</div><div class="sheet-sub">'+safeTitle+'</div><div class="sheet-actions">';
-    if (context) {
-      html += '<div class="sheet-btn" onclick="openSheet(\'story-context\',{cardIndex:'+extra.cardIndex+'})"><div class="sheet-btn-icon" style="background:rgba(108,99,255,.15)">🧠</div><div class="sheet-btn-text"><div class="sheet-btn-title">Open Feed Context</div><div class="sheet-btn-sub">Read why this story matters</div></div><div class="sheet-btn-arrow">›</div></div>';
-    }
     if (targetUrl) {
-      const openAction = targetUrl.startsWith('http')
-        ? 'window.open(\''+targetUrl+'\',\'_blank\');closeSheet();addXP(30)'
-        : 'window.location.href=\''+targetUrl+'\';closeSheet();addXP(30)';
+      const openAction = targetUrl.startsWith('http') ? 'window.open(\''+targetUrl+'\',\'_blank\');closeSheet();addXP(30)' : 'window.location.href=\''+targetUrl+'\';closeSheet();addXP(30)';
       html += '<div class="sheet-btn" onclick="'+openAction+'"><div class="sheet-btn-icon" style="background:rgba(255,107,0,.15)">🔗</div><div class="sheet-btn-text"><div class="sheet-btn-title">Open Link</div><div class="sheet-btn-sub">Jump to the linked feed destination</div></div><div class="sheet-btn-arrow">›</div></div>';
     }
     html += '<div class="sheet-btn" onclick="closeSheet()"><div class="sheet-btn-icon" style="background:rgba(255,255,255,.06)">✕</div><div class="sheet-btn-text"><div class="sheet-btn-title">Stay here</div><div class="sheet-btn-sub">Continue browsing the feed</div></div><div class="sheet-btn-arrow">›</div></div></div>';
-  } else if (type==='story-context' && extra.cardIndex !== undefined) {
-    const card = CARDS[extra.cardIndex];
-    const context = buildCardContext(card);
-    const safeTitle = escapeHTML(stripTags(card && card.title ? card.title : 'Story'));
-    const safeSummary = escapeHTML(context && context.summary ? context.summary : 'No extra context available yet.');
-    const contextItems = context && context.bullets.length
-      ? context.bullets.map(item => '<li class="sheet-context-item">'+escapeHTML(item)+'</li>').join('')
-      : '<li class="sheet-context-item">'+safeSummary+'</li>';
-    const disabledAttr = resolveCardUrl(card) ? '' : ' disabled';
-    html = '<div class="sheet-badge">🔥 Trend Signal</div>' +
-      '<div class="sheet-title">Why this is trending</div>' +
-      '<div class="sheet-subtitle">'+safeTitle+'</div>' +
-      '<div class="sheet-context-card">' +
-        '<div class="sheet-context-title">Context</div>' +
-        (context && context.summary ? '<div class="sheet-context-summary">'+safeSummary+'</div>' : '') +
-        '<ul class="sheet-context-list">'+contextItems+'</ul>' +
-      '</div>' +
-      '<div class="sheet-actions">' +
-        '<button class="sheet-btn sheet-btn-primary" onclick="handleExplore('+extra.cardIndex+')"'+disabledAttr+'>Explore this →</button>' +
-        '<button class="sheet-btn sheet-btn-secondary" onclick="handleUseInsight('+extra.cardIndex+')">Use this insight</button>' +
-        '<button class="sheet-btn sheet-btn-tertiary" onclick="handleGenerateSimilar('+extra.cardIndex+')">Generate similar</button>' +
-      '</div>';
-  } else if (type==='redirect'&&extra.url) {
-    const redirectAction = extra.url.startsWith('http')
-      ? 'window.open(\''+extra.url+'\',\'_blank\');closeSheet();addXP(30)'
-      : 'window.location.href=\''+extra.url+'\';closeSheet();addXP(30)';
-    html='<div class="sheet-title">Open Story</div><div class="sheet-sub">Opening: '+(extra.key || 'Tool')+'</div><div class="sheet-actions">'+
-      '<div class="sheet-btn" onclick="'+redirectAction+'"><div class="sheet-btn-icon" style="background:rgba(255,107,0,.15)">🚀</div><div class="sheet-btn-text"><div class="sheet-btn-title">Open</div><div class="sheet-btn-sub">+30 XP</div></div><div class="sheet-btn-arrow">›</div></div>'+
-      '<div class="sheet-btn" onclick="closeSheet()"><div class="sheet-btn-icon" style="background:rgba(255,255,255,.06)">✕</div><div class="sheet-btn-text"><div class="sheet-btn-title">Stay here</div><div class="sheet-btn-sub">Continue swiping</div></div><div class="sheet-btn-arrow">›</div></div></div>';
   } else if (type==='discover-detail'&&extra.item) {
     const { item } = extra;
     const safePath = (item.toolPath || '').replace(/'/g, "\\'");
+    const isTool = !!item.toolPath;
     html = `
       <div class="sheet-title">${item.emoji} ${item.name}</div>
-      <div class="sheet-sub">${item.cat} · Open this tool</div>
+      <div class="sheet-sub">${item.cat} · ${isTool ? 'Built by ViaDecide' : 'Saved in Profile'}</div>
       <div class="sheet-actions">
+        ${isTool ? `
         <div class="sheet-btn" onclick="openDiscoverTool('${safePath}')">
           <div class="sheet-btn-icon" style="background:rgba(255,107,0,.15)">▶</div>
-          <div class="sheet-btn-text">
-            <div class="sheet-btn-title">Open ${item.name}</div>
-            <div class="sheet-btn-sub">Launch tool</div>
-          </div>
+          <div class="sheet-btn-text"><div class="sheet-btn-title">Launch Tool</div><div class="sheet-btn-sub">Open ${item.name}</div></div>
           <div class="sheet-btn-arrow">›</div>
-        </div>
-        <div class="sheet-btn" onclick="addXP(20);closeSheet()">
-          <div class="sheet-btn-icon" style="background:rgba(108,99,255,.15)">➕</div>
-          <div class="sheet-btn-text">
-            <div class="sheet-btn-title">Follow ${item.name}</div>
-            <div class="sheet-btn-sub">+20 XP · Get updates</div>
-          </div>
-          <div class="sheet-btn-arrow">›</div>
-        </div>
+        </div>` : ``}
       </div>`;
-  } else if (type==='share') {
-    const card = CARDS[extra.cardIndex !== undefined ? extra.cardIndex : currentCard];
-    const baseUrl = window.location.origin + window.location.pathname;
-    const cardParam = card ? encodeURIComponent(card.id || '') : '';
-    const shareUrl = baseUrl + (cardParam ? '?card=' + cardParam : '');
-    const shareTitle = card ? card.title.replace(/<[^>]+>/g, '') : 'VIA — Bharat\'s Feed';
-    const shareText = encodeURIComponent(shareTitle + ' — ' + shareUrl);
-
-    if (navigator.share && card) {
-      navigator.share({
-        title: shareTitle,
-        url: shareUrl,
-      }).catch(() => {});
-      return;
-    }
-
-    const waUrl = 'https://wa.me/?text=' + shareText;
-    const tgUrl = 'https://t.me/share/url?url=' + encodeURIComponent(shareUrl) + '&text=' + encodeURIComponent(shareTitle);
-    const twUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(shareUrl) + '&text=' + encodeURIComponent(shareTitle);
-
+  } else if (type==='profile-detail'&&extra.item) {
+    const { item } = extra;
     html = `
-      <div class="sheet-title">Share this</div>
-      <div class="sheet-sub">${shareTitle.substring(0, 60)}${shareTitle.length > 60 ? '...' : ''}</div>
+      <div class="sheet-title">${item.emoji} ${item.title}</div>
+      <div class="sheet-sub">${item.type} · ${item.views === '—' ? 'Not Published' : item.views + ' views'}</div>
       <div class="sheet-actions">
-        <div class="sheet-btn" onclick="window.open('${waUrl}','_blank');closeSheet()">
-          <div class="sheet-btn-icon" style="background:rgba(0,200,100,.15)">💬</div>
-          <div class="sheet-btn-text"><div class="sheet-btn-title">WhatsApp</div><div class="sheet-btn-sub">${shareUrl}</div></div>
+        <div class="sheet-btn" onclick="closeSheet()">
+          <div class="sheet-btn-icon" style="background:rgba(255,107,0,.15)">▶</div>
+          <div class="sheet-btn-text"><div class="sheet-btn-title">Open Story</div><div class="sheet-btn-sub">View in Feed</div></div>
           <div class="sheet-btn-arrow">›</div>
         </div>
-        <div class="sheet-btn" onclick="window.open('${tgUrl}','_blank');closeSheet()">
-          <div class="sheet-btn-icon" style="background:rgba(41,182,246,.15)">📲</div>
-          <div class="sheet-btn-text"><div class="sheet-btn-title">Telegram</div><div class="sheet-btn-sub">Share to groups</div></div>
+        ${item.type === 'Draft' ? `
+        <div class="sheet-btn" onclick="closeSheet()">
+          <div class="sheet-btn-icon" style="background:rgba(108,99,255,.15)">✍️</div>
+          <div class="sheet-btn-text"><div class="sheet-btn-title">Edit Draft</div><div class="sheet-btn-sub">Continue writing</div></div>
           <div class="sheet-btn-arrow">›</div>
-        </div>
-        <div class="sheet-btn" onclick="window.open('${twUrl}','_blank');closeSheet()">
-          <div class="sheet-btn-icon" style="background:rgba(29,161,242,.15)">🐦</div>
-          <div class="sheet-btn-text"><div class="sheet-btn-title">Twitter / X</div><div class="sheet-btn-sub">Post to feed</div></div>
+        </div>` : `
+        <div class="sheet-btn" onclick="closeSheet()">
+          <div class="sheet-btn-icon" style="background:rgba(255,255,255,.08)">📤</div>
+          <div class="sheet-btn-text"><div class="sheet-btn-title">Share</div><div class="sheet-btn-sub">Send to friends</div></div>
           <div class="sheet-btn-arrow">›</div>
-        </div>
-        <div class="sheet-btn" onclick="copyShareLink('${shareUrl}');closeSheet()">
-          <div class="sheet-btn-icon" style="background:rgba(255,255,255,.08)">📋</div>
-          <div class="sheet-btn-text"><div class="sheet-btn-title">Copy Link</div><div class="sheet-btn-sub">${shareUrl}</div></div>
-          <div class="sheet-btn-arrow">›</div>
-        </div>
+        </div>`}
       </div>`;
   } else {
     const s=SHEETS[type]; if(!s)return;
     html='<div class="sheet-title">'+s.title+'</div><div class="sheet-sub">'+s.sub+'</div><div class="sheet-actions">'+
       s.actions.map(a=>'<div class="sheet-btn" onclick="'+(a.url?'window.open(\''+a.url+'\',\'_blank\');closeSheet()':'addXP(5);closeSheet()')+'"><div class="sheet-btn-icon" style="background:'+a.iconBg+'">'+a.icon+'</div><div class="sheet-btn-text"><div class="sheet-btn-title">'+a.title+'</div><div class="sheet-btn-sub">'+a.sub+'</div></div><div class="sheet-btn-arrow">›</div></div>').join('')+'</div>';
   }
+  
   body.innerHTML=html;
-  sheet.scrollTop = 0;
-  sheet.style.transform = '';
-  overlay.classList.add('open');
-  sheet.classList.add('open');
+  sheet.scrollTop = 0; sheet.style.transform = '';
+  overlay.classList.add('open'); sheet.classList.add('open');
 }
 function closeSheet() {
   const overlay = document.getElementById('sheet-overlay');
   const sheet = document.getElementById('sheet');
-  sheet.classList.remove('dragging');
   sheet.style.transform = '';
-  overlay.classList.remove('open');
-  sheet.classList.remove('open');
+  overlay.classList.remove('open'); sheet.classList.remove('open');
 }
 
-const sheetGesture = { active:false, startY:0, deltaY:0 };
-
-function updateSheetDrag(deltaY) {
-  const sheet = document.getElementById('sheet');
-  const nextDelta = Math.max(0, deltaY);
-  sheetGesture.deltaY = nextDelta;
-  if (!sheet.classList.contains('open')) return;
-  sheet.style.transform = 'translateY(' + nextDelta + 'px)';
-}
-
-function startSheetDrag(clientY) {
-  const sheet = document.getElementById('sheet');
-  if (!sheet.classList.contains('open')) return;
-  sheetGesture.active = true;
-  sheetGesture.startY = clientY;
-  sheetGesture.deltaY = 0;
-  sheet.classList.add('dragging');
-}
-
-function moveSheetDrag(clientY) {
-  if (!sheetGesture.active) return;
-  updateSheetDrag(clientY - sheetGesture.startY);
-}
-
-function endSheetDrag() {
-  const sheet = document.getElementById('sheet');
-  if (!sheetGesture.active) return;
-  const shouldClose = sheetGesture.deltaY > 120;
-  sheetGesture.active = false;
-  sheet.classList.remove('dragging');
-  if (shouldClose) {
-    closeSheet();
-    return;
-  }
-  sheet.style.transform = '';
-}
-
-(function initSheetGestures(){
-  const sheet = document.getElementById('sheet');
-  const handle = sheet.querySelector('.sheet-handle');
-  if (!handle) return;
-  handle.addEventListener('touchstart', event => {
-    const touch = event.touches[0];
-    if (!touch) return;
-    startSheetDrag(touch.clientY);
-  }, { passive:true });
-  handle.addEventListener('touchmove', event => {
-    if (!sheetGesture.active) return;
-    const touch = event.touches[0];
-    if (!touch) return;
-    moveSheetDrag(touch.clientY);
-    event.preventDefault();
-  }, { passive:false });
-  handle.addEventListener('touchend', endSheetDrag);
-  handle.addEventListener('mousedown', event => startSheetDrag(event.clientY));
-  document.addEventListener('mousemove', event => moveSheetDrag(event.clientY));
-  document.addEventListener('mouseup', endSheetDrag);
+// 🚀 Ribbon close gestures
+(function initRibbonGestures() {
+  const ribbon = document.getElementById('action-ribbon');
+  let rStartX = 0;
+  let rActive = false;
+  ribbon.addEventListener('touchstart', e => {
+    rStartX = e.touches[0].clientX;
+    rActive = true;
+    ribbon.style.transition = 'none';
+  }, {passive: true});
+  ribbon.addEventListener('touchmove', e => {
+    if (!rActive) return;
+    const dx = e.touches[0].clientX - rStartX;
+    if (dx > 0) ribbon.style.transform = `translateX(${dx}px)`;
+  }, {passive: true});
+  ribbon.addEventListener('touchend', e => {
+    if (!rActive) return;
+    rActive = false;
+    ribbon.style.transition = ''; 
+    const dx = e.changedTouches ? e.changedTouches[0].clientX - rStartX : 0;
+    if (dx > 40) closeRibbon();
+    else ribbon.style.transform = ''; 
+  });
 })();
 
-// ── BOOT ─────────────────────────────────────────────────────
 let appStarted=false;
 function startApp() {
   if (appStarted) return; appStarted=true;
   setTimeout(async ()=>{
-    try { await VIA.init(); } catch(e) { console.warn('VIA init:',e); VIA.user=getGuestProfile(); }
-    hydrateFeedCards();
+    try { await VIA.init(); } catch(e) {}
     document.getElementById('boot').classList.add('exit');
     document.getElementById('app').classList.add('visible');
     buildProgressDots(); buildDeck(); GC.init(); buildDiscover(); buildProfile();
@@ -1322,19 +995,8 @@ function startApp() {
 }
 document.addEventListener('DOMContentLoaded', startApp, {once:true});
 window.addEventListener('load', startApp, {once:true});
-
-// ── KEYBOARD ─────────────────────────────────────────────────
-document.addEventListener('keydown', e=>{
-  if (activeLayer!=='feed') return;
-  if (e.key==='ArrowUp'||e.key==='ArrowRight') nextCard();
-  if (e.key==='ArrowDown'||e.key==='ArrowLeft') prevCard();
-});
-
-// ── A11Y RESTORE ─────────────────────────────────────────────
-if (localStorage.getItem('via_a11y')==='true') {
-  a11yMode=true; document.body.classList.add('a11y-mode');
-  const btn=document.getElementById('a11y-toggle'); if(btn)btn.classList.add('active');
-}
 </script>
 </body>
 </html>
+
+

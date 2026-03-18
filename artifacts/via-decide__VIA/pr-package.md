@@ -1,3 +1,9 @@
+Branch: simba/build-execution-hooks-engine-to-make-every-post-
+Title: Build "Execution Hooks Engine" to make every post actionable. Create ...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Turn passive content into executable workflows inside the feed.
 Branch: simba/implement-a-decision-graph-engine-to-convert-all
 Title: Implement a "Decision Graph Engine" to convert all user inputs into s...
 

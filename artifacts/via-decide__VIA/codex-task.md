@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Implement ProgressiveFeedEngine for content prioritization.
+
+CONSTRAINTS
+No ML models. Deterministic scoring only.
 Implement ExecutionHooksEngine to attach actions to posts.
 
 CONSTRAINTS

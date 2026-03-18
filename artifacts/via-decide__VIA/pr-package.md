@@ -1,3 +1,9 @@
+Branch: simba/implement-progressivefeedengine-for-content-prio
+Title: Implement ProgressiveFeedEngine for content prioritization.
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Control feed evolution across phases.
 Branch: simba/implement-executionhooksengine-to-attach-actions
 Title: Implement ExecutionHooksEngine to attach actions to posts.
 

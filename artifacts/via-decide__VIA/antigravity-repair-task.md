@@ -4,6 +4,7 @@ TARGET
 Validate and repair only the files touched by the previous implementation.
 
 TASK
+Implement "Decision Confidence Meter". Create src/core/decision/confidence/. Score outputs based on clarity, constraints, and completeness. Expose score visually in feed.
 Implement "User Action Heatmap Tracker". Create src/core/analytics/heatmap/. Track clicks, scroll depth, execution triggers. Aggregate into interaction zones. Expose data to feed ranking logic.
 Build "Insight Compression Engine". Create src/core/insight/compression-engine/. Convert long outputs into concise summaries + key bullets. Add Expand/Collapse support. Implement CompressionRatio tracking.
 Implement "Context Memory Layer". Create src/core/memory/context-layer/. Store short-lived session context for users. Enable cross-tool continuity (Decision → Study → Execution). Add MemoryPruner.js for cleanup.

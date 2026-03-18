@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Implement "Decision Confidence Meter". Create src/core/decision/confidence/. Score outputs based on clarity, constraints, and completeness. Expose score visually in feed.
+
+CONSTRAINTS
+Use deterministic scoring rules.
 Implement "User Action Heatmap Tracker". Create src/core/analytics/heatmap/. Track clicks, scroll depth, execution triggers. Aggregate into interaction zones. Expose data to feed ranking logic.
 
 CONSTRAINTS

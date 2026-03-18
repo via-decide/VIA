@@ -1,3 +1,9 @@
+Branch: simba/implement-decision-confidence-meter-create-srcco
+Title: Implement "Decision Confidence Meter". Create src/core/decision/confi...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Help users trust and evaluate outputs quickly.
 Branch: simba/implement-user-action-heatmap-tracker-create-src
 Title: Implement "User Action Heatmap Tracker". Create src/core/analytics/he...
 

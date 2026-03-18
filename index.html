@@ -820,6 +820,9 @@ function openDiscoverTool(toolPath) {
 }
 function resolveCardUrl(card) {
   if (!card) return '';
+  if (card.redirect && REDIRECT_MAP[card.redirect]) return REDIRECT_MAP[card.redirect];
+  if (card.sourceUrl) return card.sourceUrl;
+  return '';
   if (card.sourceUrl) return card.sourceUrl;
   return REDIRECT_MAP[card.redirect] || '';
 }
@@ -858,6 +861,7 @@ function hydrateFeedCards() {
       ? bulletSource.map(item => String(item || '').trim()).filter(Boolean)
       : String(bulletSource || '').split(/\n+/).map(item => item.replace(/^[-•]\s*/, '').trim()).filter(Boolean);
     const author = post.author || {};
+    const redirectKey = String(post.redirect_key || post.redirect || post.redirectKey || '').trim();
     return {
       id: post.id || 'social-' + index,
       cat: String(post.category || 'viral').toLowerCase(),
@@ -871,6 +875,7 @@ function hydrateFeedCards() {
       time: post.relative_time || post.time || 'Now',
       views: post.views || 'Live',
       likes: post.reaction_count ? formatCount(post.reaction_count) : 'New',
+      redirect: redirectKey || (sourceUrl ? null : 'about'),
       redirect: sourceUrl ? null : 'about',
       sourceUrl,
       feedContext: {

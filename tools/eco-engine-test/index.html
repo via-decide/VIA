@@ -80,6 +80,7 @@
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../shared/eco-supabase-config.js"></script>
   <script src="../../shared/reward-wallet.js"></script>
   <script src="../../shared/growth-stage-engine.js"></script>
   <script src="../../shared/season-engine.js"></script>
@@ -190,14 +191,21 @@
      * New utilities introduced: friendly error mapper, auth attempt lock utility, button loading utility, field-level validator, localStorage session/TTL sync helper
      */
     (() => {
-      const SUPABASE_URL = 'https://bfocxgtlemhxfwfuhlxn.supabase.co';
-      const SUPABASE_ANON_KEY = window.ECO_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || localStorage.getItem('eco_supabase_anon_key') || 'YOUR_ANON_KEY';
-      const SUPABASE_ANON_KEY = window.ECO_SUPABASE_ANON_KEY || 'YOUR_ANON_KEY';
-      const db = window.EcoDB || window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const supabaseConfig = window.DatabaseService && typeof window.DatabaseService.getConfig === 'function'
+        ? window.DatabaseService.getConfig()
+        : (window.ECO_SUPABASE_CONFIG || {
+            url: window.ECO_SUPABASE_URL || 'https://bfocxgtlemhxfwfuhlxn.supabase.co',
+            anonKey: window.ECO_SUPABASE_ANON_KEY || '',
+            isConfigured: Boolean(window.ECO_SUPABASE_ANON_KEY)
+          });
+      const SUPABASE_URL = supabaseConfig.url;
+      const SUPABASE_ANON_KEY = supabaseConfig.anonKey || 'YOUR_ANON_KEY';
+      const db = window.EcoDB || (supabaseConfig.isConfigured && window.supabase?.createClient
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        : null);
 
-      if (SUPABASE_ANON_KEY === 'YOUR_ANON_KEY') {
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#f85149;background:#0d1117;text-align:center;padding:24px;"><div><h2>⚠️ Setup Required</h2><p style="color:#8b949e;margin-top:12px;">Add your Supabase anon public key to this file.<br>Get it from: supabase.com → Settings → API → anon public</p></div></div>';
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#f85149;background:#0d1117;text-align:center;padding:24px;"><div><h2>⚠️ Setup Required</h2><p style="color:#8b949e;margin-top:8px;">Replace YOUR_ANON_KEY in eco-engine-test/index.html<br>with your Supabase anon public key.</p></div></div>';
+      if (!supabaseConfig.isConfigured) {
+        document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#f85149;background:#0d1117;text-align:center;padding:24px;"><div><h2>⚠️ Setup Required</h2><p style="color:#8b949e;margin-top:8px;">Set <code>window.ECO_SUPABASE_ANON_KEY</code> at runtime or run <code>localStorage.setItem('eco_supabase_anon_key', 'your-anon-key')</code> before loading this page.</p></div></div>`;
         return;
       }
 
@@ -274,7 +282,7 @@
 
 
 
-      if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === 'YOUR_ANON_KEY') {
+      if (!supabaseConfig.isConfigured) {
         authError.textContent = 'Supabase key missing. Set window.ECO_SUPABASE_ANON_KEY or localStorage eco_supabase_anon_key.';
         logAction('Auth warning: Supabase anon key is not configured.');
       }

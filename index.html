@@ -15,6 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Devanagari:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="./onboarding/onboarding.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="./shared/eco-supabase-config.js"></script>
 <script src="./shared/tool-storage.js"></script>
 <script src="./shared/social-core.js"></script>
 <script src="./src/core/content/micro-content-architecture/MicroContentParser.js"></script>
@@ -680,7 +681,7 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 // ════════════════════════════════════════════════════════════════
 const _sbConfig = window.DatabaseService && typeof window.DatabaseService.getConfig === 'function'
   ? window.DatabaseService.getConfig()
-  : { url: 'https://bfocxgtlemhxfwfuhlxn.supabase.co', anonKey: window.ECO_SUPABASE_ANON_KEY || localStorage.getItem('eco_supabase_anon_key') || '', isConfigured: !!(window.ECO_SUPABASE_ANON_KEY || localStorage.getItem('eco_supabase_anon_key')) };
+  : { url: window.ECO_SUPABASE_CONFIG?.url || 'https://bfocxgtlemhxfwfuhlxn.supabase.co', anonKey: window.ECO_SUPABASE_CONFIG?.anonKey || window.ECO_SUPABASE_ANON_KEY || '', isConfigured: !!(window.ECO_SUPABASE_CONFIG?.anonKey || window.ECO_SUPABASE_ANON_KEY) };
 const SUPABASE_URL = _sbConfig.url;
 const SUPABASE_ANON_KEY = _sbConfig.anonKey;
 const SUPABASE_CONFIGURED = Boolean(_sbConfig.isConfigured);

@@ -12,9 +12,16 @@
       if (supabaseClient) return supabaseClient;
     }
 
-    const anonKey = window.ECO_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || localStorage.getItem('eco_supabase_anon_key') || '';
-    if (!window.supabase?.createClient || !anonKey) return null;
-    supabaseClient = window.supabase.createClient(window.ECO_SUPABASE_URL || fallbackProjectUrl, anonKey);
+    const config = window.DatabaseService && typeof window.DatabaseService.getConfig === 'function'
+      ? window.DatabaseService.getConfig()
+      : (window.ECO_SUPABASE_CONFIG || {
+          url: window.ECO_SUPABASE_URL || fallbackProjectUrl,
+          anonKey: window.ECO_SUPABASE_ANON_KEY || '',
+          isConfigured: Boolean(window.ECO_SUPABASE_ANON_KEY)
+        });
+
+    if (!window.supabase?.createClient || !config?.anonKey) return null;
+    supabaseClient = window.supabase.createClient(config.url || fallbackProjectUrl, config.anonKey);
     return supabaseClient;
   }
 

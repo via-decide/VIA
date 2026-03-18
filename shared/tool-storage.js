@@ -49,15 +49,20 @@
   }
 
   function getConfig() {
+    const runtimeConfig = global.ECO_SUPABASE_CONFIG && typeof global.ECO_SUPABASE_CONFIG === 'object'
+      ? global.ECO_SUPABASE_CONFIG
+      : null;
+
     const anonKey = String(
-      global.ECO_SUPABASE_ANON_KEY
-      || global.SUPABASE_ANON_KEY
+      runtimeConfig?.anonKey
+      || global.ECO_SUPABASE_ANON_KEY
       || localStorage.getItem('eco_supabase_anon_key')
       || ''
     ).trim();
 
     const url = String(
-      global.ECO_SUPABASE_URL
+      runtimeConfig?.url
+      || global.ECO_SUPABASE_URL
       || localStorage.getItem('eco_supabase_url')
       || DEFAULT_SUPABASE_URL
     ).trim();
@@ -67,7 +72,6 @@
       && anonKey
       && !url.includes('YOUR_PROJECT')
       && !anonKey.includes('YOUR_ANON_KEY')
-      && !anonKey.includes('replace-with-anon-key')
     );
 
     return {

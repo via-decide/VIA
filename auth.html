@@ -117,6 +117,7 @@ CREATE POLICY "Users can create moderation flags" ON via_moderation_queue FOR IN
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Devanagari:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="./shared/eco-supabase-config.js"></script>
 <script src="./shared/tool-storage.js"></script>
 <script src="./shared/social-core.js"></script>
 <style>
@@ -215,9 +216,9 @@ input.error,select.error{border-color:#ff6b6b}
 const supabaseConfig = window.DatabaseService && typeof window.DatabaseService.getConfig === 'function'
   ? window.DatabaseService.getConfig()
   : {
-      url: window.ECO_SUPABASE_URL || localStorage.getItem('eco_supabase_url') || 'https://bfocxgtlemhxfwfuhlxn.supabase.co',
-      anonKey: window.ECO_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || localStorage.getItem('eco_supabase_anon_key') || '',
-      isConfigured: !!(window.ECO_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || localStorage.getItem('eco_supabase_anon_key'))
+      url: window.ECO_SUPABASE_CONFIG?.url || window.ECO_SUPABASE_URL || 'https://bfocxgtlemhxfwfuhlxn.supabase.co',
+      anonKey: window.ECO_SUPABASE_CONFIG?.anonKey || window.ECO_SUPABASE_ANON_KEY || '',
+      isConfigured: !!(window.ECO_SUPABASE_CONFIG?.anonKey || window.ECO_SUPABASE_ANON_KEY)
     };
 const SUPABASE_URL = supabaseConfig.url;
 const SUPABASE_ANON_KEY = supabaseConfig.anonKey;

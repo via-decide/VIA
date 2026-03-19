@@ -1,0 +1,10 @@
+{
+  "projectId": "REPLACE_ME",
+  "appId": "REPLACE_ME",
+  "apiKey": "REPLACE_ME",
+  "authDomain": "REPLACE_ME.firebaseapp.com",
+  "firestoreDatabaseId": "REPLACE_ME",
+  "storageBucket": "REPLACE_ME.firebasestorage.app",
+  "messagingSenderId": "REPLACE_ME",
+  "measurementId": ""
+}

@@ -380,40 +380,60 @@ input.error,select.error{border-color:#ff6b6b}
   async function signInHandler(e){
     e.preventDefault();
     ['signin-id-err','signin-pass-err','signin-main-err'].forEach(id=>setErr(id,''));
+    ['signin-id','signin-password'].forEach(id=>setInputError(id,false));
     const rawId=document.getElementById('signin-id').value.trim();
     const password=document.getElementById('signin-password').value;
     let email='';
     if(state.loginType==='phone'){
       const phone=parsePhone(rawId);
-      if(!phone){ setErr('signin-id-err','Enter valid number.'); return; }
+      if(!phone){ setErr('signin-id-err','Enter valid 10-digit number.'); setInputError('signin-id',true); return; }
       email=phoneToPseudoEmail(phone);
     } else {
-      if(!rawId || !/^\S+@\S+\.\S+$/.test(rawId)){ setErr('signin-id-err','Enter valid email.'); return; }
+      if(!rawId || !/^\S+@\S+\.\S+$/.test(rawId)){ setErr('signin-id-err','Enter valid email.'); setInputError('signin-id',true); return; }
       email=rawId;
     }
-    if(password.length<8){ setErr('signin-pass-err','Min 8 chars.'); return; }
-    if(!sb){ setErr('signin-main-err','Not configured.'); return; }
-    try { await signIn(email, password); } catch (error) { setErr('signin-main-err', error?.message); }
+    if(password.length<8){ setErr('signin-pass-err','Min 8 characters.'); setInputError('signin-password',true); return; }
+    if(!sb){ setErr('signin-main-err','Supabase not configured.'); return; }
+    try { await signIn(email, password); } catch (error) { setErr('signin-main-err', error?.message || 'Login failed'); }
   }
 
   async function signUpHandler(e){
     e.preventDefault();
     ['up-name-err','up-username-err','up-id-err','up-password-err','up-city-err','signup-main-err'].forEach(id=>setErr(id,''));
+    ['up-name','up-username','up-id','up-password','up-city'].forEach(id=>setInputError(id,false));
     const name=document.getElementById('up-name').value.trim();
     const username=document.getElementById('up-username').value.trim();
     const rawId=document.getElementById('up-id').value.trim();
     const password=document.getElementById('up-password').value;
     const city=document.getElementById('up-city').value;
-    if(!name || !usernameRe.test(username) || password.length<8 || !city){ setErr('signup-main-err','Please fix errors.'); return; }
+    
+    let hasErr = false;
+    if(!name){ setErr('up-name-err','Name is required.'); setInputError('up-name',true); hasErr=true; }
+    if(!usernameRe.test(username)){ setErr('up-username-err','Use 3-20 lowercase letters, numbers, _ or .'); setInputError('up-username',true); hasErr=true; }
+    if(state.loginType==='phone'){
+      if(!parsePhone(rawId)){ setErr('up-id-err','Enter valid 10-digit number.'); setInputError('up-id',true); hasErr=true; }
+    } else {
+      if(!rawId || !/^\S+@\S+\.\S+$/.test(rawId)){ setErr('up-id-err','Enter valid email.'); setInputError('up-id',true); hasErr=true; }
+    }
+    if(password.length<8){ setErr('up-password-err','Min 8 characters.'); setInputError('up-password',true); hasErr=true; }
+    if(!city){ setErr('up-city-err','Please select your city.'); setInputError('up-city',true); hasErr=true; }
+    
+    if(hasErr) return;
+    
     let email = state.loginType==='phone' ? phoneToPseudoEmail(parsePhone(rawId)) : rawId;
-    if(!sb){ setErr('signup-main-err','Not configured.'); return; }
-    const { data, error } = await sb.auth.signUp({ email, password, options:{ data:{ name, username, city } } });
-    if(error || !data?.user){ setErr('signup-main-err', error?.message); return; }
-    const profile = prepareProfile({ id: data.user.id, username, display_name: name, city, avatar_emoji:'🌟', xp:0, level:1, followers:0, following:0, posts:0 });
-    const { error: insErr } = await sb.from('via_users').upsert(profile, { onConflict:'id' });
-    if(insErr){ setErr('signup-main-err', insErr.message); return; }
-    saveProfileCache(profile);
-    window.location.href='./index.html';
+    if(!sb){ setErr('signup-main-err','Supabase not configured.'); return; }
+    
+    try {
+      const { data, error } = await sb.auth.signUp({ email, password, options:{ data:{ name, username, city } } });
+      if(error || !data?.user){ setErr('signup-main-err', error?.message || 'Sign up failed'); return; }
+      const profile = prepareProfile({ id: data.user.id, username, display_name: name, city, avatar_emoji:'🌟', xp:0, level:1, followers:0, following:0, posts:0 });
+      const { error: insErr } = await sb.from('via_users').upsert(profile, { onConflict:'id' });
+      if(insErr){ setErr('signup-main-err', insErr.message); return; }
+      saveProfileCache(profile);
+      window.location.href='./index.html';
+    } catch(err) {
+      setErr('signup-main-err', err.message || 'An unexpected error occurred.');
+    }
   }
 
   async function resetPassword(){

@@ -40,20 +40,21 @@ import {
   setupRecaptcha,
   signInWithPhone
 } from './firebase';
-import { 
-  doc, 
-  setDoc, 
-  onSnapshot, 
-  updateDoc, 
-  collection, 
-  query, 
-  where, 
-  getDocs, 
-  addDoc, 
-  serverTimestamp, 
+import {
+  doc,
+  setDoc,
+  onSnapshot,
+  updateDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  serverTimestamp,
   increment,
   writeBatch,
   getDoc,
+  getDocFromServer,
   limit,
   orderBy
 } from 'firebase/firestore';
@@ -117,6 +118,8 @@ const App: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingInitialName, setOnboardingInitialName] = useState('');
   const [onboardingInitialUsername, setOnboardingInitialUsername] = useState('');
+  const [authError, setAuthError] = useState('');
+  const pendingNewUserRef = useRef<{ uid: string; email: string | null; phoneNumber: string | null } | null>(null);
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
   const [dives, setDives] = useState<DeepDive[]>(INITIAL_DEEP_DIVES);
   const [activePostIndex, setActivePostIndex] = useState(0);
@@ -163,18 +166,28 @@ const App: React.FC = () => {
     }
   }, [profile]);
 
-  // Auth Listener
+  // Auth Listener — modeled after Game- repo's working pattern
   useEffect(() => {
     let profileUnsub: (() => void) | null = null;
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       try {
         setUser(firebaseUser);
+        setAuthError('');
+
         if (firebaseUser) {
           addLog(`User authenticated: ${firebaseUser.email || firebaseUser.phoneNumber}`);
-          
+
           const userRef = doc(db, 'users', firebaseUser.uid);
-          const userSnap = await getDoc(userRef);
+
+          // Use getDocFromServer to avoid stale cache for new-user check
+          let userSnap;
+          try {
+            userSnap = await getDocFromServer(userRef);
+          } catch {
+            // Fallback to cache if offline
+            userSnap = await getDoc(userRef);
+          }
 
           if (!userSnap.exists()) {
             addLog('New user — starting onboarding...');
@@ -183,10 +196,11 @@ const App: React.FC = () => {
             const suggestedName = firebaseUser.displayName || (firebaseUser.phoneNumber ? `User ${firebaseUser.phoneNumber.slice(-4)}` : '');
             setOnboardingInitialName(suggestedName);
             setOnboardingInitialUsername(suggestedUsername);
-            // Store firebase user ref for onboarding completion
-            (window as any).__viaNewUserRef = { uid: firebaseUser.uid, email: firebaseUser.email, phoneNumber: firebaseUser.phoneNumber };
+            // Store in React ref (not window) — safe across re-renders
+            pendingNewUserRef.current = { uid: firebaseUser.uid, email: firebaseUser.email, phoneNumber: firebaseUser.phoneNumber };
             setShowOnboarding(true);
           } else {
+            setShowOnboarding(false);
             const storedProfile = userSnap.data() as UserProfile;
             const syncedProfile = { ...storedProfile, id: storedProfile.uid };
             profileSystemRef.current.updateProfile({
@@ -201,11 +215,11 @@ const App: React.FC = () => {
             setProfile(syncedProfile);
           }
 
-          // Real-time profile updates
+          // Real-time profile updates (like Game- uses onSnapshot)
           if (profileUnsub) profileUnsub();
-          profileUnsub = onSnapshot(userRef, (doc) => {
-            if (doc.exists()) {
-              const liveProfile = doc.data() as UserProfile;
+          profileUnsub = onSnapshot(userRef, (snap) => {
+            if (snap.exists()) {
+              const liveProfile = snap.data() as UserProfile;
               const syncedProfile = { ...liveProfile, id: liveProfile.uid };
               profileSystemRef.current.updateProfile({
                 id: syncedProfile.uid,
@@ -220,9 +234,11 @@ const App: React.FC = () => {
             }
           }, (err) => {
             console.error('Profile snapshot error:', err);
-            handleFirestoreError(err, OperationType.GET, 'users');
           });
         } else {
+          // No user — clear all auth state
+          setShowOnboarding(false);
+          pendingNewUserRef.current = null;
           const localProfile = profileSystemRef.current.getProfile();
           setProfile(localProfile ? ({
             uid: localProfile.id,
@@ -244,18 +260,26 @@ const App: React.FC = () => {
             profileUnsub = null;
           }
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Auth state change error:', err);
+        setAuthError(err?.message || 'Authentication failed. Please try again.');
+        addLog(`Auth error: ${err?.message || 'Unknown error'}`);
       } finally {
         setLoading(false);
       }
+    }, (error) => {
+      // Error callback — Game- pattern: always set isAuthReady even on error
+      console.error('Auth listener error:', error);
+      setAuthError(error.message || 'Authentication service error');
+      addLog(`Auth error: ${error.message}`);
+      setLoading(false);
     });
 
-    // Setup Recaptcha for Phone Auth
-    setupRecaptcha('recaptcha-container');
-
-    // Timeout for loading state
+    // Timeout for loading state (Game- uses 10s, we use 8s)
     const timeout = setTimeout(() => {
+      if (loading) {
+        addLog('Auth initialization taking longer than expected...');
+      }
       setLoading(false);
     }, 8000);
 
@@ -312,14 +336,14 @@ const App: React.FC = () => {
   const handleSendCode = async () => {
     // Clean phone number: remove spaces, dashes, etc.
     const cleanedPhone = phoneNumber.replace(/\s|-|\(|\)/g, '');
-    
+
     if (!cleanedPhone) {
       setPhoneError('Please enter a valid phone number');
       return;
     }
 
-    // Basic validation for E.164 format
-    if (!/^\+[1-9]\d{1,14}$/.test(cleanedPhone)) {
+    // Validate E.164 format with reasonable length (7-15 digits after country code)
+    if (!/^\+[1-9]\d{6,14}$/.test(cleanedPhone)) {
       setPhoneError('Please use international format (e.g., +919876543210)');
       return;
     }
@@ -327,15 +351,22 @@ const App: React.FC = () => {
     setPhoneError('');
     setIsSendingCode(true);
     try {
-      // Ensure recaptcha is ready
+      // Setup recaptcha right before use (not on mount) — ensures DOM is ready
       setupRecaptcha('recaptcha-container');
       const result = await signInWithPhone(cleanedPhone);
       setConfirmationResult(result);
       addLog('Verification code sent');
     } catch (error: any) {
       console.error('Phone Auth Error:', error);
-      setPhoneError(error.message || 'Failed to send code');
-      // Reset recaptcha if it fails
+      const code = error?.code || '';
+      if (code === 'auth/too-many-requests') {
+        setPhoneError('Too many attempts. Please try again later.');
+      } else if (code === 'auth/invalid-phone-number') {
+        setPhoneError('Invalid phone number. Please check and try again.');
+      } else {
+        setPhoneError(error.message || 'Failed to send code');
+      }
+      // Reset recaptcha for retry
       setupRecaptcha('recaptcha-container');
     } finally {
       setIsSendingCode(false);
@@ -350,10 +381,29 @@ const App: React.FC = () => {
       await confirmationResult.confirm(verificationCode);
       addLog('Phone verification successful');
     } catch (error: any) {
-      setPhoneError(error.message || 'Invalid verification code');
+      console.error('Phone verify error:', error);
+      const code = error?.code || '';
+      if (code === 'auth/code-expired') {
+        setPhoneError('Code expired. Please request a new one.');
+        setConfirmationResult(null);
+        setVerificationCode('');
+      } else if (code === 'auth/invalid-verification-code') {
+        setPhoneError('Invalid code. Please check and try again.');
+      } else {
+        setPhoneError(error.message || 'Verification failed');
+      }
     } finally {
       setIsVerifyingCode(false);
     }
+  };
+
+  // Clear phone auth state when switching back to main auth options
+  const handleBackToAuthOptions = () => {
+    setShowPhoneInput(false);
+    setConfirmationResult(null);
+    setVerificationCode('');
+    setPhoneNumber('');
+    setPhoneError('');
   };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -462,11 +512,16 @@ const App: React.FC = () => {
   };
 
   const handleOnboardingComplete = async (onboardingData: { displayName: string; username: string; avatarEmoji: string; bio: string; city: string }) => {
-    const newUserRef = (window as any).__viaNewUserRef;
-    if (!newUserRef) return;
-    const userRef = doc(db, 'users', newUserRef.uid);
-    const newProfile: UserProfile = {
-      uid: newUserRef.uid,
+    const pending = pendingNewUserRef.current;
+    if (!pending) {
+      addLog('Error: No pending user found for onboarding.');
+      setShowOnboarding(false);
+      return;
+    }
+
+    const userRef = doc(db, 'users', pending.uid);
+    const newProfile: UserProfile & { role: string } = {
+      uid: pending.uid,
       username: onboardingData.username || onboardingInitialUsername,
       displayName: onboardingData.displayName || 'Bharat Explorer',
       city: onboardingData.city || 'India',
@@ -479,24 +534,32 @@ const App: React.FC = () => {
       following: 0,
       posts: 0,
       createdAt: new Date().toISOString(),
-      ...(newUserRef.email != null ? { email: newUserRef.email } : {}),
-      ...(newUserRef.phoneNumber != null ? { phoneNumber: newUserRef.phoneNumber } : {}),
+      role: 'user',
+      ...(pending.email != null ? { email: pending.email } : {}),
+      ...(pending.phoneNumber != null ? { phoneNumber: pending.phoneNumber } : {}),
     };
-    await setDoc(userRef, newProfile);
-    const syncedProfile = { ...newProfile, id: newProfile.uid };
-    profileSystemRef.current.updateProfile({
-      id: syncedProfile.uid,
-      username: syncedProfile.username,
-      displayName: syncedProfile.displayName,
-      avatarEmoji: syncedProfile.avatarEmoji,
-      isGuest: false,
-      email: syncedProfile.email,
-      phoneNumber: syncedProfile.phoneNumber,
-    });
-    setProfile(syncedProfile);
-    setShowOnboarding(false);
-    delete (window as any).__viaNewUserRef;
-    addLog('Onboarding complete — welcome to VIA!');
+
+    try {
+      await setDoc(userRef, newProfile);
+      const syncedProfile = { ...newProfile, id: newProfile.uid };
+      profileSystemRef.current.updateProfile({
+        id: syncedProfile.uid,
+        username: syncedProfile.username,
+        displayName: syncedProfile.displayName,
+        avatarEmoji: syncedProfile.avatarEmoji,
+        isGuest: false,
+        email: syncedProfile.email,
+        phoneNumber: syncedProfile.phoneNumber,
+      });
+      setProfile(syncedProfile);
+      setShowOnboarding(false);
+      pendingNewUserRef.current = null;
+      addLog('Onboarding complete — welcome to VIA!');
+    } catch (err: any) {
+      console.error('Onboarding save error:', err);
+      addLog(`Failed to save profile: ${err?.message || 'Unknown error'}. Please try again.`);
+      throw err; // Re-throw so OnboardingFlow can show error state
+    }
   };
 
   if (loading) {
@@ -541,18 +604,41 @@ const App: React.FC = () => {
             Join the next generation of Bharat's digital landscape.
           </p>
 
+          {/* Auth error banner */}
+          {authError && (
+            <div className="w-full glass-panel rounded-2xl p-4 border-red-500/30 text-left space-y-2">
+              <div className="flex items-center gap-2 text-red-400">
+                <AlertCircle size={16} />
+                <span className="text-xs font-bold uppercase tracking-widest">Auth Error</span>
+              </div>
+              <p className="text-red-400/80 text-xs">{authError}</p>
+            </div>
+          )}
+
           <div className="space-y-4">
             {!showPhoneInput ? (
               <>
-                <button 
-                  onClick={signInWithGoogle}
+                <button
+                  onClick={async () => {
+                    try {
+                      setAuthError('');
+                      await signInWithGoogle();
+                    } catch (err: any) {
+                      if (err?.code !== 'auth/popup-closed-by-user') {
+                        setAuthError(err?.message || 'Google sign-in failed. Please try again.');
+                      }
+                    }
+                  }}
                   className="w-full py-4 rounded-2xl bg-white text-via-dark font-bold text-lg flex items-center justify-center gap-3 hover:bg-via-accent hover:text-white transition-all shadow-xl"
                 >
                   <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
                   Continue with Google
                 </button>
-                <button 
-                  onClick={() => setShowPhoneInput(true)}
+                <button
+                  onClick={() => {
+                    setShowPhoneInput(true);
+                    setAuthError('');
+                  }}
                   className="w-full py-4 rounded-2xl glass-panel text-white font-bold text-lg flex items-center justify-center gap-3 hover:bg-white/10 transition-all"
                 >
                   <User className="w-5 h-5" />
@@ -565,8 +651,8 @@ const App: React.FC = () => {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-2">Phone Number</label>
-                      <input 
-                        type="tel" 
+                      <input
+                        type="tel"
                         placeholder="+91 98765 43210"
                         value={phoneNumber}
                         onChange={(e) => {
@@ -577,15 +663,15 @@ const App: React.FC = () => {
                       />
                     </div>
                     {phoneError && <p className="text-red-400 text-xs ml-2">{phoneError}</p>}
-                    <button 
+                    <button
                       onClick={handleSendCode}
                       disabled={isSendingCode}
                       className="w-full py-4 rounded-2xl bg-via-accent text-white font-bold text-lg flex items-center justify-center gap-3 hover:bg-via-accent/80 transition-all disabled:opacity-50"
                     >
                       {isSendingCode ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Send Verification Code'}
                     </button>
-                    <button 
-                      onClick={() => setShowPhoneInput(false)}
+                    <button
+                      onClick={handleBackToAuthOptions}
                       className="w-full py-2 text-white/40 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors"
                     >
                       Back to options
@@ -595,8 +681,8 @@ const App: React.FC = () => {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-2">Verification Code</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder="Enter 6-digit code"
                         value={verificationCode}
                         onChange={(e) => setVerificationCode(e.target.value)}
@@ -605,18 +691,28 @@ const App: React.FC = () => {
                       />
                     </div>
                     {phoneError && <p className="text-red-400 text-xs ml-2">{phoneError}</p>}
-                    <button 
+                    <button
                       onClick={handleVerifyCode}
                       disabled={isVerifyingCode}
                       className="w-full py-4 rounded-2xl bg-via-gold text-via-dark font-bold text-lg flex items-center justify-center gap-3 hover:bg-via-gold/80 transition-all disabled:opacity-50"
                     >
                       {isVerifyingCode ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Verify & Continue'}
                     </button>
-                    <button 
-                      onClick={() => setConfirmationResult(null)}
+                    <button
+                      onClick={() => {
+                        setConfirmationResult(null);
+                        setVerificationCode('');
+                        setPhoneError('');
+                      }}
                       className="w-full py-2 text-white/40 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors"
                     >
                       Resend code
+                    </button>
+                    <button
+                      onClick={handleBackToAuthOptions}
+                      className="w-full py-2 text-white/20 text-xs font-bold uppercase tracking-widest hover:text-white/60 transition-colors"
+                    >
+                      Back to options
                     </button>
                   </div>
                 )}

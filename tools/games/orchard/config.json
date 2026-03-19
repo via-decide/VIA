@@ -1,0 +1,12 @@
+{
+  "id": "orchard",
+  "name": "Orchard",
+  "description": "Launch the Orchard experience inside VIA from the engine tools manifest.",
+  "category": "games",
+  "audience": ["students", "creators", "researchers"],
+  "inputs": ["navigation_request"],
+  "outputs": ["orchard_launch"],
+  "relatedTools": ["orchard-profile-builder", "orchard-discovery-search"],
+  "entry": "tools/games/orchard/index.html",
+  "tags": ["game", "orchard", "redirect", "standalone"]
+}

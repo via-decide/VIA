@@ -1,0 +1,478 @@
+<!-- Firebase-backed auth page. window.viaFirebase must be initialized before the inline auth script runs. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>VIA · Auth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Devanagari:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+window.VIA_FIREBASE_CONFIG = {
+  apiKey:            "REPLACE_ME",
+  authDomain:        "REPLACE_ME.firebaseapp.com",
+  projectId:         "REPLACE_ME",
+  storageBucket:     "REPLACE_ME.appspot.com",
+  messagingSenderId: "REPLACE_ME",
+  appId:             "REPLACE_ME"
+};
+</script>
+<script src="./shared/firebase-config.js"></script>
+<script src="./shared/tool-storage.js"></script>
+<script src="./shared/social-core.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--saffron:#FF6B00;--saffron2:#FF9500;--deep:#0B0B1A;--deep2:#13132A;--deep3:#1C1C38;--gold:#F5C518;--white:#fff;--muted:#8B8BAD;--border:rgba(255,255,255,.08)}
+html,body{height:100%;background:var(--deep);color:var(--white);font-family:'DM Sans',sans-serif}
+body{overflow:hidden}
+#boot{position:fixed;inset:0;background:var(--deep);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:5;transition:opacity .6s,transform .6s}
+#boot.exit{opacity:0;transform:scale(1.03);pointer-events:none}
+.boot-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,18vw,8rem);background:linear-gradient(135deg,var(--saffron),var(--gold),var(--saffron2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.boot-tagline{font-family:'Noto Sans Devanagari',sans-serif;font-size:.92rem;color:var(--muted);margin-top:1rem;letter-spacing:.12em;text-transform:uppercase}
+.boot-line{font-size:.7rem;color:rgba(255,107,0,.6);margin-top:1.1rem;opacity:0;animation:fade .4s forwards}
+.boot-line:nth-child(3){animation-delay:.3s}.boot-line:nth-child(4){animation-delay:.7s}.boot-line:nth-child(5){animation-delay:1.1s}
+@keyframes fade{to{opacity:1}}
+.boot-bar{width:220px;height:2px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:1.3rem;overflow:hidden}
+.boot-bar-fill{height:100%;width:0;background:linear-gradient(90deg,var(--saffron),var(--gold));animation:fill 1.6s ease forwards 1.2s}
+@keyframes fill{to{width:100%}}
+#auth-app{position:fixed;inset:0;display:flex;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .5s;overflow-y:auto;padding-top:2rem}
+#auth-app.visible{opacity:1}
+.panel{width:min(430px,100%);min-height:min-content;background:linear-gradient(to bottom,var(--deep2),var(--deep));border-top:1px solid var(--border);border-top-left-radius:22px;border-top-right-radius:22px;padding:1.2rem;margin-top:auto;padding-bottom:calc(1.2rem + env(safe-area-inset-bottom))}
+@media(max-height:700px){
+  .panel{padding-top:1rem;padding-bottom:1rem}
+  .tabs{margin-bottom:.6rem}
+  .form-group{margin-bottom:.8rem}
+  .sbtn{height:46px;margin-top:.8rem}
+}
+.banner{display:none;background:rgba(245,197,24,.1);border:1px solid rgba(245,197,24,.3);color:var(--gold);padding:.6rem .7rem;border-radius:10px;font-size:.72rem;margin-bottom:.8rem}
+.tabs{display:flex;background:rgba(255,255,255,.04);border-radius:12px;padding:.25rem;margin-bottom:.9rem}
+.tab{flex:1;padding:.62rem;border:none;border-radius:9px;background:transparent;color:var(--muted);font-weight:700;cursor:pointer}
+.tab.active{background:linear-gradient(135deg,var(--saffron),var(--saffron2));color:#fff}
+.mode-toggle{display:flex;gap:.4rem;margin-bottom:.8rem}
+.pill{border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);padding:.38rem .65rem;border-radius:99px;font-size:.72rem;cursor:pointer}
+.pill.active{border-color:rgba(255,107,0,.45);color:var(--saffron)}
+.field{margin-bottom:.75rem}
+label{display:block;font-size:.72rem;color:var(--muted);margin-bottom:.35rem}
+input,select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;color:#fff;padding:.72rem .8rem;font-family:'DM Sans',sans-serif}
+input.error,select.error{border-color:#ff6b6b}
+.err{font-size:.68rem;color:#ff8c8c;min-height:1rem;margin-top:.2rem}
+.btn{width:100%;padding:.78rem;border:0;border-radius:10px;background:linear-gradient(135deg,var(--saffron),var(--gold));font-weight:800;cursor:pointer}
+.link{display:inline-block;margin:.2rem 0 .8rem;font-size:.72rem;color:var(--gold);text-decoration:none}
+.social{display:grid;gap:.5rem;margin-top:.9rem}
+.sbtn{width:100%;padding:.72rem;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:#fff;cursor:pointer;font-weight:700}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div id="boot">
+  <div class="boot-logo">VIA</div>
+  <div class="boot-tagline">Bharat का अपना Feed</div>
+  <div class="boot-line">> INITIALIZING VIA AUTH...</div>
+  <div class="boot-line">> LOADING IDENTITY LAYER...</div>
+  <div class="boot-line">> READY ✦</div>
+  <div class="boot-bar"><div class="boot-bar-fill"></div></div>
+</div>
+
+<div id="auth-app">
+  <div class="panel">
+    <div id="offline-banner" class="banner">Running in offline mode — configure Firebase for full features.</div>
+    <div class="tabs">
+      <button id="signin-tab" class="tab active" type="button">Sign In</button>
+      <button id="signup-tab" class="tab" type="button">Join VIA</button>
+    </div>
+
+    <div class="mode-toggle">
+      <button id="mode-email" class="pill active" type="button">Use Email</button>
+      <button id="mode-phone" class="pill" type="button">Use Phone (+91)</button>
+    </div>
+
+    <form id="signin-form">
+      <div class="field"><label id="signin-id-label">Email</label><input id="signin-id" type="email" autocomplete="username"/><div class="err" id="signin-id-err"></div></div>
+      <div class="field hidden" id="signin-otp-wrap"><label>Verification Code</label><input id="signin-otp" type="text" placeholder="6-digit code"/><div class="err" id="signin-otp-err"></div></div>
+      <div class="field" id="signin-pass-wrap"><label>Password</label><input id="signin-password" type="password" autocomplete="current-password"/><div class="err" id="signin-pass-err"></div></div>
+      <a href="#" id="forgot-link" class="link">Forgot Password?</a>
+      <div class="field hidden" id="reset-wrap"><label>Reset email</label><input id="reset-email" type="email"/><div class="err" id="reset-err"></div></div>
+      <button class="btn" type="submit" id="signin-btn">Sign In</button>
+      <div class="err" id="signin-main-err"></div>
+    </form>
+
+    <form id="signup-form" class="hidden">
+      <div class="field"><label>Full name</label><input id="up-name" type="text"/><div class="err" id="up-name-err"></div></div>
+      <div class="field"><label>Username (@handle)</label><input id="up-username" type="text" placeholder="lowercase, no spaces"/><div class="err" id="up-username-err"></div></div>
+      <div class="field"><label id="signup-id-label">Email</label><input id="up-id" type="email"/><div class="err" id="up-id-err"></div></div>
+      <div class="field hidden" id="signup-otp-wrap"><label>Verification Code</label><input id="up-otp" type="text" placeholder="6-digit code"/><div class="err" id="up-otp-err"></div></div>
+      <div class="field" id="signup-pass-wrap"><label>Password</label><input id="up-password" type="password"/><div class="err" id="up-password-err"></div></div>
+      <div class="field"><label>City</label>
+        <select id="up-city">
+          <option value="">Select city</option><option>Mumbai</option><option>Delhi</option><option>Bengaluru</option><option>Hyderabad</option><option>Chennai</option><option>Kolkata</option><option>Pune</option><option>Jaipur</option><option>Patna</option><option>Lucknow</option><option>Other</option>
+        </select><div class="err" id="up-city-err"></div>
+      </div>
+      <button class="btn" type="submit" id="signup-btn">Create Account</button>
+      <div class="err" id="signup-main-err"></div>
+    </form>
+
+    <div class="social">
+      <button id="google-btn" class="sbtn" type="button">Continue with Google</button>
+      <button id="telegram-btn" class="sbtn" type="button">Continue with Telegram</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  console.log("VIA Auth: Inline script starting");
+  window.addEventListener('error', function(e) {
+    console.error("VIA Auth: Runtime error:", e.message, "at", e.filename, ":", e.lineno);
+  });
+
+  // ── FIREBASE CONFIGURATION ──
+  const _fbAuth = window.viaFirebase && window.viaFirebase.auth ? window.viaFirebase.auth : null;
+  const _fbDb   = window.viaFirebase && window.viaFirebase.db   ? window.viaFirebase.db   : null;
+  const FIREBASE_CONFIGURED = !!(_fbAuth);
+
+  const state = { authMode:'signin', loginType:'email', phoneStep: 1 };
+  const usernameRe = /^[a-z0-9_.]{3,20}$/;
+  let currentUser = null;
+  let authReady = false;
+
+  function setErr(id, msg='') { const el=document.getElementById(id); if (el) el.textContent=msg; }
+  function setInputError(id, on) { const el=document.getElementById(id); if (el) el.classList.toggle('error', !!on); }
+  function phoneToPseudoEmail(phone){ return `via_${phone}@phone.via.local`; }
+  function parsePhone(raw){ const digits=(raw||'').replace(/\D/g,''); return digits.length===10?digits:null; }
+  function logAuthSnapshot(){ console.log('Auth Ready:', authReady); console.log('Current User:', currentUser); }
+  function clearCachedProfile(){ localStorage.removeItem('via_user'); localStorage.removeItem('via_session'); }
+
+  function prepareProfile(profile){
+    if (window.SocialCore && typeof window.SocialCore.bootstrapProfile === 'function') {
+      return window.SocialCore.bootstrapProfile(profile) || profile;
+    }
+    return profile;
+  }
+
+  function saveProfileCache(profile) {
+    if (!profile || typeof profile !== 'object' || !profile.id) {
+      clearCachedProfile();
+      return null;
+    }
+    const preparedProfile = prepareProfile(profile) || profile;
+    const nextProfile = {
+      id: preparedProfile.id || '',
+      email: preparedProfile.email || '',
+      name: preparedProfile.user_metadata?.name || preparedProfile.user_metadata?.full_name || preparedProfile.display_name || preparedProfile.name || '',
+      avatar: preparedProfile.user_metadata?.avatar_url || preparedProfile.avatar_url || preparedProfile.avatar || '',
+      updatedAt: Date.now(),
+      ...preparedProfile
+    };
+    if (window.DatabaseService && typeof window.DatabaseService.saveLocalUser === 'function') {
+      window.DatabaseService.saveLocalUser(nextProfile);
+    } else {
+      localStorage.setItem('via_user', JSON.stringify(nextProfile));
+    }
+    return nextProfile;
+  }
+
+  async function restoreSession() {
+    if (!_fbAuth) return null;
+    return new Promise((resolve) => {
+      const unsub = _fbAuth.onAuthStateChanged((user) => {
+        unsub();
+        resolve(user || null);
+      });
+    });
+  }
+
+  async function buildCurrentUser(firebaseUser) {
+    if (!firebaseUser || !firebaseUser.uid) return null;
+    let profile = null;
+    if (_fbDb) {
+      try {
+        const doc = await _fbDb.collection('users').doc(firebaseUser.uid).get();
+        if (doc.exists) profile = doc.data();
+      } catch(err) {
+        console.warn('Firestore profile fetch failed:', err.message);
+      }
+    }
+    if (!profile) {
+      profile = {
+        id: firebaseUser.uid,
+        email: firebaseUser.email || '',
+        username: (firebaseUser.displayName || firebaseUser.email || 'user').toLowerCase().replace(/[^a-z0-9_.]/g,'_').slice(0,20),
+        display_name: firebaseUser.displayName || firebaseUser.email || 'VIA User',
+        city: '',
+        avatar_emoji: '🌟',
+        xp: 0, level: 1, followers: 0, following: 0, posts: 0
+      };
+    }
+    const prepared = prepareProfile(profile);
+    currentUser = prepared;
+    saveProfileCache(prepared);
+    return prepared;
+  }
+
+  async function initApp() {
+    console.log("VIA Auth: initApp started");
+    const session = await restoreSession();
+    console.log("VIA Auth: session restored:", !!session);
+    if (session) { currentUser = await buildCurrentUser(session); } else { currentUser = null; clearCachedProfile(); }
+    authReady = true;
+    renderApp();
+    console.log("VIA Auth: initApp finished");
+    return currentUser;
+  }
+
+  function renderUserUI() { if (currentUser) window.location.href = './index.html'; }
+  function renderGuestUI() { document.getElementById('auth-app').classList.add('visible'); }
+  function renderApp() { if (!authReady) return; logAuthSnapshot(); if (currentUser) { renderUserUI(currentUser); } else { renderGuestUI(); } }
+
+  function showTab(mode){
+    state.authMode=mode;
+    document.getElementById('signin-tab').classList.toggle('active', mode==='signin');
+    document.getElementById('signup-tab').classList.toggle('active', mode==='signup');
+    document.getElementById('signin-form').classList.toggle('hidden', mode!=='signin');
+    document.getElementById('signup-form').classList.toggle('hidden', mode!=='signup');
+  }
+
+  function setLoginType(type){
+    state.loginType=type;
+    state.phoneStep=1;
+    document.getElementById('mode-email').classList.toggle('active', type==='email');
+    document.getElementById('mode-phone').classList.toggle('active', type==='phone');
+    
+    const signInInput=document.getElementById('signin-id');
+    const signUpInput=document.getElementById('up-id');
+    const signInLabel=document.getElementById('signin-id-label');
+    const signUpLabel=document.getElementById('signup-id-label');
+    
+    // Reset OTP visibility
+    document.getElementById('signin-otp-wrap').classList.add('hidden');
+    document.getElementById('signup-otp-wrap').classList.add('hidden');
+    document.getElementById('signin-pass-wrap').classList.remove('hidden');
+    document.getElementById('signup-pass-wrap').classList.remove('hidden');
+    document.getElementById('signin-btn').textContent = 'Sign In';
+    document.getElementById('signup-btn').textContent = 'Create Account';
+
+    if(type==='phone'){
+      signInInput.type='tel'; signInInput.placeholder='10-digit mobile number'; signInLabel.textContent='Phone (+91)';
+      signUpInput.type='tel'; signUpInput.placeholder='10-digit mobile number'; signUpLabel.textContent='Phone (+91)';
+    } else {
+      signInInput.type='email'; signInInput.placeholder='you@example.com'; signInLabel.textContent='Email';
+      signUpInput.type='email'; signUpInput.placeholder='you@example.com'; signUpLabel.textContent='Email';
+    }
+  }
+
+  async function signIn(email, password) {
+    if (!_fbAuth) throw new Error('Firebase Auth is not configured.');
+    try {
+      const cred = await _fbAuth.signInWithEmailAndPassword(email, password);
+      currentUser = await buildCurrentUser(cred.user);
+      authReady = true;
+      renderApp();
+      return cred;
+    } catch (err) {
+      console.error('Login error:', err);
+      throw new Error(err.message || 'Login failed');
+    }
+  }
+
+  async function signInHandler(e){
+    e.preventDefault();
+    ['signin-id-err','signin-pass-err','signin-otp-err','signin-main-err'].forEach(id=>setErr(id,''));
+    ['signin-id','signin-password','signin-otp'].forEach(id=>setInputError(id,false));
+    
+    const rawId=document.getElementById('signin-id').value.trim();
+    const password=document.getElementById('signin-password').value;
+    const otp=document.getElementById('signin-otp').value.trim();
+
+    if(state.loginType==='phone'){
+      const phone=parsePhone(rawId);
+      if(!phone){ setErr('signin-id-err','Enter valid 10-digit number.'); setInputError('signin-id',true); return; }
+      
+      if(state.phoneStep===1){
+        // Simulate sending OTP
+        state.phoneStep=2;
+        document.getElementById('signin-otp-wrap').classList.remove('hidden');
+        document.getElementById('signin-pass-wrap').classList.add('hidden');
+        document.getElementById('signin-btn').textContent = 'Verify & Sign In';
+        console.log("VIA Auth: OTP sent to", phone);
+        return;
+      }
+      
+      if(!otp || otp.length < 6){ setErr('signin-otp-err','Enter 6-digit code.'); setInputError('signin-otp',true); return; }
+      // In this demo, any 6 digits work. Real OTP would use Firebase phone auth.
+      var email=phoneToPseudoEmail(phone);
+    } else {
+      if(!rawId || !/^\S+@\S+\.\S+$/.test(rawId)){ setErr('signin-id-err','Enter valid email.'); setInputError('signin-id',true); return; }
+      var email=rawId;
+    }
+
+    if(state.loginType==='email' && password.length<8){ setErr('signin-pass-err','Min 8 characters.'); setInputError('signin-password',true); return; }
+    if(!_fbAuth){ setErr('signin-main-err','Firebase not configured.'); return; }
+    
+    try { 
+      // For phone demo, we still use pseudo-email + fixed password or something
+      // but let's just use the phone as password if it was a phone login for this demo
+      const finalPass = state.loginType === 'phone' ? 'via_demo_pass' : password;
+      await signIn(email, finalPass); 
+    } catch (error) { 
+      setErr('signin-main-err', error?.message || 'Login failed'); 
+    }
+  }
+
+  async function signUpHandler(e){
+    e.preventDefault();
+    ['up-name-err','up-username-err','up-id-err','up-otp-err','up-password-err','up-city-err','signup-main-err'].forEach(id=>setErr(id,''));
+    ['up-name','up-username','up-id','up-otp','up-password','up-city'].forEach(id=>setInputError(id,false));
+    
+    const name=document.getElementById('up-name').value.trim();
+    const username=document.getElementById('up-username').value.trim();
+    const rawId=document.getElementById('up-id').value.trim();
+    const otp=document.getElementById('up-otp').value.trim();
+    const password=document.getElementById('up-password').value;
+    const city=document.getElementById('up-city').value;
+    
+    let hasErr = false;
+    if(!name){ setErr('up-name-err','Name is required.'); setInputError('up-name',true); hasErr=true; }
+    if(!usernameRe.test(username)){ setErr('up-username-err','Use 3-20 lowercase letters, numbers, _ or .'); setInputError('up-username',true); hasErr=true; }
+    
+    if(state.loginType==='phone'){
+      const phone=parsePhone(rawId);
+      if(!phone){ setErr('up-id-err','Enter valid 10-digit number.'); setInputError('up-id',true); hasErr=true; }
+      else if(state.phoneStep===1){
+        if(hasErr) return;
+        state.phoneStep=2;
+        document.getElementById('signup-otp-wrap').classList.remove('hidden');
+        document.getElementById('signup-pass-wrap').classList.add('hidden');
+        document.getElementById('signup-btn').textContent = 'Verify & Create';
+        return;
+      }
+      if(state.phoneStep===2 && (!otp || otp.length < 6)){ setErr('up-otp-err','Enter 6-digit code.'); setInputError('up-otp',true); hasErr=true; }
+    } else {
+      if(!rawId || !/^\S+@\S+\.\S+$/.test(rawId)){ setErr('up-id-err','Enter valid email.'); setInputError('up-id',true); hasErr=true; }
+      if(password.length<8){ setErr('up-password-err','Min 8 characters.'); setInputError('up-password',true); hasErr=true; }
+    }
+    
+    if(!city){ setErr('up-city-err','Please select your city.'); setInputError('up-city',true); hasErr=true; }
+    if(hasErr) return;
+    
+    let email = state.loginType==='phone' ? phoneToPseudoEmail(parsePhone(rawId)) : rawId;
+    let finalPass = state.loginType==='phone' ? 'via_demo_pass' : password;
+
+    if(!_fbAuth){ setErr('signup-main-err','Firebase not configured.'); return; }
+    
+    try {
+      const cred = await _fbAuth.createUserWithEmailAndPassword(email, finalPass);
+      const uid = cred.user.uid;
+      const profile = prepareProfile({
+        id: uid,
+        email,
+        username,
+        display_name: name,
+        city,
+        avatar_emoji: '🌟',
+        xp: 0, level: 1, followers: 0, following: 0, posts: 0
+      });
+      if (_fbDb) {
+        await _fbDb.collection('users').doc(uid).set(profile, { merge: true });
+      }
+      saveProfileCache(profile);
+      window.location.href = './index.html';
+    } catch(err) {
+      setErr('signup-main-err', err.message || 'Sign up failed');
+    }
+  }
+
+  async function resetPassword(){
+    const email=document.getElementById('reset-email').value.trim();
+    setErr('reset-err','');
+    if(!/^\S+@\S+\.\S+$/.test(email)){ setErr('reset-err','Enter a valid email for reset link.'); return; }
+    if(!_fbAuth){ setErr('reset-err','Firebase not configured.'); return; }
+    try {
+      await _fbAuth.sendPasswordResetEmail(email);
+      setErr('reset-err','Reset email sent. Check your inbox.');
+    } catch(err) {
+      setErr('reset-err', err.message || 'Reset failed.');
+    }
+  }
+
+  document.getElementById('signin-tab').addEventListener('click',()=>showTab('signin'));
+  document.getElementById('signup-tab').addEventListener('click',()=>showTab('signup'));
+  document.getElementById('mode-email').addEventListener('click',()=>setLoginType('email'));
+  document.getElementById('mode-phone').addEventListener('click',()=>setLoginType('phone'));
+  document.getElementById('signin-form').addEventListener('submit', signInHandler);
+  document.getElementById('signup-form').addEventListener('submit', signUpHandler);
+  document.getElementById('forgot-link').addEventListener('click',(e)=>{ e.preventDefault(); document.getElementById('reset-wrap').classList.toggle('hidden'); });
+  document.getElementById('reset-email').addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ e.preventDefault(); resetPassword(); }});
+  document.getElementById('google-btn').addEventListener('click', async ()=>{
+    if(!_fbAuth){ setErr('signin-main-err','Firebase not configured.'); return; }
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope('email');
+      provider.addScope('profile');
+      const cred = await _fbAuth.signInWithPopup(provider);
+      const user = cred.user;
+      const profile = prepareProfile({
+        id: user.uid,
+        email: user.email || '',
+        username: (user.displayName || user.email || 'user').toLowerCase().replace(/[^a-z0-9_.]/g,'_').slice(0,20),
+        display_name: user.displayName || user.email || 'VIA User',
+        city: '',
+        avatar_emoji: '🌟',
+        xp: 0, level: 1, followers: 0, following: 0, posts: 0
+      });
+      if (_fbDb) {
+        await _fbDb.collection('users').doc(user.uid).set(profile, { merge: true });
+      }
+      saveProfileCache(profile);
+      window.location.href = './index.html';
+    } catch(err) {
+      setErr('signin-main-err', err.message || 'Google sign-in failed.');
+    }
+  });
+  document.getElementById('telegram-btn').addEventListener('click', ()=> window.open('https://t.me/GN8RBot?start=via_auth','_blank'));
+
+  if (_fbAuth) {
+    _fbAuth.onAuthStateChanged(async (user) => {
+      console.log('Firebase auth state:', user ? user.uid : 'signed out');
+      if (user) {
+        currentUser = await buildCurrentUser(user);
+      } else {
+        currentUser = null;
+        clearCachedProfile();
+      }
+      authReady = true;
+      renderApp();
+    });
+  }
+
+  let bootFinished = false;
+  function finishBoot() {
+    console.log("VIA Auth: finishBoot called, bootFinished=" + bootFinished);
+    if (bootFinished) return;
+    bootFinished = true;
+    const bootEl = document.getElementById('boot');
+    if (bootEl) { bootEl.classList.add('exit'); }
+    initApp().catch(err => { console.error('VIA Auth: App init failed:', err); authReady = true; renderApp(); });
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    console.log("VIA Auth: DOMContentLoaded fired");
+    if(!FIREBASE_CONFIGURED) {
+      const banner = document.getElementById('offline-banner');
+      if (banner) banner.style.display='block';
+      console.log("VIA Auth: Firebase not configured, showing banner");
+    }
+    setLoginType('email');
+    setTimeout(finishBoot, 500);
+  });
+
+  // Safety net: force exit if DOMContentLoaded or initApp takes too long
+  setTimeout(() => {
+    console.log("VIA Auth: Safety timeout reached");
+    finishBoot();
+  }, 4000);
+</script>
+</body>
+</html>
+```

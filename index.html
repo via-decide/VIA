@@ -450,6 +450,7 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
   <div class="status-bar">
     <div class="status-logo" onclick="switchLayer('feed')">VIA</div>
     <div class="status-actions">
+      <button class="status-auth-btn" id="feed-debug-btn" type="button" hidden onclick="window.testPost && window.testPost()">Test Post</button>
       <div class="status-xp"><div class="xp-dot"></div><span id="xp-counter">0 XP</span></div>
       <button class="status-auth-btn" id="status-auth-btn" onclick="VIA.openAuth()">Sign In</button>
     </div>
@@ -1083,6 +1084,7 @@ const PROFILE_ITEMS = [
 ];
 
 const CREATOR_PUBLISHED_KEY = 'via_creator_published_drafts';
+const FEED_DEBUG_FLAG_KEY = 'via_feed_debug';
 const MICRO_FRONTEND_LAYER_MAP = {
   feed: 'feed_surface',
   discover: 'discover_surface',
@@ -1104,6 +1106,79 @@ function getPublishedCreatorDrafts() {
   return Array.isArray(published) ? published : [];
 }
 
+function transformDraftToPost(draft) {
+  if (!draft || typeof draft !== 'object') return null;
+  const titleSource = typeof draft.hook === 'string' && draft.hook.trim()
+    ? draft.hook.trim()
+    : typeof draft.title === 'string' && draft.title.trim()
+      ? draft.title.trim()
+      : '';
+  if (!titleSource) return null;
+
+  const ctaText = typeof draft.cta === 'string' ? draft.cta.trim() : '';
+  const contextText = typeof draft.context === 'string' ? draft.context.trim() : '';
+  const insightText = typeof draft.insight === 'string' ? draft.insight.trim() : '';
+  const summaryText = contextText || insightText || ctaText || 'Fresh creator draft from the VIA studio.';
+  const title = titleSource.includes('<em>')
+    ? titleSource
+    : `${titleSource} — <em>${draft.author || 'VIA Creator'}</em>`;
+
+  return {
+    id: draft.id || `creator-draft-${Date.now()}`,
+    type: draft.type || 'Draft',
+    hook: titleSource,
+    title,
+    cta: ctaText,
+    context: contextText,
+    insight: insightText,
+    summary: summaryText,
+    body: [contextText, insightText].filter(Boolean).join(' ').trim() || summaryText,
+    microSummary: summaryText,
+    microCTA: ctaText,
+    cat: draft.cat || 'create',
+    catLabel: draft.catLabel || '✍️ Creator',
+    bg: draft.bg || 'linear-gradient(160deg,#240b36 0%,#0B0B1A 60%)',
+    emoji: draft.emoji || (draft.type === 'Video Script' ? '🎬' : draft.type === 'Thread' ? '🧵' : '✍️'),
+function getFeedDebugFlag() {
+  try {
+    return window.location.search.includes('feedDebug=1') || localStorage.getItem(FEED_DEBUG_FLAG_KEY) === '1' || window.__VIA_FEED_DEBUG === true;
+  } catch (_error) {
+    return false;
+  }
+}
+
+function updateFeedDebugControl() {
+  const button = document.getElementById('feed-debug-btn');
+  if (!button) return;
+  button.hidden = !getFeedDebugFlag();
+}
+
+function persistCreatorDraft(draft) {
+  if (!draft || typeof draft !== 'object') return null;
+  const published = getPublishedCreatorDrafts();
+  const normalizedDraft = {
+    id: draft.id || `draft-${Date.now()}`,
+    type: draft.type || 'Post',
+    title: draft.hook || draft.title || 'Creator Draft',
+    author: draft.author || 'VIA Creator',
+    context: draft.context || '',
+    insight: draft.insight || '',
+    structure: draft.structure || '',
+    cta: draft.cta || '',
+    created_at: draft.created_at || new Date().toISOString()
+  };
+  localStorage.setItem(CREATOR_PUBLISHED_KEY, JSON.stringify([normalizedDraft].concat(published).slice(0, 12)));
+  return normalizedDraft;
+}
+
+function hydrateFeed() {
+  const drafts = getPublishedCreatorDrafts();
+  window.__viaLatestCreatorDrafts = drafts;
+  console.log('Feed loaded');
+  syncCreatorContentSurface();
+  return drafts;
+}
+
 function getPublishedCreatorCards() {
   return getPublishedCreatorDrafts().slice(0, 4).map((draft, index) => ({
     id: `creator-draft-${draft.id || index}`,
@@ -1113,29 +1188,51 @@ function getPublishedCreatorCards() {
     emoji: draft.type === 'Video Script' ? '🎬' : draft.type === 'Thread' ? '🧵' : '✍️',
     title: `${draft.title || 'Creator Draft'} — <em>${draft.author || 'VIA Creator'}</em>`,
     author: draft.author || 'VIA Creator',
-    authorEmoji: '✍️',
-    location: 'Creator Studio',
-    time: 'Just now',
-    views: 'New',
-    likes: '0',
-    storyKey: 'creator'
-  }));
+    authorEmoji: draft.authorEmoji || '✍️',
+    location: draft.location || 'Creator Studio',
+    time: draft.time || 'Just now',
+    views: draft.views || 'New',
+    likes: draft.likes || '0',
+    storyKey: draft.storyKey || 'creator',
+    publishedAt: draft.publishedAt || new Date().toISOString()
+  };
+}
+
+function getPublishedCreatorCards() {
+  return getPublishedCreatorDrafts()
+    .map((draft) => transformDraftToPost(draft))
+    .filter(Boolean)
+    .slice(0, 4);
+}
+
+function publishDraft(draft) {
+  if (!draft || typeof draft !== 'object') return false;
+  const nextPost = transformDraftToPost(draft);
+  if (!nextPost) return false;
+  const draftList = getPublishedCreatorDrafts();
+  const updatedDrafts = [nextPost].concat(draftList);
+  localStorage.setItem(CREATOR_PUBLISHED_KEY, JSON.stringify(updatedDrafts));
+  syncCreatorContentSurface();
+  return nextPost;
 }
 
 function getProfileItems() {
-  const draftItems = getPublishedCreatorDrafts().slice(0, 4).map((draft, index) => ({
-    emoji: draft.type === 'Video Script' ? '🎬' : '✍️',
-    title: draft.title || `Creator Draft ${index + 1}`,
-    type: 'Published',
-    views: 'Fresh',
-    color: '#240b36',
-    storyKey: 'creator'
-  }));
+  const draftItems = getPublishedCreatorDrafts().slice(0, 4).map((draft, index) => {
+    const post = transformDraftToPost(draft) || {};
+    return {
+      emoji: post.emoji || '✍️',
+      title: stripTags(post.hook || post.title || `Creator Draft ${index + 1}`),
+      type: 'Published',
+      views: 'Fresh',
+      color: '#240b36',
+      storyKey: post.storyKey || 'creator'
+    };
+  });
   return draftItems.concat(PROFILE_ITEMS);
 }
 
 function syncCreatorContentSurface() {
-  CARDS = getPublishedCreatorCards().concat(DEFAULT_CARDS.slice());
+  CARDS = getPublishedCreatorCards().concat(hydrateFeedCardsWithMicroContent(DEFAULT_CARDS.slice()));
   if (currentCard >= CARDS.length) currentCard = 0;
   if (document.getElementById('deck')) {
     buildProgressDots();
@@ -1146,9 +1243,21 @@ function syncCreatorContentSurface() {
   }
 }
 
+let hasDraftGenerateSubscription = false;
+function subscribeFeedDraftEvents() {
+  if (hasDraftGenerateSubscription) return;
+  const runtime = window.VIAFederatedRuntime;
+  if (!runtime || typeof runtime.subscribe !== 'function') return;
+  runtime.subscribe('draft_generate', function(payload) {
+    console.debug('[VIA feed] draft_generate payload', payload);
+    publishDraft(payload);
+  });
+  hasDraftGenerateSubscription = true;
+}
+
 window.addEventListener('storage', (event) => {
   if (event.key === CREATOR_PUBLISHED_KEY) {
-    syncCreatorContentSurface();
+    hydrateFeed();
   }
 });
 
@@ -1979,6 +2088,9 @@ async function initMicroFrontendArchitecture() {
         syncCreatorContentSurface();
       });
     }
+    architecture.runtime.subscribe('content_events', () => {
+      hydrateFeed();
+    });
 
     const legacySwitchLayer = window.__viaLegacySwitchLayer;
     switchLayer = function (layer, storyKey) {
@@ -2010,6 +2122,21 @@ async function initMicroFrontendArchitecture() {
 }
 
 let federatedRuntime=null;
+window.testPost = function (payload = {}) {
+  const draft = {
+    hook: payload.hook || 'Test creator hook from VIA feed debug',
+    context: payload.context || 'Hydration path verification from startup debug control.',
+    insight: payload.insight || 'Persist draft events locally so feed cards render on page load.',
+    structure: payload.structure || 'Hook → Context → Insight → CTA',
+    cta: payload.cta || 'Open the creator surface and verify the post appears.'
+  };
+  if (!window.VIAFederatedRuntime || typeof window.VIAFederatedRuntime.emit !== 'function') {
+    console.warn('VIAFederatedRuntime unavailable for testPost');
+    return null;
+  }
+  window.VIAFederatedRuntime.emit('draft_generate', draft);
+  return draft;
+};
 async function initFederatedRuntime(){
   try {
     federatedRuntime = ensureVIAFederatedRuntimeBootstrap({
@@ -2021,6 +2148,8 @@ async function initFederatedRuntime(){
         }
       }
     });
+    window.VIAFederatedRuntime = federatedRuntime;
+    console.log('Runtime:', window.VIAFederatedRuntime);
     federatedRuntime.emit('surface_open', {
       surfaceName: 'feed_surface',
       pageContext: {
@@ -2029,6 +2158,9 @@ async function initFederatedRuntime(){
         description: document.querySelector('meta[name="description"]') ? document.querySelector('meta[name="description"]').getAttribute('content') || '' : ''
       }
     });
+    window.VIAFederatedRuntime = federatedRuntime;
+    subscribeFeedDraftEvents();
+    window.publishDraft = publishDraft;
     window.VIAFeedRuntimeBridge = {
       getSnapshot(){
         return federatedRuntime ? federatedRuntime.getSnapshot() : null;
@@ -2062,6 +2194,12 @@ async function initFederatedRuntime(){
   } catch (error) {
     console.error('[VIA] Federated runtime initialization failed:', error);
   }
+    federatedRuntime.subscribe('draft_generate', function(draft){
+      console.log('Feed received draft:', draft);
+      persistCreatorDraft(draft);
+      hydrateFeed();
+    });
+  } catch (_error) {}
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -2130,7 +2268,8 @@ function startApp(){
     }
     document.getElementById('boot').classList.add('exit');
     document.getElementById('app').classList.add('visible');
-    syncCreatorContentSurface();GC.init();buildDiscover();buildProfile();
+    updateFeedDebugControl();
+    hydrateFeed();GC.init();buildDiscover();buildProfile();
     renderApp();
     await initMicroFrontendArchitecture();
     await initFederatedRuntime();
@@ -2141,4 +2280,3 @@ window.addEventListener('load',startApp,{once:true});
 </script>
 </body>
 </html>
-

@@ -13,7 +13,6 @@
 <link rel="manifest" href="./manifest.json"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Devanagari:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="./onboarding/onboarding.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 window.ECO_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsenJkZHZvY3N1dGRlaXd2cmhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3NzAzNDAsImV4cCI6MjA4OTM0NjM0MH0.4oLh-_y0MkgdO6F98Y4D8FTwy4pOTAjc1eeERkjkQJk";
@@ -21,10 +20,6 @@ window.ECO_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ
 <script src="./shared/eco-supabase-config.js"></script>
 <script src="./shared/tool-storage.js"></script>
 <script src="./shared/social-core.js"></script>
-<script src="./src/core/content/micro-content-architecture/MicroContentParser.js"></script>
-<script src="./src/core/content/micro-content-architecture/MicroContentComposer.js"></script>
-<script src="./src/core/content/micro-content-architecture/MicroContentRegistry.js"></script>
-<script src="./src/core/content/micro-content-architecture/index.js"></script>
 <style>
 /* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -694,8 +689,6 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 <div id="sheet-overlay" class="sheet-overlay" onclick="closeSheet()"></div>
 <div id="sheet" class="sheet"><div class="sheet-handle"></div><div id="sheet-body"></div></div>
 
-<script src="./onboarding/onboarding.js"></script>
-<script src="./js/viadecide-agent.js"></script>
 <script>
 // ════════════════════════════════════════════════════════════════
 // SUPABASE + HELPERS
@@ -923,10 +916,115 @@ const DEFAULT_CARDS = [
    storyKey:'edtech'},
 ];
 
+const FEATURE_RUNTIME_BOOTSTRAP_ENABLED = true;
 const VIA_MICRO_CONTENT = typeof window.createMicroContentArchitecture === 'function'
   ? window.createMicroContentArchitecture()
   : null;
 const STORY_MICRO_CACHE = {};
+
+function createInlineFederatedRuntime(options = {}) {
+  const handlers = {};
+  const runtime = {
+    events: handlers,
+    deps: options.deps || {},
+    emit(event, payload) {
+      const listeners = Array.isArray(handlers[event]) ? handlers[event].slice() : [];
+      listeners.forEach((listener) => {
+        try {
+          listener(payload);
+        } catch (error) {
+          console.error('[VIA] Federated runtime subscriber failed:', error);
+        }
+      });
+      return payload;
+    },
+    subscribe(event, fn) {
+      if (typeof fn !== 'function') return () => {};
+      handlers[event] = handlers[event] || [];
+      handlers[event].push(fn);
+      return function unsubscribe() {
+        handlers[event] = (handlers[event] || []).filter((listener) => listener !== fn);
+      };
+    },
+    getSnapshot() {
+      return {
+        events: Object.fromEntries(Object.entries(handlers).map(([event, listeners]) => [event, listeners.length])),
+        pageContext: runtime.deps.pageContext || null
+      };
+    },
+    handoffToAgent(request = {}) {
+      const result = {
+        surfaceName: request.surfaceName || 'feed_surface',
+        message: request.message || 'where should I go next?',
+        route: request.pageContext && request.pageContext.pathname ? request.pageContext.pathname : window.location.pathname,
+        source: 'inline-federated-runtime'
+      };
+      runtime.emit('route_suggestion', result);
+      return Promise.resolve(result);
+    },
+    handoffToContent(request = {}) {
+      const result = {
+        surfaceName: request.surfaceName || 'feed_surface',
+        mode: request.mode || 'feed_units',
+        input: request.input || null,
+        source: 'inline-federated-runtime'
+      };
+      runtime.emit('content_request', { ...request, result });
+      return result;
+    }
+  };
+  return runtime;
+}
+
+function ensureVIAFederatedRuntimeBootstrap(options = {}) {
+  if (!FEATURE_RUNTIME_BOOTSTRAP_ENABLED) return null;
+  const existingRuntime = window.VIAFederatedRuntime;
+  if (existingRuntime && typeof existingRuntime.emit === 'function' && typeof existingRuntime.subscribe === 'function') {
+    existingRuntime.events = existingRuntime.events && typeof existingRuntime.events === 'object' ? existingRuntime.events : {};
+    return existingRuntime;
+  }
+  const runtime = createInlineFederatedRuntime(options);
+  window.VIAFederatedRuntime = runtime;
+  return runtime;
+}
+
+function createInlineMicroFrontendArchitecture(options = {}) {
+  const runtime = ensureVIAFederatedRuntimeBootstrap();
+  const surfaces = [
+    { name: 'feed_surface', mountSelector: '#app', loadingStrategy: 'eager' },
+    { name: 'discover_surface', mountSelector: '#app', loadingStrategy: 'prefetch' },
+    { name: 'about_surface', mountSelector: '#app', loadingStrategy: 'prefetch' },
+    { name: 'profile_surface', mountSelector: '#app', loadingStrategy: 'prefetch' }
+  ];
+  const registry = {
+    get(name) {
+      return surfaces.find((surface) => surface.name === name) || null;
+    },
+    getAll() {
+      return surfaces.slice();
+    }
+  };
+  const loader = {
+    async mountSurface(name, target) {
+      if (runtime) {
+        runtime.emit('surface_open', {
+          surfaceName: name,
+          target: target && target.id ? target.id : null,
+          pageContext: {
+            pathname: window.location.pathname,
+            title: document.title
+          }
+        });
+      }
+      return typeof options.openHandler === 'function' ? options.openHandler(name, {}) : false;
+    },
+    async prefetchSurface(name) {
+      if (runtime) runtime.emit('surface_prefetch', { surfaceName: name });
+      return true;
+    }
+  };
+  return { runtime, registry, loader };
+}
 
 function getStoryMicroPackage(key) {
   if (!VIA_MICRO_CONTENT || !key || !BLOG_DATA[key]) return null;
@@ -1975,8 +2073,7 @@ function applySurfaceFromUrl() {
 
 async function initMicroFrontendArchitecture() {
   try {
-    const microFrontendModule = await import('./src/core/frontend/micro-frontend-architecture/index.js');
-    const architecture = await microFrontendModule.createMicroFrontendArchitecture({
+    const architecture = await createInlineMicroFrontendArchitecture({
       openHandler(name, params) {
         const layer = Object.keys(MICRO_FRONTEND_LAYER_MAP).find((key) => MICRO_FRONTEND_LAYER_MAP[key] === name);
         if (!layer) return false;
@@ -1986,6 +2083,11 @@ async function initMicroFrontendArchitecture() {
     });
 
     window.VIAMicroFrontendArchitecture = architecture;
+    if (architecture.runtime && typeof architecture.runtime.subscribe === 'function') {
+      architecture.runtime.subscribe('content_events', () => {
+        syncCreatorContentSurface();
+      });
+    }
     architecture.runtime.subscribe('content_events', () => {
       hydrateFeed();
     });
@@ -2012,7 +2114,9 @@ async function initMicroFrontendArchitecture() {
     prefetchSurfaces.forEach((surface) => {
       architecture.loader.prefetchSurface(surface.name);
     });
-  } catch (_error) {}
+  } catch (error) {
+    console.error('[VIA] Micro frontend initialization failed:', error);
+  }
 
   applySurfaceFromUrl();
 }
@@ -2035,8 +2139,7 @@ window.testPost = function (payload = {}) {
 };
 async function initFederatedRuntime(){
   try {
-    const runtimeModule = await import('./src/core/runtime/federated-agent-content-runtime/index.js');
-    federatedRuntime = await runtimeModule.createFederatedAgentContentRuntime({
+    federatedRuntime = ensureVIAFederatedRuntimeBootstrap({
       deps: {
         pageContext: {
           pathname: window.location.pathname,
@@ -2088,6 +2191,9 @@ async function initFederatedRuntime(){
         window.__viaFeedContentPreview = payload.result;
       }
     });
+  } catch (error) {
+    console.error('[VIA] Federated runtime initialization failed:', error);
+  }
     federatedRuntime.subscribe('draft_generate', function(draft){
       console.log('Feed received draft:', draft);
       persistCreatorDraft(draft);
@@ -2149,6 +2255,17 @@ function startApp(){
   if(appStarted)return;appStarted=true;
   setTimeout(async()=>{
     try{await VIA.init();}catch(error){console.error('Auth init failed:', error);currentUser=null;authReady=true;renderApp();}
+    if (FEATURE_RUNTIME_BOOTSTRAP_ENABLED) {
+      ensureVIAFederatedRuntimeBootstrap({
+        deps: {
+          pageContext: {
+            pathname: window.location.pathname,
+            title: document.title,
+            description: document.querySelector('meta[name="description"]') ? document.querySelector('meta[name="description"]').getAttribute('content') || '' : ''
+          }
+        }
+      });
+    }
     document.getElementById('boot').classList.add('exit');
     document.getElementById('app').classList.add('visible');
     updateFeedDebugControl();

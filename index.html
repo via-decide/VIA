@@ -1139,6 +1139,17 @@ function transformDraftToPost(draft) {
     catLabel: draft.catLabel || '✍️ Creator',
     bg: draft.bg || 'linear-gradient(160deg,#240b36 0%,#0B0B1A 60%)',
     emoji: draft.emoji || (draft.type === 'Video Script' ? '🎬' : draft.type === 'Thread' ? '🧵' : '✍️'),
+    author: draft.author || 'VIA Creator',
+    authorEmoji: draft.authorEmoji || '✍️',
+    location: draft.location || 'Creator Studio',
+    time: draft.time || 'Just now',
+    views: draft.views || 'New',
+    likes: draft.likes || '0',
+    storyKey: draft.storyKey || 'creator',
+    publishedAt: draft.publishedAt || new Date().toISOString()
+  };
+}
+
 function getFeedDebugFlag() {
   try {
     return window.location.search.includes('feedDebug=1') || localStorage.getItem(FEED_DEBUG_FLAG_KEY) === '1' || window.__VIA_FEED_DEBUG === true;
@@ -1177,25 +1188,6 @@ function hydrateFeed() {
   console.log('Feed loaded');
   syncCreatorContentSurface();
   return drafts;
-}
-
-function getPublishedCreatorCards() {
-  return getPublishedCreatorDrafts().slice(0, 4).map((draft, index) => ({
-    id: `creator-draft-${draft.id || index}`,
-    cat: 'create',
-    catLabel: '✍️ Creator',
-    bg: 'linear-gradient(160deg,#240b36 0%,#0B0B1A 60%)',
-    emoji: draft.type === 'Video Script' ? '🎬' : draft.type === 'Thread' ? '🧵' : '✍️',
-    title: `${draft.title || 'Creator Draft'} — <em>${draft.author || 'VIA Creator'}</em>`,
-    author: draft.author || 'VIA Creator',
-    authorEmoji: draft.authorEmoji || '✍️',
-    location: draft.location || 'Creator Studio',
-    time: draft.time || 'Just now',
-    views: draft.views || 'New',
-    likes: draft.likes || '0',
-    storyKey: draft.storyKey || 'creator',
-    publishedAt: draft.publishedAt || new Date().toISOString()
-  };
 }
 
 function getPublishedCreatorCards() {
@@ -2194,14 +2186,7 @@ async function initFederatedRuntime(){
   } catch (error) {
     console.error('[VIA] Federated runtime initialization failed:', error);
   }
-    federatedRuntime.subscribe('draft_generate', function(draft){
-      console.log('Feed received draft:', draft);
-      persistCreatorDraft(draft);
-      hydrateFeed();
-    });
-  } catch (_error) {}
 }
-
 // ════════════════════════════════════════════════════════════════
 // SHEETS
 // ════════════════════════════════════════════════════════════════

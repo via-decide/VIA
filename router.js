@@ -116,11 +116,55 @@
   // CORE ROUTING LOGIC
   // ─────────────────────────────────────────────────────────────
 
+  const canonicalRoute = normalizePath;
+  const navLinks = '[data-nav]';
+  const sections = Object.keys(SPA_LAYERS);
+
   function normalizePath(raw) {
     return String(raw || '')
       .toLowerCase()
       .replace(/^[/#?]+|[/#?]+$/g, '')
       .trim();
+  }
+
+  function getRepoBasePath() {
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    return parts[0] === 'decide.engine-tools' ? `/${parts[0]}/` : '/';
+  }
+
+  function resolveInternalHref(target) {
+    if (!target || /^https?:\/\//.test(target) || !target.startsWith('/')) return target;
+
+    const repoBase = getRepoBasePath();
+    const currentPath = window.location.pathname;
+    const currentDir = currentPath.endsWith('/')
+      ? currentPath
+      : currentPath.replace(/[^/]+$/, '');
+
+    const from = currentDir.startsWith(repoBase)
+      ? currentDir.slice(repoBase.length)
+      : currentDir.replace(/^\//, '');
+    const to = target.startsWith(repoBase)
+      ? target.slice(repoBase.length)
+      : target.replace(/^\//, '');
+
+    const fromParts = from.split('/').filter(Boolean);
+    const toParts = to.split('/').filter(Boolean);
+
+    let shared = 0;
+    while (shared < fromParts.length && shared < toParts.length && fromParts[shared] === toParts[shared]) {
+      shared += 1;
+    }
+
+    const relativeParts = [
+      ...fromParts.slice(shared).map(() => '..'),
+      ...toParts.slice(shared),
+    ];
+    const relative = relativeParts.join('/');
+
+    if (!relative) return './';
+    if (/^\.\.(?:\/\.\.)*$/.test(relative)) return `${relative}/`;
+    return relative.startsWith('..') ? relative : `./${relative}`;
   }
 
   // Navigate to a named route — resolves SPA layer or subpage
@@ -155,7 +199,7 @@
       if (isExternal) {
         window.open(subpage, '_blank', 'noopener');
       } else {
-        window.location.href = subpage;
+        window.location.href = resolveInternalHref(subpage);
       }
       return;
     }
@@ -245,7 +289,7 @@
     if (ref && ref.includes('viadecide.com')) {
       history.back();
     } else {
-      window.location.href = fallback || '/';
+      window.location.href = resolveInternalHref(fallback || getRepoBasePath());
     }
   }
 
@@ -325,7 +369,9 @@
 
   // Also expose legacy toolPathStaticMap for backwards compat with old callers
   window.Router = {
-    canonicalRoute: normalizePath,
+    canonicalRoute,
+    navLinks,
+    sections,
     toolPathStaticMap: Object.fromEntries(
       Object.entries(SUBPAGES).map(([k, v]) => [k, v.replace(/^\//, '')])
     ),

@@ -1,9 +1,9 @@
-Branch: simba/1-extract-core-authentication-logic-from-legacy-
-Title: 1. Extract core authentication logic from legacy-auth-repo and port i...
+Branch: simba/push-the-phase-0-initialized-monorepo-structure-
+Title: Push the Phase 0 initialized monorepo structure to the GitHub reposit...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Centralize and standardize authentication within the VIA monorepo to enable seamless Single Sign-On (SSO) across all consolidated tools.
+- Goal: Establish the monorepo source of truth on GitHub.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

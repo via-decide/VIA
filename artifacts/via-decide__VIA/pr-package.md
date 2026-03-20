@@ -1,3 +1,9 @@
+Branch: simba/implement-the-core-multi-agent-routing-engine-ca
+Title: Implement the core multi-agent routing engine called via-agent-swarm ...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Create a fluid, multi-agent ecosystem where specialized AIs can collaborate, debate, and pass context seamlessly to solve complex user requests.
 Branch: simba/implement-a-lightweight-cross-platform-developer
 Title: Implement a lightweight, cross-platform Developer SDK and CLI tool ca...
 

@@ -1,13 +1,13 @@
-Branch: simba/implement-a-core-backend-middleware-module-calle
-Title: > Implement a core backend middleware module called via-predictive-ro...
+Branch: simba/implement-a-lightweight-cross-platform-developer
+Title: Implement a lightweight, cross-platform Developer SDK and CLI tool ca...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: > Upgrade the VIA core architecture into a robust, highly scalable backend capable of intelligently load-balancing massive concurrent agent or user requests. This lays the infrastructural foundation necessary to support advanced, dynamic social-media-style engine tools. /end_task
+- Goal: Transform VIA from an isolated web application into a ubiquitous developer platform. By providing a clean SDK and a powerful CLI, engineers can embed the multi-agent swarm directly into their CI/CD pipelines (e.g., auto-reviewing PRs) or build their own custom UIs on top of your orchestration engine.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests
-- [ ] Validate Telegram command flow
+- [ ] Validate command flow
 - [ ] Validate generated artifact files
 
 ## Risks

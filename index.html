@@ -21,10 +21,9 @@ window.ECO_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ
 <script src="./shared/eco-supabase-config.js"></script>
 <script src="./shared/tool-storage.js"></script>
 <script src="./shared/social-core.js"></script>
-<script src="./src/core/content/micro-content-architecture/MicroContentParser.js"></script>
-<script src="./src/core/content/micro-content-architecture/MicroContentComposer.js"></script>
-<script src="./src/core/content/micro-content-architecture/MicroContentRegistry.js"></script>
-<script src="./src/core/content/micro-content-architecture/index.js"></script>
+<script src="./js/via-micro-content.js"></script>
+<script src="./js/via-transition.js"></script>
+<script src="./js/via-navigation.js"></script>
 <style>
 /* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -478,7 +477,7 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 <!-- ── APP ── -->
 <div id="app">
   <div class="status-bar">
-    <div class="status-logo" onclick="switchLayer('feed')">VIA</div>
+    <div class="status-logo" onclick="window.VIANav.openPage('feed')">VIA</div>
     <div class="status-actions">
       <div class="status-xp"><div class="xp-dot"></div><span id="xp-counter">0 XP</span></div>
       <button class="status-auth-btn" id="status-auth-btn" onclick="VIA.openAuth()">Sign In</button>
@@ -676,7 +675,7 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
           <div class="about-product-info"><div class="about-product-name">Deep Dives</div><div class="about-product-desc">Cinematic story breakdowns on Bharat's biggest trends.</div></div>
           <div class="about-product-arrow">›</div>
         </div>
-        <div class="about-product" onclick="window.location.href='./creator-onboarding.html'">
+        <div class="about-product" onclick="window.VIANav.openPage('creator_onboarding')">
           <div class="about-product-icon">🎬</div>
           <div class="about-product-info"><div class="about-product-name">Creator Setup</div><div class="about-product-desc">Start the creator onboarding flow and set up your VIA publishing path.</div></div>
           <div class="about-product-arrow">›</div>
@@ -730,17 +729,17 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
   </div>
 
   <nav class="bottom-nav">
-    <button class="nav-item active" data-nav="feed" onclick="switchNav('feed',this)">
+    <button class="nav-item active" data-nav="feed" onclick="window.VIANav.openPage('feed')">
       <div class="nav-icon">🏠</div><div class="nav-label">Feed</div>
     </button>
-    <button class="nav-item" data-nav="discover" onclick="switchNav('discover',this)">
+    <button class="nav-item" data-nav="discover" onclick="window.VIANav.openPage('discover')">
       <div class="nav-icon">🔍</div><div class="nav-label">Explore</div>
     </button>
     <button class="nav-create" onclick="openSheet('create')">＋</button>
-    <button class="nav-item" data-nav="about" onclick="switchNav('about',this)">
+    <button class="nav-item" data-nav="about" onclick="window.VIANav.openPage('about')">
       <div class="nav-icon">ℹ️</div><div class="nav-label">About</div>
     </button>
-    <button class="nav-item" data-nav="profile" onclick="switchNav('profile',this)">
+    <button class="nav-item" data-nav="profile" onclick="window.VIANav.openPage('profile')">
       <div class="nav-icon">👤</div><div class="nav-label">Profile</div>
     </button>
   </nav>
@@ -752,7 +751,6 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 
 <script src="./onboarding/onboarding.js"></script>
 <script src="./js/viadecide-agent.js"></script>
-<script src="./router.js"></script>
 <script>
 // ════════════════════════════════════════════════════════════════
 // SUPABASE + HELPERS
@@ -974,7 +972,7 @@ const VIA = {
     renderApp();
   },
   async saveXP(v){if(!currentUser)return;currentUser.xp=v;this.user=currentUser;if(!currentUser.is_guest)await this.saveLocalProfile(currentUser);renderApp();},
-  openAuth(){window.location.href='./auth.html';},
+  openAuth(){if(window.VIATransition&&typeof window.VIATransition.navigate==='function'){window.VIATransition.navigate('./auth.html');return;}window.location.href='./auth.html';},
   async signOut(){
     if(_sb&&_sb.auth&&typeof _sb.auth.signOut==='function'){
       try{await _sb.auth.signOut();}catch(error){console.error('Sign out error:', error);}
@@ -2181,7 +2179,26 @@ function switchLayer(layer, storyKey) {
   if (layer==='profile')  buildProfile();
 }
 
-document.querySelectorAll('.layer-tab').forEach(tab=>tab.addEventListener('click',()=>switchLayer(tab.dataset.layer)));
+document.querySelectorAll('.layer-tab').forEach(tab=>tab.addEventListener('click',(event)=>{
+  if(tab.dataset.layer==='feed'){switchLayer('feed');return;}
+  if(window.VIANav){event.preventDefault();window.VIANav.openPage(tab.dataset.layer);}
+}));
+
+(function handleLegacyStandaloneRoutes(){
+  const legacyStandaloneRoutes={
+    '/creator-onboarding':'creator_onboarding',
+    '/creator-story':'creator_story',
+    '/profile':'profile',
+    '/agent':'agent',
+    '/discover':'discover',
+    '/about':'about'
+  };
+  const normalizedPath=window.location.pathname.replace(/\/$/, '');
+  const target=legacyStandaloneRoutes[normalizedPath];
+  if(target&&window.VIANav){
+    window.location.replace(window.VIANavigation.buildUrl(target));
+  }
+})();
 
 // ── TOOL VIEWER ──────────────────────────────────────────────────────
 let _tvPrevLayer = 'discover';
@@ -2495,101 +2512,49 @@ function applySurfaceFromUrl() {
 }
 
 async function initMicroFrontendArchitecture() {
-  try {
-    const microFrontendModule = await import('./src/core/frontend/micro-frontend-architecture/index.js');
-    const architecture = await microFrontendModule.createMicroFrontendArchitecture({
-      openHandler(name, params) {
-        const layer = Object.keys(MICRO_FRONTEND_LAYER_MAP).find((key) => MICRO_FRONTEND_LAYER_MAP[key] === name);
-        if (!layer) return false;
-        window.__viaLegacySwitchLayer(layer, params && params.storyKey ? params.storyKey : undefined);
-        return true;
-      }
-    });
-
-    window.VIAMicroFrontendArchitecture = architecture;
-    architecture.runtime.subscribe('content_events', () => {
-      syncCreatorContentSurface();
-    });
-
-    const legacySwitchLayer = window.__viaLegacySwitchLayer;
-    switchLayer = function (layer, storyKey) {
-      if (!storyKey && MICRO_FRONTEND_LAYER_MAP[layer]) {
-        const surfaceName = MICRO_FRONTEND_LAYER_MAP[layer];
-        const moduleDef = architecture.registry.get(surfaceName);
-        const target = moduleDef ? document.querySelector(moduleDef.mountSelector) : document.getElementById('app');
-        return architecture.loader.mountSurface(surfaceName, target);
-      }
-      return legacySwitchLayer(layer, storyKey);
-    };
-
-    window.switchLayer = switchLayer;
-
-    const eagerSurfaces = architecture.registry.getAll().filter((surface) => surface.loadingStrategy === 'eager');
-    for (const surface of eagerSurfaces) {
-      await architecture.loader.prefetchSurface(surface.name);
-    }
-
-    const prefetchSurfaces = architecture.registry.getAll().filter((surface) => surface.loadingStrategy === 'prefetch');
-    prefetchSurfaces.forEach((surface) => {
-      architecture.loader.prefetchSurface(surface.name);
-    });
-  } catch (_error) {}
-
+  window.VIAMicroFrontendArchitecture = {
+    mode: 'static-multi-page',
+    surfaces: MICRO_FRONTEND_LAYER_MAP
+  };
   applySurfaceFromUrl();
 }
 
 let federatedRuntime=null;
 async function initFederatedRuntime(){
-  try {
-    const runtimeModule = await import('./src/core/runtime/federated-agent-content-runtime/index.js');
-    federatedRuntime = await runtimeModule.createFederatedAgentContentRuntime({
-      deps: {
-        pageContext: {
+  federatedRuntime = {
+    getSnapshot(){
+      return {
+        mode:'static-multi-page',
+        pageContext:{
           pathname: window.location.pathname,
           title: document.title,
           description: document.querySelector('meta[name="description"]') ? document.querySelector('meta[name="description"]').getAttribute('content') || '' : ''
         }
-      }
-    });
-    federatedRuntime.emit('surface_open', {
-      surfaceName: 'feed_surface',
-      pageContext: {
-        pathname: window.location.pathname,
+      };
+    },
+    handoffToAgent(){
+      return Promise.resolve(null);
+    },
+    handoffToContent(args){
+      return args && args.input ? args.input : null;
+    },
+    emit(){},
+    subscribe(){}
+  };
+  window.VIAFeedRuntimeBridge = {
+    getSnapshot(){
+      return federatedRuntime.getSnapshot();
+    },
+    requestRouteSuggestion(){
+      return Promise.resolve(null);
+    },
+    requestContentPreview(input){
+      return federatedRuntime.handoffToContent({ input: input || {
         title: document.title,
-        description: document.querySelector('meta[name="description"]') ? document.querySelector('meta[name="description"]').getAttribute('content') || '' : ''
-      }
-    });
-    window.VIAFeedRuntimeBridge = {
-      getSnapshot(){
-        return federatedRuntime ? federatedRuntime.getSnapshot() : null;
-      },
-      requestRouteSuggestion(message){
-        if(!federatedRuntime)return Promise.resolve(null);
-        return federatedRuntime.handoffToAgent({
-          surfaceName:'feed_surface',
-          message:message || 'where should I go next?',
-          pageContext:{ pathname: window.location.pathname, title: document.title },
-          openSurface:false
-        });
-      },
-      requestContentPreview(input){
-        if(!federatedRuntime)return null;
-        return federatedRuntime.handoffToContent({
-          surfaceName:'feed_surface',
-          mode:'feed_units',
-          input:input || { title: document.title, body: document.querySelector('meta[name="description"]') ? document.querySelector('meta[name="description"]').getAttribute('content') || '' : '' }
-        });
-      }
-    };
-    federatedRuntime.subscribe('route_suggestion',function(payload){
-      window.__viaFeedRouteSuggestion = payload;
-    });
-    federatedRuntime.subscribe('content_request',function(payload){
-      if(payload && payload.surfaceName==='feed_surface'){
-        window.__viaFeedContentPreview = payload.result;
-      }
-    });
-  } catch (_error) {}
+        body: document.querySelector('meta[name="description"]') ? document.querySelector('meta[name="description"]').getAttribute('content') || '' : ''
+      } });
+    }
+  };
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -2616,7 +2581,7 @@ function openSheet(type, extra={}) {
     '</div>';
   } else if(type==='discover-detail'&&extra.item){
     const {item}=extra;const safe=(item.toolPath||'').replace(/'/g,"\\'");
-    html=`<div class="sheet-title">${item.emoji} ${item.name}</div><div class="sheet-sub">${item.cat}</div><div class="sheet-actions">${item.toolPath?`<div class="sheet-btn" onclick="window.location.href='${safe}';closeSheet()"><div class="sheet-btn-icon" style="background:rgba(255,107,0,.15)">▶</div><div class="sheet-btn-text"><div class="sheet-btn-title">Launch Tool</div><div class="sheet-btn-sub">Open ${item.name}</div></div><div class="sheet-btn-arrow">›</div></div>`:''}</div>`;
+    html=`<div class="sheet-title">${item.emoji} ${item.name}</div><div class="sheet-sub">${item.cat}</div><div class="sheet-actions">${item.toolPath?`<div class="sheet-btn" onclick="if(window.VIATransition&&typeof window.VIATransition.navigate==='function'){window.VIATransition.navigate('${safe}');}else{window.location.href='${safe}';}closeSheet()"><div class="sheet-btn-icon" style="background:rgba(255,107,0,.15)">▶</div><div class="sheet-btn-text"><div class="sheet-btn-title">Launch Tool</div><div class="sheet-btn-sub">Open ${item.name}</div></div><div class="sheet-btn-arrow">›</div></div>`:''}</div>`;
   } else if(type==='profile-detail'&&extra.item){
     const {item}=extra;
     html=`<div class="sheet-title">${item.emoji} ${item.title}</div><div class="sheet-sub">${item.type}</div><div class="sheet-actions">${item.postBody?`<div class="sheet-btn" style="align-items:flex-start;cursor:default"><div class="sheet-btn-icon" style="background:rgba(108,99,255,.15)">✍️</div><div class="sheet-btn-text"><div class="sheet-btn-title">Post body</div><div class="sheet-btn-sub">${escapeHTML(item.postBody)}</div></div></div>`:''}<div class="sheet-btn" onclick="closeSheet()"><div class="sheet-btn-icon" style="background:rgba(255,255,255,.06)">✕</div><div class="sheet-btn-text"><div class="sheet-btn-title">Close</div></div><div class="sheet-btn-arrow">›</div></div></div>`;

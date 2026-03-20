@@ -1,26 +1,55 @@
 (function (global) {
   'use strict';
 
-  var PAGE_MAP = {
+  var ROUTES = {
     feed: './index.html',
+    creator_onboarding: './creator-onboarding.html',
+    creator_story: './creator-story.html',
+    profile: './profile.html',
+    agent: './agent.html',
     discover: './discover.html',
     about: './about.html',
-    profile: './profile.html',
-    creator_story: './creator-story.html',
-    creator_onboarding: './creator-onboarding.html',
-    agent: './agent.html'
+    decision_brief: './decision-brief.html',
+    studyos: './StudyOS.html',
+    app_generator: './app-generator.html',
+    finance_dashboard_msme: './finance-dashboard-msme.html',
+    alchemist: './alchemist.html'
+  };
+  var LEGACY_PATHS = {
+    '/creator-onboarding': ROUTES.creator_onboarding,
+    '/creator-onboarding/': ROUTES.creator_onboarding,
+    '/creator-story': ROUTES.creator_story,
+    '/creator-story/': ROUTES.creator_story,
+    '/profile': ROUTES.profile,
+    '/profile/': ROUTES.profile,
+    '/agent': ROUTES.agent,
+    '/agent/': ROUTES.agent,
+    '/discover': ROUTES.discover,
+    '/discover/': ROUTES.discover,
+    '/about': ROUTES.about,
+    '/about/': ROUTES.about,
+    '/decision-brief': ROUTES.decision_brief,
+    '/decision-brief/': ROUTES.decision_brief,
+    '/StudyOS': ROUTES.studyos,
+    '/StudyOS/': ROUTES.studyos,
+    '/app-generator': ROUTES.app_generator,
+    '/app-generator/': ROUTES.app_generator,
+    '/finance-dashboard-msme': ROUTES.finance_dashboard_msme,
+    '/finance-dashboard-msme/': ROUTES.finance_dashboard_msme,
+    '/alchemist': ROUTES.alchemist,
+    '/alchemist/': ROUTES.alchemist
   };
 
   function normalizePath(path) {
     var value = String(path || '').trim();
     if (!value) return './index.html';
     if (value === '.' || value === './' || value === '/') return './index.html';
-    if (!/\.html(?:$|[?#])/.test(value) && PAGE_MAP[value]) return PAGE_MAP[value];
+    if (!/\.html(?:$|[?#])/.test(value) && ROUTES[value]) return ROUTES[value];
     return value;
   }
 
   function resolvePage(name) {
-    return normalizePath(PAGE_MAP[name] || name);
+    return normalizePath(ROUTES[name] || name);
   }
 
   function buildUrl(path, params) {
@@ -35,12 +64,25 @@
     return target.toString();
   }
 
-  function openPage(path, params) {
-    global.location.href = buildUrl(path, params);
+  function navigate(url) {
+    if (typeof global.VIATransition !== 'undefined' && global.VIATransition && typeof global.VIATransition.navigate === 'function') {
+      global.VIATransition.navigate(url);
+      return;
+    }
+    global.location.href = url;
+  }
+
+  function openPage(name, params) {
+    var path = resolvePage(name);
+    if (!path) {
+      console.error('Route not found:', name);
+      return;
+    }
+    navigate(buildUrl(path, params));
   }
 
   function openSurface(name, params) {
-    openPage(resolvePage(name), params);
+    openPage(name, params);
   }
 
   function goBack(fallbackName) {
@@ -95,18 +137,32 @@
     applyActiveNav(scope);
   }
 
+  function handleLegacyPathRedirect() {
+    var pathname = global.location.pathname || '';
+    var redirectPath = LEGACY_PATHS[pathname];
+    if (!redirectPath) return;
+    var target = new URL(resolvePage(redirectPath), global.location.href);
+    target.search = global.location.search || '';
+    target.hash = global.location.hash || '';
+    global.location.replace(target.toString());
+  }
+
   function handleLegacyRoutes() {
     var params = new URLSearchParams(global.location.search || '');
     var surface = params.get('surface') || params.get('route');
     if (!surface) return;
-    if (!PAGE_MAP[surface] || surface === 'feed') return;
+    if (!ROUTES[surface] || surface === 'feed') return;
     params.delete('surface');
     params.delete('route');
     openSurface(surface, Object.fromEntries(params.entries()));
   }
 
+  global.VIANav = {
+    openPage: openPage
+  };
+
   global.VIANavigation = {
-    pages: PAGE_MAP,
+    pages: ROUTES,
     resolvePage: resolvePage,
     openPage: openPage,
     openSurface: openSurface,
@@ -114,15 +170,18 @@
     applyActiveNav: applyActiveNav,
     bindNavigation: bindNavigation,
     handleLegacyRoutes: handleLegacyRoutes,
-    getCurrentPageFile: getCurrentPageFile
+    getCurrentPageFile: getCurrentPageFile,
+    buildUrl: buildUrl
   };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
+      handleLegacyPathRedirect();
       bindNavigation(document);
       handleLegacyRoutes();
     }, { once: true });
   } else {
+    handleLegacyPathRedirect();
     bindNavigation(document);
     handleLegacyRoutes();
   }

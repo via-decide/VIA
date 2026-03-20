@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Implement a lightweight Developer SDK and CLI tool called via-sdk-core for programmatic access to the swarm. 1. Create src/tools/sdk/ (Node/Browser) and src/tools/cli/ (Terminal). 2. Implement ViaClient.ts exposing clean methods: via.agents.spawn(), via.swarm.execute(). 3. Create AsyncStreamHandler.ts to wrap WebSockets/SSE into standard async iterables (for await). 4. Implement cli.ts (using Commander.js) supporting commands like via run "analyze codebase" --context=./src. 5. Hook the CLI into the via-agent-tools to allow cloud agents local file-system access via secure tunnels.
+
+CONSTRAINTS
+The SDK MUST have zero heavy dependencies to avoid bloating consumer bundles.
 Implement a comprehensive telemetry and billing engine called via-audit-core to track token usage and enforce quotas. 1. Create src/core/telemetry/auditing/. 2. Implement CostTracker.ts to intercept API headers, extract exact prompt_tokens/completion_tokens, and calculate real-world costs. 3. Create UserQuotaManager.ts backed by a Redis token bucket to enforce daily/monthly spending limits and instantly reject requests (HTTP 402) if exceeded. 4. Implement LatencyMonitor.ts to track TTFT and tool execution overhead. 5. Build AuditLogger.ts for enterprise compliance, logging sanitized metadata (Agent ID, Cost, Success) without storing PII/prompt text.
 
 CONSTRAINTS

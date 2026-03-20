@@ -1,3 +1,9 @@
+Branch: simba/implement-a-lightweight-developer-sdk-and-cli-to
+Title: Implement a lightweight Developer SDK and CLI tool called via-sdk-cor...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Transform VIA into a ubiquitous developer platform, allowing engineers to embed the swarm directly into CI/CD pipelines or custom apps.
 Branch: simba/implement-a-comprehensive-telemetry-and-billing-
 Title: Implement a comprehensive telemetry and billing engine called via-aud...
 

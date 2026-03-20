@@ -143,7 +143,15 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 @keyframes likeBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}40%{opacity:1;transform:translate(-50%,-50%) scale(1.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
 
 /* ── DISCOVER GRID ── */
-.discover-grid{position:absolute;inset:0;padding:6rem 1rem 5rem;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.85rem;align-content:start;}
+.discover-grid{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.85rem;align-content:start;}
+.discover-section-hdr{grid-column:1/-1;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.35);padding:.5rem 0 .25rem;border-bottom:1px solid rgba(255,255,255,.06);margin-top:.5rem;}
+.discover-card.game-card{border-color:rgba(245,197,24,.2);background:linear-gradient(135deg,rgba(245,197,24,.06),rgba(11,11,26,.95));}
+.discover-card.game-card:active{background:rgba(245,197,24,.1);}
+.discover-card.game-card .discover-card-cat{color:var(--gold);}
+.discover-card.featured-card{grid-column:1/-1;flex-direction:row;align-items:center;gap:1rem;padding:1.2rem 1.4rem;border-color:rgba(255,107,0,.25);background:linear-gradient(135deg,rgba(255,107,0,.08),rgba(11,11,26,.97));}
+.discover-card.featured-card .discover-card-bg{font-size:3rem;margin-bottom:0;flex-shrink:0;}
+.discover-card.featured-card .discover-card-name{font-size:1.15rem;}
+.dc-arrow{margin-top:.5rem;font-size:.72rem;color:var(--saffron);font-weight:800;letter-spacing:.06em;}
 .discover-card{border-radius:20px;padding:1.2rem;display:flex;flex-direction:column;gap:.5rem;background:rgba(255,255,255,0.03);position:relative;cursor:pointer;transition:transform .25s cubic-bezier(.16,1,.3,1),background .2s;border:1px solid var(--border);box-shadow:inset 0 1px 0 rgba(255,255,255,0.05),0 4px 12px rgba(0,0,0,0.15);}
 .discover-card:active{transform:scale(.94);background:rgba(255,255,255,0.06);}
 .discover-card-bg{font-size:2.4rem;line-height:1;margin-bottom:.4rem;}
@@ -1033,12 +1041,28 @@ function hydrateFeedCardsWithMicroContent(cards) {
 let CARDS = DEFAULT_CARDS.slice();
 
 const DISCOVER_ITEMS = [
-  {emoji:'📦',cat:'Context',name:'Context Packager',desc:'Bundle text, code, and links into a single file payload for AI models.',toolPath:'/tools/context-packager/'},
+  // ── Featured ──────────────────────────────────────────────────
+  {emoji:'📚',cat:'Learning',name:'StudyOS',desc:'Modular offline learning OS — UPSC, Programming, GK, and more. Kinetic swipe cards, missions, vault.',toolPath:'/StudyOS/',isFeatured:true},
   {emoji:'◂',cat:'Dives',name:'Deep Dives',desc:'Cinematic breakdowns of Bharat\'s biggest trends and innovations.',toolPath:null,isDive:true},
+  // ── Games ─────────────────────────────────────────────────────
+  {isHeader:true, label:'🎮 Games'},
+  {emoji:'⬡',cat:'Games',name:'SkillHex',desc:'Mission-control strategy game. Build skills, conquer hexes.',toolPath:'/skillhex/',isGame:true},
+  {emoji:'🍎',cat:'Games',name:'Orchard',desc:'Harvest, grow and compete in this multiplayer farming world.',toolPath:'https://orchard.viadecide.com',isGame:true,isExternal:true},
+  // ── AI Tools ──────────────────────────────────────────────────
+  {isHeader:true, label:'🛠 AI Tools'},
+  {emoji:'📦',cat:'Context',name:'Context Packager',desc:'Bundle text, code, and links into a single AI payload.',toolPath:'/tools/context-packager/'},
   {emoji:'⚗️',cat:'AI',name:'Prompt Alchemy',desc:'Refine raw ideas into structured, high-yield system prompts.',toolPath:'/prompt-alchemy/'},
-  {emoji:'⚙️',cat:'Dev',name:'Spec Builder',desc:'Generate production-ready feature specs and architecture documents.',toolPath:'/tools/spec-builder/'},
+  {emoji:'⚙️',cat:'Dev',name:'Spec Builder',desc:'Generate production-ready feature specs and architecture docs.',toolPath:'/tools/spec-builder/'},
+  {emoji:'🧪',cat:'Dev',name:'Code Reviewer',desc:'AI-powered code review and quality analysis.',toolPath:'/tools/code-reviewer/'},
+  // ── Career & Learning ─────────────────────────────────────────
+  {isHeader:true, label:'📖 Career & Research'},
   {emoji:'🎯',cat:'Career',name:'Interview Prep',desc:'Run simulated high-pressure technical and behavioral interviews.',toolPath:'/interview-prep/'},
-  {emoji:'📚',cat:'Learning',name:'StudyOS',desc:'A modular, offline learning OS for intensive UPSC and tech study.',toolPath:'/StudyOS/'},
+  {emoji:'🔬',cat:'Research',name:'Student Research',desc:'Deep academic and market research toolkit.',toolPath:'/student-research/'},
+  {emoji:'🏢',cat:'Founder',name:'Founder Dashboard',desc:'Launch, track, and grow your startup ventures.',toolPath:'/founder/'},
+  // ── Creator ───────────────────────────────────────────────────
+  {isHeader:true, label:'🎬 Creator'},
+  {emoji:'🎬',cat:'Creator',name:'Creator Setup',desc:'Start your VIA creator journey and set up your publishing path.',toolPath:'./creator-onboarding.html'},
+  {emoji:'⏱️',cat:'Focus',name:'Pomodoro Timer',desc:'Focus timer with XP rewards and session tracking.',toolPath:'/tools/pomodoro/'},
 ];
 
 const PROFILE_ITEMS = [
@@ -1493,13 +1517,13 @@ function ddBuildFooter() {
   ddFooterBuilt = true;
 
   const tools = [
-    {title:'Context Packager', desc:'Bundle code and text into AI payloads.', cta:'Use Tool'},
-    {title:'StudyOS',          desc:'Modular, offline learning OS.',           cta:'Explore'},
-    {title:'Prompt Alchemy',   desc:'Refine ideas into strict prompts.',        cta:'Launch'}
+    {title:'StudyOS',          desc:'Modular, offline learning OS.',           cta:'Launch', path:'/StudyOS/'},
+    {title:'Context Packager', desc:'Bundle code and text into AI payloads.',  cta:'Use Tool', path:'/tools/context-packager/'},
+    {title:'Prompt Alchemy',   desc:'Refine ideas into strict prompts.',        cta:'Launch', path:'/prompt-alchemy/'}
   ];
   const tGrid = document.getElementById('dd-toolsGrid');
   if (tGrid) tools.forEach(t => tGrid.innerHTML += `
-    <a href="#" class="dd-car-card">
+    <a href="${t.path}" class="dd-car-card">
       <div class="dd-car-thumb"></div>
       <h4>${t.title}</h4><p>${t.desc}</p>
       <span class="dd-car-cta">${t.cta} →</span>
@@ -1508,14 +1532,14 @@ function ddBuildFooter() {
   const fNav = document.getElementById('dd-footerNav');
   if (fNav) {
     const cols = [
-      {h:'Tools',    items:[{l:'Engine Tools',route:'#'},{l:'GN8R Bot',route:'https://t.me/GN8RBot'}]},
-      {h:'Platform', items:[{l:'VIA Social Feed',route:'#'},{l:'Discover',route:'#'},{l:'Creator Setup',route:'./creator-onboarding.html'}]},
-      {h:'Network',  items:[{l:'About ViaDecide',route:'https://via-decide.github.io/decide.engine-tools/'},{l:'GitHub Repo',route:'https://github.com/via-decide'}]}
+      {h:'Tools',    items:[{l:'Engine Tools',route:'https://via-decide.github.io/decide.engine-tools/',ext:true},{l:'GN8R Bot',route:'https://t.me/GN8RBot',ext:true}]},
+      {h:'Platform', items:[{l:'VIA Social Feed',route:null,onclick:'switchLayer(\'feed\')'},{l:'Discover',route:null,onclick:'switchLayer(\'discover\')'},{l:'Creator Setup',route:'./creator-onboarding.html',ext:false}]},
+      {h:'Network',  items:[{l:'About ViaDecide',route:'https://via-decide.github.io/decide.engine-tools/',ext:true},{l:'GitHub Repo',route:'https://github.com/via-decide',ext:true}]}
     ];
     cols.forEach(col => {
       fNav.innerHTML += `<div class="dd-fcol"><h5>${col.h}</h5><ul>${col.items.map(i=>{
-        const external = /^https?:\/\//.test(i.route);
-        return `<li><a href="${i.route}"${external ? ' target="_blank" rel="noopener"' : ''}>${i.l}</a></li>`;
+        if (i.onclick) return `<li><a href="#" onclick="${i.onclick};return false;">${i.l}</a></li>`;
+        return `<li><a href="${i.route}"${i.ext ? ' target="_blank" rel="noopener"' : ''}>${i.l}</a></li>`;
       }).join('')}</ul></div>`;
     });
   }
@@ -1870,15 +1894,35 @@ async function fetchDiscoverProfiles(queryText){
 
 async function buildDiscover() {
   const grid=document.getElementById('discover-grid');if(grid){grid.innerHTML='';}
-  DISCOVER_ITEMS.forEach((item,i)=>{
+  let cardIdx=0;
+  DISCOVER_ITEMS.forEach((item)=>{
     if(!grid)return;
+    // Section header — full-width label
+    if(item.isHeader){
+      const hdr=document.createElement('div');
+      hdr.className='discover-section-hdr';
+      hdr.textContent=item.label;
+      grid.appendChild(hdr);
+      return;
+    }
     const card=document.createElement('div');
-    card.className='discover-card stagger-enter';
-    card.style.animationDelay=(i*.04)+'s';
-    card.innerHTML=`<div class="discover-card-bg">${item.emoji}</div><div><div class="discover-card-cat">${item.cat}</div><div class="discover-card-name">${item.name}</div><div class="discover-card-desc">${item.desc}</div></div>`;
+    const classes=['discover-card','stagger-enter'];
+    if(item.isFeatured) classes.push('featured-card');
+    if(item.isGame)     classes.push('game-card');
+    card.className=classes.join(' ');
+    card.style.animationDelay=(cardIdx*.05)+'s';
+    cardIdx++;
+    const arrow=item.toolPath?`<div class="dc-arrow">Open →</div>`:'';
+    card.innerHTML=`<div class="discover-card-bg">${item.emoji}</div><div style="flex:1"><div class="discover-card-cat">${item.cat}</div><div class="discover-card-name">${item.name}</div><div class="discover-card-desc">${item.desc}</div>${arrow}</div>`;
     card.addEventListener('click',()=>{
       addXP(10);
       if(item.isDive){switchLayer('deepdives');return;}
+      // Direct navigation — no intermediate sheet
+      if(item.toolPath){
+        if(item.isExternal){window.open(item.toolPath,'_blank','noopener');return;}
+        window.location.href=item.toolPath;
+        return;
+      }
       openSheet('discover-detail',{item});
     });
     grid.appendChild(card);

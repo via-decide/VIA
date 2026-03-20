@@ -5,6 +5,14 @@ Migrate the second batch of productivity tools and interactive games. 1. Port fo
 
 CONSTRAINTS
 Ensure all Canvas-based games handle iframe resizing correctly without resolution loss.
+Implement a unified analytics service for the entire platform. 1. Create services/analytics.js to track tool usage and performance. 2. Implement an event-forwarding layer in the Shell to collect data from tool iframes. 3. Connect the service to a central database/dashboard.
+
+CONSTRAINTS
+Must be GDRP compliant. Use non-blocking event collection to avoid performance impact.
+Create a shared CSS library to standardize the look and feel of all tools. 1. Build shared/styles/via-theme.css with a core set of CSS variables (colors, spacing, fonts). 2. Implement a theme-switching listener in the Shell that propagates to all tool iframes. 3. Update Batch 1 & 2 tools to use the standardized via-theme.
+
+CONSTRAINTS
+Use Vanilla CSS custom properties only. Ensure accessibility (WCAG AA) compliance.
 
 PROCESS (MANDATORY)
 1. Read README.md and AGENTS.md before editing.

@@ -1,3 +1,9 @@
+Branch: simba/finalize-and-deploy-the-via-realtime-bus-system-
+Title: Finalize and deploy the via-realtime-bus system. 1. Integrate SocketM...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Enable "glass-box" transparency for all AI and system interactions.
 Branch: simba/migrate-the-second-batch-of-productivity-tools-a
 Title: Migrate the second batch of productivity tools and interactive games....
 

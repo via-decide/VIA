@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Finalize and deploy the via-realtime-bus system. 1. Integrate SocketManager.ts and EventBroadcaster.ts into the main server. 2. Implement LLMStreamer.ts to pipe partial tokens from the gateway to the UI. 3. Hook AgentStateTracker.ts into the existing agent logic to stream execution status.
+
+CONSTRAINTS
+Zero-buffer token streaming is mandatory. Ensure strict cleanup of stale WebSocket connections.
 Migrate the second batch of productivity tools and interactive games. 1. Port food.decider and creator-tool to tools/productivity/. 2. Port HexWars and RoboOS to tools/games/. 3. Update nav-registry.json with the new tool paths and icons.
 
 CONSTRAINTS

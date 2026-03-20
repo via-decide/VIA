@@ -1,22 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
-Push the Phase 0 initialized monorepo structure to the GitHub repository. 1. Initialize a git repository in viadecide-monorepo/. 2. Add the remote origin https://github.com/via-decide/VIA.git. 3. Commit the Phase 0 skeleton (shell, tools/*, services, shared, configs). 4. Push the main branch.
+Finalize and deploy the via-realtime-bus system. 1. Integrate SocketManager.ts and EventBroadcaster.ts into the main server. 2. Implement LLMStreamer.ts to pipe partial tokens from the gateway to the UI. 3. Hook AgentStateTracker.ts into the existing agent logic to stream execution status.
 
 CONSTRAINTS
-Direct push to main is allowed for this initialization. Do NOT include node_modules.
-Implement the visual platform shell in shell/index.html. 1. Create a premium dark-mode layout with a fixed sidebar and centered tool area. 2. Implement the RealtimeBus connection for status indicators. 3. Build the tool-loading logic using iframes to isolate tool-specific JS/CSS.
-
-CONSTRAINTS
-Must be 100% mobile-responsive. Use zero external CSS frameworks (Vanilla CSS only).
-Finalize the cloud deployment and SPA routing. 1. Deploy the viadecide-monorepo to Vercel. 2. Configure vercel.json to handle SPA rewrites for /tool/*. 3. Verify that the shell handles URL parameter parsing for tool induction.
-
-CONSTRAINTS
-The URL structure must remain www.viadecide.com/tool/{tool-id}.
-Migrate the most critical tools into the new shell system. 1. Move code for decide.engine-tools into tools/core/engine-tools/. 2. Update tool internal links to use the StateBridge for cross-platform context. 3. Register the tool as "Active" in the nav-registry.json.
-
-CONSTRAINTS
-Zero downtime for the legacy tool. Verify that the iframe induction works without scroll-lock issues.
+Zero-buffer token streaming is mandatory. Ensure strict cleanup of stale WebSocket connections.
 
 PROCESS (MANDATORY)
 1. Read README.md and AGENTS.md before editing.

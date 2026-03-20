@@ -1,10 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
-1. Extract core authentication logic from legacy-auth-repo and port it to packages/auth-service within the monorepo. 2. Refactor the login payload to align with the unified monorepo API schema. 3. Update shell/router.js to protect internal routing paths using the newly ported auth middleware. 4. Write unit tests to verify token validation and session timeout behaviors in the new environment.
+Finalize the cloud deployment and SPA routing. 1. Deploy the viadecide-monorepo to Vercel. 2. Configure vercel.json to handle SPA rewrites for /tool/*. 3. Verify that the shell handles URL parameter parsing for tool induction.
 
 CONSTRAINTS
-Must maintain backward compatibility with existing active JWT tokens for currently logged-in users. Ensure strict TypeScript typing for the auth middleware. Clean up and remove legacy CI/CD pipeline triggers from the old repository.
+The URL structure must remain www.viadecide.com/tool/{tool-id}.
 
 PROCESS (MANDATORY)
 1. Read README.md and AGENTS.md before editing.

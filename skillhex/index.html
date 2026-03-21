@@ -587,8 +587,6 @@ footer {
       <div class="fb-led" id="fb-led"></div>
       <span id="fb-status">CONNECTING</span>
     </div>
-    <button class="hdr-btn" onclick="showRoom()">⊕ Room</button>
-    <button class="hdr-btn" onclick="triggerLogin()">⬡ Login</button>
   </div>
 </header>
 
@@ -617,37 +615,10 @@ footer {
       <div class="btn-row" style="margin-top:.45rem">
         <button class="btn btn-c" onclick="applyWarmupAnswer()">Apply</button>
       </div>
-    <div class="prebrief" id="mission-prebrief">
-      <div class="prebrief-hd">
-        <span class="prebrief-title">Pre-Brief Warm-up</span>
-        <span class="prebrief-mult" id="warmup-mult">x1.00</span>
-      </div>
-      <div class="prebrief-q" id="warmup-question">Warm-up unavailable for this mission.</div>
-      <textarea id="warmup-answer" placeholder="Draft a short warm-up response to tune your approach..."></textarea>
-      <div class="btn-row" style="margin-bottom:0">
-        <button class="btn btn-c" onclick="applyWarmup()">Apply</button>
-        <button class="btn btn-ghost" onclick="skipWarmup()">Skip</button>
-      </div>
-      <div class="prebrief-hint" id="warmup-hint">Answering is optional. Mission choices stay active.</div>
     </div>
     <div class="prog-wrap">
       <div class="prog-row"><span>Mission Progress</span><span id="prog-txt">1/6</span></div>
       <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:10%"></div></div>
-    </div>
-    <div class="warmup-box" id="warmup-box" style="display:none">
-      <div style="font-family:var(--fhud);font-size:.58rem;color:var(--amber);margin-bottom:.35rem">MISSION PRE-BRIEF (OPTIONAL)</div>
-      <div id="warmup-q" style="font-family:var(--fmono);font-size:.56rem;color:var(--txt);line-height:1.5"></div>
-      <div class="warmup-row" style="margin-top:.45rem">
-        <textarea id="warmup-answer" placeholder="Type your warm-up answer (20–40 sec optional)"></textarea>
-        <div style="display:flex;flex-direction:column;gap:.35rem">
-          <button class="btn btn-c" onclick="submitWarmup()">Apply</button>
-          <button class="btn btn-ghost" onclick="skipWarmup()">Skip</button>
-        </div>
-      </div>
-      <div class="warmup-meta">
-        <span id="warmup-status">Multiplier: 1.00x</span>
-        <span id="warmup-followup"></span>
-      </div>
     </div>
     <div class="choices-list" id="choices-list"></div>
     <div class="btn-row">
@@ -701,7 +672,6 @@ footer {
 
       <div class="panel-hd" style="margin-top:.9rem;margin-bottom:.4rem">Streak</div>
       <div class="streak-pips" id="streak-pips"></div>
-      <button class="btn btn-o" style="width:100%;margin-top:.4rem;justify-content:center" onclick="triggerLogin()">⬆ Register Login</button>
     </div>
   </div>
 
@@ -900,18 +870,9 @@ let db = null;
 let fbOnline = false;
 
 (function initFirebase() {
-  try {
-    firebase.initializeApp(FB_CONFIG);
-    db = firebase.firestore();
-    // Enable offline persistence
-    db.enablePersistence().catch(() => {});
-    fbOnline = true;
-    setFbStatus(true);
-    startLeaderboardListener();
-  } catch (e) {
-    setFbStatus(false);
-    console.warn('[Firebase] Using local-only mode:', e.message);
-  }
+  // Placeholder config — skip Firebase init and run in local-only mode.
+  // Replace FB_CONFIG with a real project config to enable leaderboard sync.
+  setFbStatus(false);
 })();
 
 function setFbStatus(online) {
@@ -1295,102 +1256,6 @@ function getWarmupForMission(mission) {
   return { ...picked, mult, prior: prior?.answer || '', words: wc, done: !!prior };
 }
 
-function renderWarmupBox() {
-  const box = document.getElementById('warmup-box');
-  const q = document.getElementById('warmup-q');
-  const ans = document.getElementById('warmup-answer');
-  const status = document.getElementById('warmup-status');
-  const follow = document.getElementById('warmup-followup');
-  if (!box || !q || !ans || !status || !follow) return;
-  if (!missionWarmup) { box.style.display = 'none'; return; }
-  box.style.display = '';
-  q.textContent = missionWarmup.q;
-  ans.value = missionWarmup.prior || '';
-  status.textContent = `Multiplier: ${(missionWarmup.mult || 1).toFixed(2)}x`;
-  follow.textContent = missionWarmup.followUp || '';
-}
-
-function submitWarmup() {
-  if (!missionWarmup) return;
-  const ta = document.getElementById('warmup-answer');
-  if (!ta) return;
-  const txt = ta.value.trim();
-  if (!txt) return;
-  const wc = wordsOf(txt);
-  missionWarmup.mult = wc >= 30 ? 1.3 : wc >= 15 ? 1.15 : 1.0;
-  missionWarmup.followUp = wc < 30 ? (chooseFollowUp(txt, missionWarmup.cat) || 'Thoda aur depth add karo for stronger multiplier.') : '';
-  missionWarmup.prior = txt;
-
-  const hit = INTERVIEW.answers.find(a => a.fromWarmup && a.q === missionWarmup.q);
-  if (hit) {
-    hit.answer = txt;
-    hit.ts = Date.now();
-  } else {
-    INTERVIEW.answers.push({ q: missionWarmup.q, cat: missionWarmup.cat, answer: txt, ts: Date.now(), fromWarmup: true });
-  }
-  INTERVIEW.transcript.push({ role:'user', text:txt, cat:missionWarmup.cat, ts:Date.now(), fromWarmup:true });
-  save();
-  renderWarmupBox();
-  showToast(`Warm-up applied · ${(missionWarmup.mult).toFixed(2)}x`, missionWarmup.mult > 1 ? 'ok' : 'info');
-}
-
-function skipWarmup() {
-  if (!missionWarmup) return;
-  missionWarmup.mult = 1.0;
-  missionWarmup.followUp = '';
-  renderWarmupBox();
-  showToast('Warm-up skipped · multiplier 1.00x', 'info');
-  const prior = INTERVIEW.answers.find(a => a.fromWarmup === picked.q);
-  const warmupKey = warmupKeyForMission(mission, missionIdx);
-  const prior = INTERVIEW.answers.find(a => a.warmupKey === warmupKey)
-    || INTERVIEW.answers.find(a => a.fromWarmup === true && a.q === picked.q);
-  const wc = prior ? wordsOf(prior.answer || '') : 0;
-  const mult = prior ? (wc >= 30 ? 1.3 : wc >= 15 ? 1.15 : 1.0) : 1.0;
-  return { ...picked, warmupKey, mult, prior: prior?.answer || '' };
-  const prior = INTERVIEW.answers.find(a => a.fromWarmup === picked.q);
-  const priorAnswer = prior?.answer || '';
-  const mult = calcWarmupMultiplier(priorAnswer);
-  return { ...picked, mult, prior: priorAnswer, skipped: !!prior?.skipped };
-}
-
-function applyWarmup() {
-  if (!missionWarmup) return;
-  const answerEl = document.getElementById('warmup-answer');
-  const hintEl = document.getElementById('warmup-hint');
-  const txt = (answerEl?.value || '').trim();
-  const mult = calcWarmupMultiplier(txt);
-
-  missionWarmup.prior = txt;
-  missionWarmup.mult = mult;
-  missionWarmup.skipped = false;
-
-  const hit = INTERVIEW.answers.find(a => a.fromWarmup === missionWarmup.q);
-  if (hit) {
-    hit.answer = txt;
-    hit.cat = missionWarmup.cat;
-    hit.skipped = false;
-    hit.ts = Date.now();
-  } else {
-    INTERVIEW.answers.push({
-      q: missionWarmup.q,
-      fromWarmup: missionWarmup.q,
-      cat: missionWarmup.cat,
-      answer: txt,
-      skipped: false,
-      ts: Date.now(),
-    });
-  }
-
-  setWarmupMultiplier(mult);
-  if (hintEl) {
-    if (!txt) hintEl.textContent = 'Applied with no response. Add 15+ words for x1.15 or 30+ words for x1.30.';
-    else if (mult >= 1.3) hintEl.textContent = 'Strong pre-brief. Max boost locked at x1.30 for this mission.';
-    else if (mult >= 1.15) hintEl.textContent = 'Good warm-up. Add more depth to reach x1.30.';
-    else hintEl.textContent = 'Warm-up saved. Expand with concrete detail to reach x1.15/x1.30.';
-  }
-
-  save();
-}
 
 function skipWarmup() {
   if (!missionWarmup) return;

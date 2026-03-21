@@ -504,6 +504,7 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 
   <div class="layer-tabs" id="layer-tabs">
     <button class="layer-tab active" data-layer="feed">Feed</button>
+    <button class="layer-tab" data-layer="tools">Tools</button>
     <button class="layer-tab" data-layer="discover">Discover</button>
     <button class="layer-tab" data-layer="about">About</button>
     <button class="layer-tab" data-layer="profile">Profile</button>
@@ -667,15 +668,15 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
         <div class="about-mission-text">Tools that help you think, build, and <em>decide.</em> A sovereign, Bharat-first digital ecosystem — no data harvesting, no hidden fees.</div>
       </div>
       <div class="about-stat-row">
-        <div class="about-stat"><div class="about-stat-n">44+</div><div class="about-stat-l">Live Tools</div></div>
+        <div class="about-stat"><div class="about-stat-n">58</div><div class="about-stat-l">Live Tools</div></div>
         <div class="about-stat"><div class="about-stat-n">0</div><div class="about-stat-l">Logins Needed</div></div>
         <div class="about-stat"><div class="about-stat-n">∞</div><div class="about-stat-l">Free Forever</div></div>
       </div>
       <div class="about-section">
         <div class="about-section-title">🛠 Products</div>
-        <div class="about-product" onclick="window.open('https://via-decide.github.io/decide.engine-tools/','_blank')">
+        <div class="about-product" onclick="switchLayer('tools')">
           <div class="about-product-icon">⚙️</div>
-          <div class="about-product-info"><div class="about-product-name">Decide Engine Tools</div><div class="about-product-desc">44+ browser tools for creators, coders, students & founders.</div></div>
+          <div class="about-product-info"><div class="about-product-name">Decide Engine Tools</div><div class="about-product-desc">58 browser tools for creators, coders, students & founders.</div></div>
           <div class="about-product-arrow">›</div>
         </div>
         <div class="about-product" onclick="window.open('https://t.me/GN8RBot','_blank')">
@@ -737,6 +738,27 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
 
   <!-- BOTTOM NAV -->
   <!-- TOOL VIEWER LAYER (iframe sub-view) -->
+  <!-- TOOLS LAYER — the visible tool explorer -->
+  <div id="layer-tools" style="display:none;position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#0B0B1A">
+    <div style="padding:60px 16px 100px;max-width:600px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:28px;font-weight:900;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;color:#fff">⚡ Tool Explorer</div>
+        <div style="font-size:12px;color:#6e6e82;margin-top:4px">58 tools · zero logins · free forever</div>
+      </div>
+      <input id="tools-search" type="search" placeholder="Search tools…" autocomplete="off" spellcheck="false"
+        style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 16px;color:#fff;font-size:14px;outline:none;font-family:inherit;margin-bottom:12px" />
+      <div id="tools-cats" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;scrollbar-width:none"></div>
+      <div id="tools-grid" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div id="tools-empty" style="display:none;text-align:center;padding:40px 0;color:#6e6e82;font-size:13px">No tools found</div>
+      <div style="text-align:center;margin-top:24px">
+        <a href="https://via-decide.github.io/decide.engine-tools/" target="_blank" rel="noopener"
+          style="display:inline-block;padding:10px 20px;background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.3);border-radius:10px;color:#ff8c00;font-size:12px;font-weight:700;text-decoration:none;letter-spacing:1px">
+          OPEN FULL ENGINE →
+        </a>
+      </div>
+    </div>
+  </div>
+
   <div id="layer-tool-viewer" style="display:none;">
     <div class="tv-header">
       <button class="tv-back" onclick="closeToolViewer()">← Back</button>
@@ -753,7 +775,9 @@ html,body{height:100%;width:100%;background:var(--deep);color:var(--white);font-
     <button class="nav-item" data-nav="discover" onclick="window.VIANav.openPage('discover')">
       <div class="nav-icon">🔍</div><div class="nav-label">Explore</div>
     </button>
-    <button class="nav-create" onclick="openSheet('create')">＋</button>
+    <button class="nav-item" data-nav="tools" onclick="switchLayer('tools')" style="position:relative">
+      <div class="nav-icon">⚡</div><div class="nav-label" style="color:#ff8c00;font-weight:800">Tools</div>
+    </button>
     <button class="nav-item" data-nav="about" onclick="window.VIANav.openPage('about')">
       <div class="nav-icon">ℹ️</div><div class="nav-label">About</div>
     </button>
@@ -2249,7 +2273,7 @@ const GC = {
 function switchLayer(layer, storyKey) {
   activeLayer = layer;
   const deck=document.getElementById('deck');
-  const layerEls={discover:'layer-discover',deepdives:'layer-deepdives',about:'layer-about',profile:'layer-profile','tool-viewer':'layer-tool-viewer'};
+  const layerEls={discover:'layer-discover',deepdives:'layer-deepdives',about:'layer-about',profile:'layer-profile','tool-viewer':'layer-tool-viewer',tools:'layer-tools'};
   deck.style.display = layer==='feed'?'block':'none';
   Object.entries(layerEls).forEach(([k,id])=>{
     const el=document.getElementById(id);
@@ -2272,6 +2296,7 @@ function switchLayer(layer, storyKey) {
   }
   if (layer==='discover') buildDiscover();
   if (layer==='profile')  buildProfile();
+  if (layer==='tools')    buildToolsGrid();
 }
 
 document.querySelectorAll('.layer-tab').forEach(tab=>tab.addEventListener('click',(event)=>{
@@ -2744,7 +2769,6 @@ window.addEventListener('load',startApp,{once:true});
   try {
     await VIARegistry.init('/nav-registry.json');
     const map = VIARegistry.buildSubpagesMap();
-    // Merge registry tool paths into router's SUBPAGES (router.js uses window.VIARouter.SUBPAGES or window.Router.toolPathStaticMap)
     if (window.VIARouter && window.VIARouter.SUBPAGES) {
       Object.assign(window.VIARouter.SUBPAGES, map);
     }
@@ -2756,6 +2780,91 @@ window.addEventListener('load',startApp,{once:true});
     console.warn('[VIA] Registry wire failed:', e.message);
   }
 })();
+
+// ════════════════════════════════════════════════════════════════
+// VISIBLE TOOLS GRID — renders tools from nav-registry.json
+// ════════════════════════════════════════════════════════════════
+let _toolsBuilt = false;
+let _toolsActiveCat = null;
+
+function buildToolsGrid() {
+  if (!window.VIARegistry || !VIARegistry.isLoaded()) {
+    // Registry not loaded yet — try again in 500ms
+    setTimeout(buildToolsGrid, 500);
+    return;
+  }
+  const grid = document.getElementById('tools-grid');
+  const empty = document.getElementById('tools-empty');
+  const catsEl = document.getElementById('tools-cats');
+  const searchInput = document.getElementById('tools-search');
+  if (!grid) return;
+
+  const allTools = VIARegistry.allTools();
+  const cats = VIARegistry.allCategories();
+
+  // Build category pills (once)
+  if (!_toolsBuilt) {
+    // Category bar
+    let catHtml = '<button class="tg-cat active" data-cat="all" onclick="filterToolsCat(\'all\')">All ' + allTools.length + '</button>';
+    Object.entries(cats).sort((a, b) => (a[1].priority || 99) - (b[1].priority || 99)).forEach(([id, c]) => {
+      catHtml += '<button class="tg-cat" data-cat="' + id + '" onclick="filterToolsCat(\'' + id + '\')">' + (c.icon || '📂') + ' ' + (c.label || id) + ' ' + c.count + '</button>';
+    });
+    catsEl.innerHTML = catHtml;
+
+    // Search handler
+    searchInput.addEventListener('input', () => renderToolsList());
+    _toolsBuilt = true;
+  }
+
+  renderToolsList();
+}
+
+function filterToolsCat(cat) {
+  _toolsActiveCat = cat === 'all' ? null : cat;
+  document.querySelectorAll('.tg-cat').forEach(b => b.classList.toggle('active', b.dataset.cat === (cat || 'all')));
+  renderToolsList();
+}
+
+function renderToolsList() {
+  const grid = document.getElementById('tools-grid');
+  const empty = document.getElementById('tools-empty');
+  const query = (document.getElementById('tools-search')?.value || '').trim();
+
+  let tools = query ? VIARegistry.search(query) : VIARegistry.allTools();
+  if (_toolsActiveCat) tools = tools.filter(t => t.category === _toolsActiveCat);
+
+  if (!tools.length) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const catColors = {coders:'#00d4ff',creators:'#ff8c00',operators:'#10b981',researchers:'#9966ff',system:'#6e6e82',engine:'#ff8c00',business:'#10b981',games:'#ff4488',misc:'#6e6e82'};
+
+  grid.innerHTML = tools.map(t => {
+    const href = t.path || '/tools/' + t.id + '/';
+    const cc = catColors[t.category] || '#6e6e82';
+    return '<a href="' + href + '" style="display:flex;gap:12px;align-items:center;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;text-decoration:none;color:#fff;transition:all .2s" onmouseenter="this.style.borderColor=\'rgba(255,140,0,.3)\'" onmouseleave="this.style.borderColor=\'rgba(255,255,255,.06)\'">'
+      + '<div style="font-size:22px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border-radius:8px;flex-shrink:0">' + (t.icon || '🔧') + '</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-size:13px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(t.title || t.id) + '</div>'
+      + '<div style="font-size:11px;color:#6e6e82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc((t.description || '').slice(0, 60)) + '</div>'
+      + '</div>'
+      + '<div style="font-size:9px;padding:3px 8px;border:1px solid ' + cc + '33;color:' + cc + ';border-radius:6px;white-space:nowrap;flex-shrink:0">' + esc(t.category) + '</div>'
+      + '</a>';
+  }).join('');
+}
+
+function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 </script>
+
+<!-- Tool grid category pill styles -->
+<style>
+.tg-cat{padding:6px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:transparent;color:#6e6e82;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;transition:all .2s}
+.tg-cat.active{background:rgba(255,140,0,.12);border-color:rgba(255,140,0,.4);color:#ff8c00}
+.tg-cat:hover{border-color:rgba(255,255,255,.2);color:#fff}
+#tools-cats::-webkit-scrollbar{display:none}
+</style>
 </body>
 </html>

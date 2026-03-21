@@ -587,8 +587,6 @@ footer {
       <div class="fb-led" id="fb-led"></div>
       <span id="fb-status">CONNECTING</span>
     </div>
-    <button class="hdr-btn" onclick="showRoom()">⊕ Room</button>
-    <button class="hdr-btn" onclick="triggerLogin()">⬡ Login</button>
   </div>
 </header>
 
@@ -617,37 +615,10 @@ footer {
       <div class="btn-row" style="margin-top:.45rem">
         <button class="btn btn-c" onclick="applyWarmupAnswer()">Apply</button>
       </div>
-    <div class="prebrief" id="mission-prebrief">
-      <div class="prebrief-hd">
-        <span class="prebrief-title">Pre-Brief Warm-up</span>
-        <span class="prebrief-mult" id="warmup-mult">x1.00</span>
-      </div>
-      <div class="prebrief-q" id="warmup-question">Warm-up unavailable for this mission.</div>
-      <textarea id="warmup-answer" placeholder="Draft a short warm-up response to tune your approach..."></textarea>
-      <div class="btn-row" style="margin-bottom:0">
-        <button class="btn btn-c" onclick="applyWarmup()">Apply</button>
-        <button class="btn btn-ghost" onclick="skipWarmup()">Skip</button>
-      </div>
-      <div class="prebrief-hint" id="warmup-hint">Answering is optional. Mission choices stay active.</div>
     </div>
     <div class="prog-wrap">
       <div class="prog-row"><span>Mission Progress</span><span id="prog-txt">1/6</span></div>
       <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:10%"></div></div>
-    </div>
-    <div class="warmup-box" id="warmup-box" style="display:none">
-      <div style="font-family:var(--fhud);font-size:.58rem;color:var(--amber);margin-bottom:.35rem">MISSION PRE-BRIEF (OPTIONAL)</div>
-      <div id="warmup-q" style="font-family:var(--fmono);font-size:.56rem;color:var(--txt);line-height:1.5"></div>
-      <div class="warmup-row" style="margin-top:.45rem">
-        <textarea id="warmup-answer" placeholder="Type your warm-up answer (20–40 sec optional)"></textarea>
-        <div style="display:flex;flex-direction:column;gap:.35rem">
-          <button class="btn btn-c" onclick="submitWarmup()">Apply</button>
-          <button class="btn btn-ghost" onclick="skipWarmup()">Skip</button>
-        </div>
-      </div>
-      <div class="warmup-meta">
-        <span id="warmup-status">Multiplier: 1.00x</span>
-        <span id="warmup-followup"></span>
-      </div>
     </div>
     <div class="choices-list" id="choices-list"></div>
     <div class="btn-row">
@@ -701,7 +672,6 @@ footer {
 
       <div class="panel-hd" style="margin-top:.9rem;margin-bottom:.4rem">Streak</div>
       <div class="streak-pips" id="streak-pips"></div>
-      <button class="btn btn-o" style="width:100%;margin-top:.4rem;justify-content:center" onclick="triggerLogin()">⬆ Register Login</button>
     </div>
   </div>
 
@@ -900,18 +870,9 @@ let db = null;
 let fbOnline = false;
 
 (function initFirebase() {
-  try {
-    firebase.initializeApp(FB_CONFIG);
-    db = firebase.firestore();
-    // Enable offline persistence
-    db.enablePersistence().catch(() => {});
-    fbOnline = true;
-    setFbStatus(true);
-    startLeaderboardListener();
-  } catch (e) {
-    setFbStatus(false);
-    console.warn('[Firebase] Using local-only mode:', e.message);
-  }
+  // Placeholder config — skip Firebase init and run in local-only mode.
+  // Replace FB_CONFIG with a real project config to enable leaderboard sync.
+  setFbStatus(false);
 })();
 
 function setFbStatus(online) {

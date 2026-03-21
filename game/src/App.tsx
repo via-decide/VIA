@@ -3,15 +3,15 @@ import { GameState, Plant, GlobalUpgrades, Orchard, Tool, Weather } from './type
 import { PLANT_STAGES, INITIAL_UPGRADES, SHOP_ITEMS, INITIAL_TOOLS, getRandomWeather, BASE_PLANT_TYPES } from './constants';
 import PlantCard from './components/PlantCard';
 import PlantVisualizer from './components/PlantVisualizer';
-import { 
-  Sprout, 
-  FlaskConical, 
-  Store, 
-  Droplets, 
-  Zap, 
-  Bug, 
-  Flame, 
-  TrendingUp, 
+import {
+  Sprout,
+  FlaskConical,
+  Store,
+  Droplets,
+  Zap,
+  Bug,
+  Flame,
+  TrendingUp,
   ArrowUpCircle,
   RefreshCw,
   Database,
@@ -27,7 +27,8 @@ import {
   CloudRain,
   CloudLightning,
   Thermometer,
-  Cloud
+  Cloud,
+  Trophy
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -161,6 +162,8 @@ const App: React.FC = () => {
   const [isTransferring, setIsTransferring] = useState(false);
   const [isLoginLoading, setIsLoginLoading] = useState(false);
   const [breedingParents, setBreedingParents] = useState<number[]>([]);
+  const [showAchievement, setShowAchievement] = useState<{ title: string; desc: string } | null>(null);
+  const achievementsEarned = React.useRef<Set<string>>(new Set(JSON.parse(localStorage.getItem('via-achievements') || '[]')));
   const lastActivityRef = React.useRef(Date.now());
 
   const updateActivity = useCallback(() => {
@@ -169,6 +172,14 @@ const App: React.FC = () => {
 
   const addLog = useCallback((msg: string, type: string = 'info') => {
     setLogs(prev => [{ msg, type }, ...prev].slice(0, 20));
+  }, []);
+
+  const triggerAchievement = useCallback((id: string, title: string, desc: string) => {
+    if (achievementsEarned.current.has(id)) return;
+    achievementsEarned.current.add(id);
+    localStorage.setItem('via-achievements', JSON.stringify(Array.from(achievementsEarned.current)));
+    setShowAchievement({ title, desc });
+    setTimeout(() => setShowAchievement(null), 4000);
   }, []);
 
   // Auto-save timer (2 minutes of inactivity)
@@ -491,7 +502,9 @@ const App: React.FC = () => {
         dataSeeds += 20;
         
         addLog(`Harvested ${plant.type}! Gained ${reward} credits and 20 genetic data.`, 'success');
-        
+        triggerAchievement('first-harvest', 'First Harvest!', `${plant.type} successfully harvested for ${reward} credits.`);
+        if (plant.rarity === 'Legendary') triggerAchievement('legendary-harvest', 'Legendary Harvest!', `Harvested a Legendary ${plant.type}!`);
+
         // Reset plot
         newPlants[prev.selectedPlantIndex!] = null;
         orchard.plants = newPlants;
@@ -512,9 +525,9 @@ const App: React.FC = () => {
         const finalG = Math.max(1, Math.round(baseG * (plant.nutrients / 100) * (plant.growthSpeedMultiplier || 1)));
         
         plant.rootStrength += finalG;
-        plant.water -= 5;
-        plant.nutrients -= 10;
-        plant.stress += Math.max(0, 5 - stressReduction);
+        plant.water -= Math.max(1, Math.round(5 * prev.upgrades.waterEfficiency));
+        plant.nutrients -= Math.max(0, Math.round(10 * prev.upgrades.nutrientRetention));
+        plant.stress += Math.max(0, 5 - stressReduction - prev.upgrades.stressResistance);
         credits += (10 + creditBonus);
         
         // Check evolution
@@ -526,6 +539,7 @@ const App: React.FC = () => {
         if (nextStage > plant.stageIndex) {
           plant.stageIndex = nextStage;
           addLog(`Evolution! ${plant.type} reached stage: ${PLANT_STAGES[nextStage].name}`, 'success');
+          triggerAchievement('first-evolution', 'Evolution Detected!', `${plant.type} has reached ${PLANT_STAGES[nextStage].name}!`);
           dataSeeds += 5;
           
           // Mark as harvestable at final stage
@@ -537,7 +551,7 @@ const App: React.FC = () => {
         // Pest chance
         const pestDefenseBonus = getToolBonus('pest-control');
         const basePestChance = 0.15;
-        const finalPestChance = basePestChance * (1 - pestDefenseBonus);
+        const finalPestChance = Math.max(0, basePestChance * (1 - pestDefenseBonus) - prev.upgrades.pestDefense);
         
         if (plant.pestImmunity === 0 && Math.random() < finalPestChance) {
           plant.pests = Math.min(5, plant.pests + 1);
@@ -607,9 +621,9 @@ const App: React.FC = () => {
             plant.water = Math.min(PLANT_STAGES[plant.stageIndex].maxWater, plant.water + (30 * weather.intensity));
             plant.stress += (15 * weather.intensity);
           } else if (weather.type === 'heatwave') {
-            plant.nutrients = Math.max(0, plant.nutrients - (20 * weather.intensity));
+            plant.nutrients = Math.max(0, plant.nutrients - Math.round(20 * weather.intensity * prev.upgrades.nutrientRetention));
             plant.stress += (25 * weather.intensity);
-            plant.water = Math.max(0, plant.water - (20 * weather.intensity));
+            plant.water = Math.max(0, plant.water - Math.round(20 * weather.intensity * prev.upgrades.waterEfficiency));
           } else if (weather.type === 'fog') {
             plant.water = Math.min(PLANT_STAGES[plant.stageIndex].maxWater, plant.water + 5);
             plant.stress = Math.max(0, plant.stress - 5);
@@ -620,7 +634,7 @@ const App: React.FC = () => {
 
           // Overnight effects
           if (plant.pests > 0) {
-            const pestDrain = (plant.pests * 10) * (1 - nutrientBonus);
+            const pestDrain = Math.round((plant.pests * 10) * (1 - nutrientBonus) * prev.upgrades.nutrientRetention);
             plant.nutrients = Math.max(0, plant.nutrients - pestDrain);
             plant.stress += (plant.pests * 5);
           } else {
@@ -648,6 +662,9 @@ const App: React.FC = () => {
       });
 
       addLog(`Day ${prev.day + 1} started. Weather shifted to ${newWeather.name}.`, 'system');
+      if (prev.day + 1 === 10) triggerAchievement('day-10', 'Veteran Farmer', '10 growth cycles completed!');
+      if (prev.day + 1 === 25) triggerAchievement('day-25', 'Seasoned Cultivator', '25 growth cycles completed!');
+      if (prev.day + 1 === 50) triggerAchievement('day-50', 'Master Cultivator', '50 growth cycles completed!');
       const nextState = { ...prev, day: prev.day + 1, orchards: newOrchards, weather: newWeather };
       saveState({ day: prev.day + 1, orchards: newOrchards, weather: newWeather });
       return nextState;
@@ -698,8 +715,10 @@ const App: React.FC = () => {
       newOrchards[orchardIndex] = orchard;
       const nextState = { ...prev, orchards: newOrchards, credits: prev.credits - 50, selectedPlantIndex: index };
       saveState({ orchards: newOrchards, credits: prev.credits - 50 });
+      if (rarity !== 'Common') triggerAchievement('first-rare', 'Rare Discovery!', `Seeded a ${rarity} ${randomType.name} specimen!`);
       return nextState;
     });
+    triggerAchievement('first-seed', 'Plot Cultivated!', 'First specimen seeded in the orchard.');
     addLog('New plot cleared and seeded.', 'success');
   };
 
@@ -734,9 +753,11 @@ const App: React.FC = () => {
     setState(prev => {
       const nextUpgrades = {
         ...prev.upgrades,
-        [id]: id === 'stressResistance' 
-          ? (prev.upgrades[id] as number) + 5 
-          : (prev.upgrades[id] as number) * 0.9
+        [id]: id === 'stressResistance'
+          ? (prev.upgrades[id] as number) + 5
+          : id === 'pestDefense'
+            ? (prev.upgrades[id] as number) + 0.05
+            : (prev.upgrades[id] as number) * 0.9
       };
       const nextState = {
         ...prev,
@@ -835,6 +856,7 @@ const App: React.FC = () => {
       };
       saveState({ credits: prev.credits - 100, orchards: newOrchards });
       setBreedingParents([]);
+      triggerAchievement('first-hybrid', 'Hybridization Complete!', `Created a new ${newPlant.rarity} ${newPlant.type}.`);
       addLog(`Success! A new ${newPlant.rarity} hybrid has been created.`, 'success');
       return nextState;
     });
@@ -1118,13 +1140,28 @@ const App: React.FC = () => {
                           <span className="text-leaf-green">{selectedPlant.rootStrength}</span>
                         </div>
                         <div className="h-2.5 w-full bg-black/40 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-leaf-green transition-all duration-1000 ease-out" 
+                          <div
+                            className="h-full bg-leaf-green transition-all duration-1000 ease-out"
                             style={{ width: `${(selectedPlant.rootStrength / (PLANT_STAGES[selectedPlant.stageIndex + 1]?.threshold || 1000)) * 100}%` }}
                           />
                         </div>
                       </div>
                     </div>
+
+                    {selectedPlant.pestImmunity > 0 && (
+                      <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-leaf-green/10 border border-leaf-green/20">
+                        <Bug size={14} className="text-leaf-green" />
+                        <div className="flex-1 space-y-1">
+                          <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+                            <span>Pest Immunity</span>
+                            <span className="text-leaf-green">{selectedPlant.pestImmunity} cycles remaining</span>
+                          </div>
+                          <div className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
+                            <div className="h-full bg-leaf-green transition-all duration-500" style={{ width: `${(selectedPlant.pestImmunity / 3) * 100}%` }} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto w-full">
                       {selectedPlant.isHarvestable ? (
@@ -1308,6 +1345,7 @@ const App: React.FC = () => {
                         { id: 'waterEfficiency', name: 'Deep Roots', desc: 'Reduces water consumption by 10%', icon: Droplets },
                         { id: 'nutrientRetention', name: 'Efficient Metabolism', desc: 'Reduces nutrient drain by 10%', icon: TrendingUp },
                         { id: 'stressResistance', name: 'Hardened Bark', desc: 'Reduces stress gain by 5 points', icon: Flame },
+                        { id: 'pestDefense', name: 'Immune Coating', desc: 'Reduces pest infestation chance by 5%', icon: Bug },
                       ].map(u => (
                         <button 
                           key={u.id}
@@ -1588,6 +1626,28 @@ const App: React.FC = () => {
           <RefreshCw className="animate-spin text-leaf-green" size={40} />
         </div>
       )}
+
+      {/* Achievement Toast */}
+      <AnimatePresence>
+        {showAchievement && (
+          <motion.div
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 60 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 hardware-panel px-6 py-4 flex items-center gap-4 border-mineral-gold/50 shadow-2xl shadow-mineral-gold/10 min-w-72"
+          >
+            <div className="w-10 h-10 rounded-full bg-mineral-gold/20 flex items-center justify-center text-mineral-gold flex-shrink-0">
+              <Trophy size={20} />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-mineral-gold uppercase tracking-widest">Achievement Unlocked</p>
+              <p className="font-bold text-sm text-text-primary">{showAchievement.title}</p>
+              <p className="text-xs text-text-secondary">{showAchievement.desc}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

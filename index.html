@@ -2734,5 +2734,28 @@ function startApp(){
 document.addEventListener('DOMContentLoaded',startApp,{once:true});
 window.addEventListener('load',startApp,{once:true});
 </script>
+
+<!-- Phase 1: Registry-powered routing -->
+<script src="./shared/registry-loader.js"></script>
+<script src="./router.js"></script>
+<script>
+// Bridge: load nav-registry and patch router SUBPAGES dynamically
+(async function wireRegistry() {
+  try {
+    await VIARegistry.init('/nav-registry.json');
+    const map = VIARegistry.buildSubpagesMap();
+    // Merge registry tool paths into router's SUBPAGES (router.js uses window.VIARouter.SUBPAGES or window.Router.toolPathStaticMap)
+    if (window.VIARouter && window.VIARouter.SUBPAGES) {
+      Object.assign(window.VIARouter.SUBPAGES, map);
+    }
+    if (window.Router && window.Router.toolPathStaticMap) {
+      Object.assign(window.Router.toolPathStaticMap, map);
+    }
+    console.log('[VIA] Registry wired into router:', VIARegistry.stats().totalTools, 'tools');
+  } catch (e) {
+    console.warn('[VIA] Registry wire failed:', e.message);
+  }
+})();
+</script>
 </body>
 </html>

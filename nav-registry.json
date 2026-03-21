@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "generatedAt": "2026-03-21T00:00:00Z",
   "organization": "via-decide",
-  "totalTools": 58,
+  "totalTools": 68,
   "categories": {
     "business": {
       "label": "Business",
@@ -52,6 +52,12 @@
       "icon": "\ud83d\udda5\ufe0f",
       "priority": 5,
       "count": 3
+    },
+    "games": {
+      "label": "Games & Simulations",
+      "icon": "\ud83c\udfae",
+      "priority": 2,
+      "count": 10
     }
   },
   "tools": [
@@ -1790,6 +1796,212 @@
       "relatedTools": [],
       "status": "active",
       "icon": "\ud83d\udd27"
+    },
+    {
+      "id": "hex-wars",
+      "title": "HexWars",
+      "description": "Hex-based territory strategy game. Capture tiles, build defenses, conquer the grid.",
+      "category": "games",
+      "path": "https://via-decide.github.io/decide.engine-tools/tools/games/hex-wars/",
+      "entry": "index.html",
+      "icon": "\u2694\ufe0f",
+      "tags": [
+        "game",
+        "strategy",
+        "hex"
+      ],
+      "status": "active",
+      "audience": [
+        "everyone"
+      ],
+      "inputs": [],
+      "outputs": [],
+      "relatedTools": []
+    },
+    {
+      "id": "snake-game",
+      "title": "Decision Snake",
+      "description": "Classic snake with a twist \u2014 make decisions at every turn that affect the game.",
+      "category": "games",
+      "path": "https://via-decide.github.io/decide.engine-tools/tools/games/snake-game/",
+      "entry": "index.html",
+      "icon": "\ud83d\udc0d",
+      "tags": [
+        "game",
+        "arcade"
+      ],
+      "status": "active",
+      "audience": [
+        "everyone"
+      ],
+      "inputs": [],
+      "outputs": [],
+      "relatedTools": []
+    },
+    {
+      "id": "freecell-classic",
+      "title": "FreeCell Classic",
+      "description": "Classic FreeCell solitaire card game, browser-native.",
+      "category": "games",
+      "path": "https://via-decide.github.io/decide.engine-tools/tools/games/freecell-classic/",
+      "entry": "index.html",
+      "icon": "\ud83c\udccf",
+      "tags": [
+        "game",
+        "cards"
+      ],
+      "status": "active",
+      "audience": [
+        "everyone"
+      ],
+      "inputs": [],
+      "outputs": [],
+      "relatedTools": []
+    },
+    {
+      "id": "skillhex-mission-control",
+      "title": "SkillHex Mission Control",
+      "description": "Sci-fi mission control game. Complete missions, earn XP, climb the leaderboard.",
+      "category": "games",
+      "path": "https://via-decide.github.io/skillhex-mission-control/",
+      "entry": "index.html",
+      "icon": "\ud83d\udef8",
+      "tags": [
+        "game",
+        "missions"
+      ],
+      "status": "active",
+      "audience": [
+        "everyone"
+      ],
+      "inputs": [],
+      "outputs": [],
+      "relatedTools": []
+    },
+    {
+      "id": "wings-of-fire-quiz",
+      "title": "Wings of Fire Quiz",
+      "description": "Test your knowledge of the Wings of Fire book series.",
+      "category": "games",
+      "path": "https://via-decide.github.io/decide.engine-tools/tools/games/wings-of-fire-quiz/",
+      "entry": "index.html",
+      "icon": "\ud83d\udc09",
+      "tags": [
+        "quiz",
+        "books"
+      ],
+      "status": "active",
+      "audience": [
+        "everyone"
+      ],
+      "inputs": [],
+      "outputs": [],
+      "relatedTools": []
+    },
+    {
+      "id": "data-orchard",
+      "title": "Data Orchard",
+      "description": "Genetic cultivation strategy game. Grow rare plants, research traits, trade credits.",
+      "category": "games",
+      "path": "https://via-decide.github.io/Game-/",
+      "entry": "index.html",
+      "icon": "\ud83c\udf33",
+      "tags": [
+        "game",
+        "farming",
+        "strategy"
+      ],
+      "status": "active",
+      "audience": [
+        "everyone"
+      ],
+      "inputs": [],
+      "outputs": [],
+      "relatedTools": []
+    },
+    {
+      "id": "mars-rover-sim",
+      "title": "Mars Geological Survey",
+      "description": "ISRO Mars Rover simulator. Explore hex terrain, manage resources, survive dust storms.",
+      "category": "games",
+      "path": "https://via-decide.github.io/Mars-Terminal-Rover-Simulator/",
+      "entry": "index.html",
+      "icon": "\ud83d\ude80",
+      "tags": [
+        "game",
+        "mars",
+        "simulation"
+      ],
+      "status": "active",
+      "audience": [
+        "everyone"
+      ],
+      "inputs": [],
+      "outputs": [],
+      "relatedTools": []
+    },
+    {
+      "id": "roboos-drone",
+      "title": "RoboOS Drone Sim",
+      "description": "6-DOF drone autopilot with KADA controller, cascade PID physics, mission planner.",
+      "category": "games",
+      "path": "https://via-decide.github.io/RoboOS/",
+      "entry": "index.html",
+      "icon": "\ud83d\udee9\ufe0f",
+      "tags": [
+        "game",
+        "drone",
+        "simulation"
+      ],
+      "status": "active",
+      "audience": [
+        "everyone"
+      ],
+      "inputs": [],
+      "outputs": [],
+      "relatedTools": []
+    },
+    {
+      "id": "kada-drone-v2",
+      "title": "KADA Drone v2",
+      "description": "Advanced drone sim with FPV camera, Gemini AI copilot, Casio watch face controller.",
+      "category": "games",
+      "path": "https://via-decide.github.io/Qowowjeuuxnapqpqo1/",
+      "entry": "index.html",
+      "icon": "\ud83c\udfae",
+      "tags": [
+        "game",
+        "drone",
+        "fpv"
+      ],
+      "status": "active",
+      "audience": [
+        "everyone"
+      ],
+      "inputs": [],
+      "outputs": [],
+      "relatedTools": []
+    },
+    {
+      "id": "orchard-engine",
+      "title": "Orchard Ecosystem",
+      "description": "Balance soil, water, and nutrients to grow a sustainable farm. Strategic ecosystem sim.",
+      "category": "games",
+      "path": "https://via-decide.github.io/decide.engine-tools/tools/games/orchard/",
+      "entry": "index.html",
+      "icon": "\ud83c\udf31",
+      "tags": [
+        "game",
+        "farming",
+        "ecosystem"
+      ],
+      "status": "active",
+      "audience": [
+        "everyone"
+      ],
+      "inputs": [],
+      "outputs": [],
+      "relatedTools": []
     }
   ]
 }

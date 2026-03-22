@@ -1,18 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
-Migrate the second batch of productivity tools and interactive games. 1. Port food.decider and creator-tool to tools/productivity/. 2. Port HexWars and RoboOS to tools/games/. 3. Update nav-registry.json with the new tool paths and icons.
+Integrate 'Orchade' social-hub module as the VIA Global Lobby. 1. Bridge the 'Orchade' UI components with the VIA frontend framework. 2. Implement the 'Social Consensus' layer: Ensure that player actions in the Orchade garden are recorded in the VIA 'Cohort' database. 3. Link the 'MBB' (Mind, Body, Breath) logic from VIA to the Orchade growth-mechanics, allowing user breathing patterns to influence the environment in real-time.
 
 CONSTRAINTS
-Ensure all Canvas-based games handle iframe resizing correctly without resolution loss.
-Implement a unified analytics service for the entire platform. 1. Create services/analytics.js to track tool usage and performance. 2. Implement an event-forwarding layer in the Shell to collect data from tool iframes. 3. Connect the service to a central database/dashboard.
-
-CONSTRAINTS
-Must be GDRP compliant. Use non-blocking event collection to avoid performance impact.
-Create a shared CSS library to standardize the look and feel of all tools. 1. Build shared/styles/via-theme.css with a core set of CSS variables (colors, spacing, fonts). 2. Implement a theme-switching listener in the Shell that propagates to all tool iframes. 3. Update Batch 1 & 2 tools to use the standardized via-theme.
-
-CONSTRAINTS
-Use Vanilla CSS custom properties only. Ensure accessibility (WCAG AA) compliance.
+Maintain a strict 1Hz refresh rate for the Casio GBD-200 UI bridge within Orchade. Ensure the Google ID profile data persists between the main VIA engine and the Orchade lobby.
 
 PROCESS (MANDATORY)
 1. Read README.md and AGENTS.md before editing.

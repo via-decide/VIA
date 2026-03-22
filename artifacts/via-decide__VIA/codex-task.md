@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Backend Integration for Orchade Module. 1. Set up a reverse-proxy route from 'viadecide.com/orchade' to the Orchade hub. 2. Implement the '/api/sync/orchade' endpoint that persists MBB (Mind, Body, Breath) telemetry from the user session into the main Cohort database.
+
+CONSTRAINTS
+Secure all socket connections with VIA's 2026-standard encryption.
 Backend Integration for Mars Module. 1. Set up a reverse-proxy (Nginx/Envoy) route from 'viadecide.com/mars' to the internal IP of the Mars micro-service. 2. Implement the '/api/verify/mars' endpoint that confirms the active Google ID session before granting access to the relativistic physics parameters.
 
 CONSTRAINTS

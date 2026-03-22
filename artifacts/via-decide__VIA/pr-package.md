@@ -1,21 +1,9 @@
-Branch: simba/migrate-the-second-batch-of-productivity-tools-a
-Title: Migrate the second batch of productivity tools and interactive games....
+Branch: simba/build-the-sovereign-telemetry-websocket-wssapivi
+Title: Build the Sovereign Telemetry Websocket (wss://api.viadecide.com/ops/...
 
 ## Summary
 - Repo orchestration task for via-decide/VIA
-- Goal: Populate the monorepo with high-engagement gaming and utility content.
-Branch: simba/implement-a-unified-analytics-service-for-the-en
-Title: Implement a unified analytics service for the entire platform. 1. Cre...
-
-## Summary
-- Repo orchestration task for via-decide/VIA
-- Goal: Gain deep insights into tool popularity and performance across the monorepo.
-Branch: simba/create-a-shared-css-library-to-standardize-the-l
-Title: Create a shared CSS library to standardize the look and feel of all t...
-
-## Summary
-- Repo orchestration task for via-decide/VIA
-- Goal: Create a seamless, premium "single application" feel across 44+ different tools.
+- Goal: Build the Sovereign Telemetry Websocket (wss://api.viadecide.com/ops/stream). 1. Orchestrate a data aggregator service that collects metrics every 1 second from all 47 micro-services. 2. Aggregate 'Mars' metrics (active pilots, physics latency) and 'Orchade' metrics (consensus events, MBB rate, Casio status). 3. Stream this unified JSON packet over the secure websocket.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

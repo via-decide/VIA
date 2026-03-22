@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Implement Secure Admin Authentication. 1. Create the '/api/auth/verify-admin' endpoint. 2. Modify the VIA authentication middleware to check for a 'role: sovereign' flag on the user profile linked to your specific Google ID. 3. Generate a long-lived 'Ops-Token' to secure the websocket data stream.
+
+CONSTRAINTS
+Must be unhackable by standard commercial methods. Include IP-whitelisting for your Gandhidham IP.
 Build the Sovereign Telemetry Websocket (wss://api.viadecide.com/ops/stream). 1. Orchestrate a data aggregator service that collects metrics every 1 second from all 47 micro-services. 2. Aggregate 'Mars' metrics (active pilots, physics latency) and 'Orchade' metrics (consensus events, MBB rate, Casio status). 3. Stream this unified JSON packet over the secure websocket.
 
 CONSTRAINTS

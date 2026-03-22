@@ -1,3 +1,9 @@
+Branch: simba/implement-secure-admin-authentication-1-create-t
+Title: Implement Secure Admin Authentication. 1. Create the '/api/auth/verif...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Implement Secure Admin Authentication. 1. Create the '/api/auth/verify-admin' endpoint. 2. Modify the VIA authentication middleware to check for a 'role: sovereign' flag on the user profile linked to your specific Google ID. 3. Generate a long-lived 'Ops-Token' to secure the websocket data stream.
 Branch: simba/build-the-sovereign-telemetry-websocket-wssapivi
 Title: Build the Sovereign Telemetry Websocket (wss://api.viadecide.com/ops/...
 

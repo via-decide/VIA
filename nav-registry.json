@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "generatedAt": "2026-03-21T00:00:00Z",
   "organization": "via-decide",
-  "totalTools": 68,
+  "totalTools": 66,
   "categories": {
     "business": {
       "label": "Business",
@@ -57,7 +57,7 @@
       "label": "Games & Simulations",
       "icon": "\ud83c\udfae",
       "priority": 2,
-      "count": 10
+      "count": 8
     }
   },
   "tools": [
@@ -1802,7 +1802,7 @@
       "title": "HexWars",
       "description": "Hex-based territory strategy game. Capture tiles, build defenses, conquer the grid.",
       "category": "games",
-      "path": "https://via-decide.github.io/decide.engine-tools/tools/games/hex-wars/",
+      "path": "/tools/games/hex-wars/",
       "entry": "index.html",
       "icon": "\u2694\ufe0f",
       "tags": [
@@ -1823,7 +1823,7 @@
       "title": "Decision Snake",
       "description": "Classic snake with a twist \u2014 make decisions at every turn that affect the game.",
       "category": "games",
-      "path": "https://via-decide.github.io/decide.engine-tools/tools/games/snake-game/",
+      "path": "/tools/games/snake-game/",
       "entry": "index.html",
       "icon": "\ud83d\udc0d",
       "tags": [
@@ -1843,7 +1843,7 @@
       "title": "FreeCell Classic",
       "description": "Classic FreeCell solitaire card game, browser-native.",
       "category": "games",
-      "path": "https://via-decide.github.io/decide.engine-tools/tools/games/freecell-classic/",
+      "path": "/tools/games/freecell-classic/",
       "entry": "index.html",
       "icon": "\ud83c\udccf",
       "tags": [
@@ -1863,7 +1863,7 @@
       "title": "SkillHex Mission Control",
       "description": "Sci-fi mission control game. Complete missions, earn XP, climb the leaderboard.",
       "category": "games",
-      "path": "https://via-decide.github.io/skillhex-mission-control/",
+      "path": "/skillhex/",
       "entry": "index.html",
       "icon": "\ud83d\udef8",
       "tags": [
@@ -1883,7 +1883,7 @@
       "title": "Wings of Fire Quiz",
       "description": "Test your knowledge of the Wings of Fire book series.",
       "category": "games",
-      "path": "https://via-decide.github.io/decide.engine-tools/tools/games/wings-of-fire-quiz/",
+      "path": "/tools/games/wings-of-fire-quiz/",
       "entry": "index.html",
       "icon": "\ud83d\udc09",
       "tags": [
@@ -1924,7 +1924,7 @@
       "title": "Mars Geological Survey",
       "description": "ISRO Mars Rover simulator. Explore hex terrain, manage resources, survive dust storms.",
       "category": "games",
-      "path": "https://via-decide.github.io/Mars-Terminal-Rover-Simulator/",
+      "path": "/mars/",
       "entry": "index.html",
       "icon": "\ud83d\ude80",
       "tags": [
@@ -1941,53 +1941,11 @@
       "relatedTools": []
     },
     {
-      "id": "roboos-drone",
-      "title": "RoboOS Drone Sim",
-      "description": "6-DOF drone autopilot with KADA controller, cascade PID physics, mission planner.",
-      "category": "games",
-      "path": "https://via-decide.github.io/RoboOS/",
-      "entry": "index.html",
-      "icon": "\ud83d\udee9\ufe0f",
-      "tags": [
-        "game",
-        "drone",
-        "simulation"
-      ],
-      "status": "active",
-      "audience": [
-        "everyone"
-      ],
-      "inputs": [],
-      "outputs": [],
-      "relatedTools": []
-    },
-    {
-      "id": "kada-drone-v2",
-      "title": "KADA Drone v2",
-      "description": "Advanced drone sim with FPV camera, Gemini AI copilot, Casio watch face controller.",
-      "category": "games",
-      "path": "https://via-decide.github.io/Qowowjeuuxnapqpqo1/",
-      "entry": "index.html",
-      "icon": "\ud83c\udfae",
-      "tags": [
-        "game",
-        "drone",
-        "fpv"
-      ],
-      "status": "active",
-      "audience": [
-        "everyone"
-      ],
-      "inputs": [],
-      "outputs": [],
-      "relatedTools": []
-    },
-    {
       "id": "orchard-engine",
       "title": "Orchard Ecosystem",
       "description": "Balance soil, water, and nutrients to grow a sustainable farm. Strategic ecosystem sim.",
       "category": "games",
-      "path": "https://via-decide.github.io/decide.engine-tools/tools/games/orchard/",
+      "path": "/tools/games/orchard/",
       "entry": "index.html",
       "icon": "\ud83c\udf31",
       "tags": [

@@ -4,6 +4,18 @@ Title: Backend Integration for Mars Module. 1. Set up a reverse-proxy (Nginx...
 ## Summary
 - Repo orchestration task for via-decide/VIA
 - Goal: Backend Integration for Mars Module. 1. Set up a reverse-proxy (Nginx/Envoy) route from 'viadecide.com/mars' to the internal IP of the Mars micro-service. 2. Implement the '/api/verify/mars' endpoint that confirms the active Google ID session before granting access to the relativistic physics parameters.
+Branch: simba/integrate-mars-exploration-module-into-the-via-c
+Title: Integrate 'Mars' exploration module into the VIA Core. 1. Synchronize...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Enable VIA users to launch into the Mars exploration environment directly from the authenticated dashboard.
+Branch: simba/integrate-orchade-social-hub-module-as-the-via-g
+Title: Integrate 'Orchade' social-hub module as the VIA Global Lobby. 1. Bri...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: Establish Orchade as the 'Heart' of the VIA brand, where all 4,478 commits of logic converge into a social experience.
 
 ## Testing Checklist
 - [ ] Run unit/integration tests

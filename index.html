@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    
+    <!-- Ultra SEO Meta Tags -->
+    <title>VIA Decide Engine — Autonomous Visual Architecture & Agent Workflows</title>
+    <meta name="description" content="VIA is a zero-dependency, highly visual orchestrator for software architecture, logic mapping, and autonomous agent workflows. Launch massive projects seamlessly from a single HTML file.">
+    <meta name="keywords" content="VIA, AI Agent Workflows, Visual Canvas, LogicHub, Code Generation, LLM Orchestration, Single File Application, Zero Dependencies, Software Architecture">
+    <meta name="author" content="VIA Team">
+    <link rel="canonical" href="https://github.com/via-decide/VIA">
+    
+    <!-- Open Graph (Social SEO) -->
+    <meta property="og:title" content="VIA Decide Engine — Autonomous Visual Architecture">
+    <meta property="og:description" content="A fundamentally different approach to software mapping. Zero npm. Zero bloat. 100% Visual.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://github.com/via-decide/VIA">
+    <meta property="og:image" content="https://via-decide.github.io/VIA/preview.png">
+    
+    <!-- Twitter Specific -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VIA Decide Engine">
+    <meta name="twitter:description" content="Zero-npm visual architecture toolkit. Build logic, visualize topologies, invoke AI.">
+
+    <!-- JSON-LD Semantic Web Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "VIA Decide Engine",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Cross-Platform (Web)",
+      "description": "ViaDecide is a revolutionary zero-dependency ecosystem designed to orchestrate visual logic graphs, topological dependencies, and AI code generation natively within the browser.",
+      "url": "https://github.com/via-decide/VIA",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Config for exact branding -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Crimson Text', 'serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            colors: {
+              via: {
+                dark: '#050505',
+                card: '#0a0a0d',
+                border: '#27272a',
+                gold: '#ffd600',
+                goldHover: '#ffea00',
+                green: '#2ecc71',
+                red: '#ff4444'
+              }
+            },
+            backgroundImage: {
+              'dot-matrix': 'radial-gradient(rgba(82, 82, 91, 0.4) 1px, transparent 1px)',
+              'glow': 'conic-gradient(from 180deg at 50% 50%, #2a8af6 0deg, #a853ba 180deg, #e92a67 360deg)',
+            },
+            animation: {
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'bounce-subtle': 'bounce 2s infinite',
+              'shimmer': 'shimmer 2.5s linear infinite',
+              'float': 'float 6s ease-in-out infinite',
+            },
+            keyframes: {
+              shimmer: {
+                '0%': { backgroundPosition: '200% 0' },
+                '100%': { backgroundPosition: '-200% 0' }
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-15px)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Core Styles -->
+    <style>
+      body {
+        background-color: theme('colors.via.dark');
+        color: #f4f4f5;
+        overflow-x: hidden;
+      }
+      
+      .geometric-bg {
+        background-image: theme('backgroundImage.dot-matrix');
+        background-size: 24px 24px;
+        background-position: -12px -12px;
+      }
+
+      /* Ultimate CTA Button — Impossible to Ignore */
+      .cta-button {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.25rem 3rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 800;
+        font-size: 1.25rem;
+        letter-spacing: 0.1em;
+        color: theme('colors.via.dark');
+        background: theme('colors.via.gold');
+        border: 2px solid transparent;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        box-shadow: 0 0 40px rgba(255, 214, 0, 0.4), inset 0 0 0 0 rgba(255, 255, 255, 0.2);
+        z-index: 10;
+        clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+      }
+
+      .cta-button::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%; width: 50%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+        transform: skewX(-20deg);
+        animation: shine 4s ease-in-out infinite;
+      }
+
+      @keyframes shine {
+        0%, 100% { left: -100%; }
+        20%, 80% { left: 200%; }
+      }
+
+      .cta-button:hover {
+        transform: translateY(-4px) scale(1.02);
+        background: theme('colors.via.goldHover');
+        box-shadow: 0 15px 50px rgba(255, 214, 0, 0.6);
+        border: 2px solid #fff;
+      }
+
+      .cta-button:active {
+        transform: translateY(2px) scale(0.98);
+        box-shadow: 0 0 20px rgba(255, 214, 0, 0.4);
+      }
+
+      /* Secondary terminal styling */
+      .terminal-window {
+        background: theme('colors.via.card');
+        border: 1px solid theme('colors.via.border');
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(12px);
+      }
+      
+      .terminal-header {
+        background: linear-gradient(to right, #18181b, #09090b);
+        border-bottom: 1px solid theme('colors.via.border');
+      }
+
+      /* Animated Gradient Text */
+      .text-gradient {
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-image: linear-gradient(90deg, #ffffff, #a1a1aa, #ffffff);
+        background-size: 200% auto;
+        animation: shimmer 4s linear infinite;
+      }
+
+      .text-gradient-gold {
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-image: linear-gradient(90deg, #ffd600, #ffea00, #ff8c00);
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar { width: 10px; }
+      ::-webkit-scrollbar-track { background: theme('colors.via.dark'); }
+      ::-webkit-scrollbar-thumb { background: theme('colors.via.border'); border-radius: 5px; }
+      ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+    </style>
+</head>
+<body class="antialiased selection:bg-via-gold selection:text-via-dark geometric-bg relative min-h-screen">
+
+    <!-- Global ambient glow behind everything -->
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-via-gold/5 blur-[120px] pointer-events-none"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 border-b border-via-border bg-via-dark/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="font-mono font-bold text-xl text-via-gold tracking-tighter">VIA.</span>
+                <span class="font-serif font-semibold text-lg text-zinc-400 italic">Decide Engine</span>
+            </div>
+            <div class="hidden md:flex gap-8 font-mono text-sm tracking-widest text-zinc-400">
+                <a href="#features" class="hover:text-via-gold transition-colors block">FEATURES</a>
+                <a href="#terminal" class="hover:text-via-gold transition-colors block">CORE</a>
+                <a href="logichub.html" class="hover:text-via-gold transition-colors block">LOGICHUB</a>
+            </div>
+            <div>
+                <a href="viadecide.html" class="px-5 py-2 font-mono text-xs font-bold border border-via-border hover:border-via-gold text-white hover:text-via-gold transition-all rounded bg-via-card">
+                    INITIALIZE >_
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative pt-40 pb-32 flex flex-col items-center justify-center min-h-[90vh] text-center px-4">
+        
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-via-gold/10 border border-via-gold/20 text-via-gold font-mono text-xs font-bold tracking-widest mb-10 animate-float">
+            <span class="w-2 h-2 rounded-full bg-via-green animate-pulse"></span>
+            SYSTEM ONLINE // V2.0
+        </div>
+
+        <h1 class="font-sans font-black text-6xl md:text-8xl lg:text-[7rem] tracking-tight leading-[1.05] mb-8 max-w-5xl mx-auto relative z-10 drop-shadow-2xl">
+            <span class="text-white">Orchestrate</span><br>
+            <span class="text-gradient-gold">Without Limits.</span>
+        </h1>
+
+        <p class="font-serif text-xl md:text-3xl text-zinc-400 max-w-3xl mx-auto mb-16 leading-relaxed italic">
+            Zero npm dependencies. A standalone executable visual canvas designed to engineer, verify, and generate native logic instantly.
+        </p>
+
+        <!-- THE ULTIMATE CTA -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10 w-full max-w-md mx-auto">
+            <a href="viadecide.html" class="cta-button w-full sm:w-auto hover:after:w-full">
+                LAUNCH ENGINE
+            </a>
+            
+            <p class="absolute -bottom-8 font-mono text-xs text-zinc-500 tracking-widest">
+                [ NO INSTALLATION REQUIRED ]
+            </p>
+        </div>
+
+        <!-- CLI / Terminal Preview -->
+        <div id="terminal" class="mt-32 w-full max-w-4xl mx-auto terminal-window rounded-xl overflow-hidden relative z-10 animate-float" style="animation-delay: 1s; animation-duration: 8s;">
+            <div class="terminal-header h-12 flex items-center px-4 gap-2">
+                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                <span class="ml-4 font-mono text-xs text-zinc-500">via-boot-sequence.sh</span>
+            </div>
+            <div class="p-6 font-mono text-sm leading-loose text-left overflow-hidden h-[240px]">
+                <div class="text-zinc-500">> Initiating runtime environment...</div>
+                <div class="text-via-green">> SUCCESS: Bypass npm packaging [2ms]</div>
+                <div class="text-zinc-500">> Loading LogicHub Canvas...</div>
+                <div class="text-via-green">> SUCCESS: Visual logic mounted [4ms]</div>
+                <div class="text-zinc-500">> Connecting Anthropic Engine...</div>
+                <div class="text-via-gold">> OK: Awaiting architecture verification.</div>
+                <div class="mt-4 text-white typing-effect font-bold">> READY. SELECT LAUNCH ENGINE TO PROCEED <span class="animate-pulse bg-white text-white">_</span></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section id="features" class="py-32 border-t border-via-border relative bg-[#050505]">
+        <!-- Top gradient mask for section transition -->
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-via-gold to-transparent opacity-20"></div>
+
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-24">
+                <h2 class="font-mono text-via-gold tracking-widest font-bold mb-4">ARCHITECTURE REDEFINED</h2>
+                <h3 class="font-sans text-4xl md:text-5xl font-black text-white">Native Web Execution.</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Feature 1 -->
+                <a href="viadecide.html" class="group block p-8 rounded-2xl border border-via-border bg-via-card hover:border-via-gold transition-colors relative overflow-hidden h-full">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-via-gold/5 blur-3xl transition-opacity group-hover:bg-via-gold/10 pointer-events-none"></div>
+                    <div class="w-12 h-12 flex items-center justify-center rounded border border-via-border bg-via-dark text-via-gold font-mono text-xl font-bold mb-6 group-hover:-translate-y-1 transition-transform">01</div>
+                    <h4 class="font-sans text-2xl font-bold mb-4 text-white">Standalone Core</h4>
+                    <p class="font-serif text-zinc-400 leading-relaxed">
+                        Execute the engine via a single HTML bundle. Ignore `node_modules`. VIA utilizes modular frontend principles optimized purely natively.
+                    </p>
+                </a>
+
+                <!-- Feature 2 -->
+                <a href="logichub.html" class="group block p-8 rounded-2xl border border-via-border bg-via-card hover:border-via-gold transition-colors relative overflow-hidden h-full">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-via-green/5 blur-3xl transition-opacity group-hover:bg-via-green/10 pointer-events-none"></div>
+                    <div class="w-12 h-12 flex items-center justify-center rounded border border-via-border bg-via-dark text-via-green font-mono text-xl font-bold mb-6 group-hover:-translate-y-1 transition-transform">02</div>
+                    <h4 class="font-sans text-2xl font-bold mb-4 text-white">LogicHub Visuals</h4>
+                    <p class="font-serif text-zinc-400 leading-relaxed">
+                        Drag, link, and architect the entire topography of your software visually on an interactive, mathematical canvas grid.
+                    </p>
+                </a>
+
+                <!-- Feature 3 -->
+                <div class="group p-8 rounded-2xl border border-via-border bg-via-card hover:border-via-gold transition-colors relative overflow-hidden h-full">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-via-gold/5 blur-3xl transition-opacity group-hover:bg-via-gold/10 pointer-events-none"></div>
+                    <div class="w-12 h-12 flex items-center justify-center rounded border border-via-border bg-via-dark text-via-gold font-mono text-xl font-bold mb-6 group-hover:-translate-y-1 transition-transform">03</div>
+                    <h4 class="font-sans text-2xl font-bold mb-4 text-white">AI Enforcement</h4>
+                    <p class="font-serif text-zinc-400 leading-relaxed">
+                        Topological sorting feeds context downstream into native LLM gateways, dynamically building and evaluating complex architectures.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Bottom CTA Bar -->
+    <section class="py-24 border-t border-via-border geometric-bg relative text-center">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-[300px] rounded-[100%] bg-via-gold/5 blur-[80px] pointer-events-none"></div>
+        <div class="relative z-10 px-6">
+            <h2 class="font-sans text-4xl md:text-6xl font-black mb-10 text-white tracking-tight">Begin The Operation.</h2>
+            <a href="viadecide.html" class="cta-button">
+                LAUNCH ENGINE
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-via-border bg-[#020202] py-12 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <span class="font-mono font-bold text-lg text-via-gold">VIA.</span>
+                <span class="font-mono text-sm text-zinc-600">// SYSTEM ORCHESTRATION</span>
+            </div>
+            <p class="font-mono text-xs text-zinc-500">© 2026 VIA Open Source. Root Level Access.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

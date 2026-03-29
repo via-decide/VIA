@@ -36,7 +36,7 @@
     html, body { width: 100%; height: 100%; overflow: hidden; background: var(--void); color: var(--text-main); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; user-select: none; touch-action: none; }
 
     /* ═══ MAIN APP SHELL ═══ */
-    #app { position: fixed; inset: 0; display: flex; flex-direction: column; background: linear-gradient(135deg, var(--void) 0%, #0f0f1e 100%); }
+    #app { display: none; position: fixed; inset: 0; flex-direction: column; background: linear-gradient(135deg, var(--void) 0%, #0f0f1e 100%); }
 
     /* ═══ STATUS BAR ═══ */
     .status-bar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; padding-top: calc(1rem + var(--safe-top)); position: relative; z-index: 100; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: linear-gradient(to bottom, rgba(5, 5, 10, 0.7), transparent); border-bottom: 1px solid var(--border); }
@@ -92,6 +92,10 @@
     .auth-btn { width: 100%; padding: 1.2rem; margin-bottom: 1rem; border: none; border-radius: 12px; font-family: var(--font-sans); font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 1px; }
     .auth-btn.primary { background: var(--saffron); color: var(--void); }
     .auth-btn.primary:active { transform: scale(0.96); }
+    .auth-input { width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid var(--border-bright); background: rgba(0,0,0,0.4); color: var(--text-main); font-family: var(--font-mono); font-size: 0.9rem; margin-bottom: 0.5rem; outline: none; transition: border 0.3s; }
+    .auth-input:focus { border-color: var(--saffron); }
+    .auth-btn.secondary { background: transparent; color: var(--text-main); border: 1px solid var(--border-bright); margin-bottom: 0; }
+    .auth-btn.secondary:hover { border-color: var(--saffron); }
     .auth-status { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted); padding: 12px; background: rgba(0, 230, 118, 0.1); border-radius: 8px; margin-top: 1rem; }
     .user-info-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(15, 15, 26, 0.6); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px; }
     .user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
@@ -389,8 +393,16 @@
     <div class="auth-modal">
       <h1>Enter VIA</h1>
       <p>Your Orchade awaits. Sign in to access your farming city.</p>
+      
+      <div id="auth-forms" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom: 1rem;">
+        <input type="email" id="auth-email" placeholder="Email Address" class="auth-input" />
+        <input type="password" id="auth-password" placeholder="Password" class="auth-input" />
+        <button class="auth-btn primary" id="email-login-btn">Log In</button>
+        <button class="auth-btn secondary" id="email-signup-btn">Create Account</button>
+      </div>
+      <div style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.8rem; font-family: var(--font-mono); text-transform: uppercase;">— OR —</div>
       <button class="auth-btn primary" id="google-signin-btn">🔐 Sign in with Google</button>
-      <div class="auth-status" id="auth-status">Initializing authentication...</div>
+      <div class="auth-status" id="auth-status">Ready to connect...</div>
     </div>
   </div>
 
@@ -1561,11 +1573,35 @@
     async function signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       try {
-        document.getElementById('auth-status').textContent = 'Signing in...';
+        document.getElementById('auth-status').textContent = 'Connecting to Google OAuth...';
         await auth.signInWithPopup(provider);
       } catch (error) {
         console.error('Auth error:', error);
         document.getElementById('auth-status').textContent = 'Sign in failed: ' + error.message;
+      }
+    }
+
+    async function loginWithEmail() {
+      const e = document.getElementById('auth-email').value.trim();
+      const p = document.getElementById('auth-password').value.trim();
+      if (!e || !p) return document.getElementById('auth-status').textContent = 'Email and password required.';
+      document.getElementById('auth-status').textContent = 'Authenticating...';
+      try {
+        await auth.signInWithEmailAndPassword(e, p);
+      } catch (err) {
+        document.getElementById('auth-status').textContent = 'Error: ' + err.message;
+      }
+    }
+
+    async function signupWithEmail() {
+      const e = document.getElementById('auth-email').value.trim();
+      const p = document.getElementById('auth-password').value.trim();
+      if (!e || !p) return document.getElementById('auth-status').textContent = 'Email and password required.';
+      document.getElementById('auth-status').textContent = 'Creating account...';
+      try {
+        await auth.createUserWithEmailAndPassword(e, p);
+      } catch (err) {
+        document.getElementById('auth-status').textContent = 'Error: ' + err.message;
       }
     }
 
@@ -1598,23 +1634,37 @@
     }
 
     function loadUserGameState(uid) {
-      database.ref('users/' + uid + '/orchade').on('value', (snapshot) => {
-        if (snapshot.exists()) {
-          const savedState = snapshot.val();
-          gameState = { ...gameState, ...savedState };
-        }
-        // Initialize app after loading user data
-        if (!window._appInitialized) {
-          initializeApp();
-          window._appInitialized = true;
-        }
-      });
+      if (!database) {
+        if (!window._appInitialized) { initializeApp(); window._appInitialized = true; }
+        return;
+      }
+      try {
+        database.ref('users/' + uid + '/orchade').on('value', (snapshot) => {
+          if (snapshot.exists()) {
+            const savedState = snapshot.val();
+            gameState = { ...gameState, ...savedState };
+          }
+          if (!window._appInitialized) {
+            initializeApp();
+            window._appInitialized = true;
+          }
+        }, (err) => {
+          console.error("Database read rejected (Check Firebase rules)", err);
+          document.getElementById('auth-status').textContent = 'Database rules error. Offline mode.';
+          if (!window._appInitialized) { initializeApp(); window._appInitialized = true; }
+        });
+      } catch(e) {
+          if (!window._appInitialized) { initializeApp(); window._appInitialized = true; }
+      }
     }
 
     function saveUserGameState(uid) {
-      database.ref('users/' + uid + '/orchade').set(gameState).catch(err => {
-        console.error('Failed to save game state:', err);
-      });
+      if (!database) return;
+      try {
+        database.ref('users/' + uid + '/orchade').set(gameState).catch(err => {
+          console.error('Failed to save game state:', err);
+        });
+      } catch(e) {}
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1649,9 +1699,11 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // GOOGLE SIGNIN BUTTON
+    // AUTH LISTENERS
     // ═══════════════════════════════════════════════════════════════
     document.getElementById('google-signin-btn').addEventListener('click', signInWithGoogle);
+    document.getElementById('email-login-btn').addEventListener('click', loginWithEmail);
+    document.getElementById('email-signup-btn').addEventListener('click', signupWithEmail);
   </script>
 </body>
 </html>

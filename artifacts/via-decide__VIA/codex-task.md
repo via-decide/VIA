@@ -5,6 +5,14 @@ Upgrade all typography across the site to a distinctive, high-contrast type syst
 
 CONSTRAINTS
 Do not touch any font-size values for body text - only font-family, letter-spacing, and line-height. Zero layout reflow allowed.
+Build a glow + border animation system for all interactive elements. 1. In shared/shared.css add glow token variables:
+
+CONSTRAINTS
+All glows must use CSS variables. Never hardcode rgba values outside :root. Pulse animation only on elements with .live or .active class - not globally.
+Add a staggered fade-slide entrance animation system for all page content. 1. In shared/shared.css add: @keyframes fadeSlideIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } } 2. Create utility classes .anim-1 through .anim-8 each with:
+
+CONSTRAINTS
+Use CSS custom property --i for delay - not hardcoded nth-child delays. Reduced motion override is mandatory. Touch only shared/shared.css for the keyframe - individual HTML files only add the class + --i value.
 
 PROCESS (MANDATORY)
 1. Read README.md and AGENTS.md before editing.

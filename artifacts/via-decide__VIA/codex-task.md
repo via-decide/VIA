@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Upgrade all typography across the site to a distinctive, high-contrast type system. 1. Replace font-family: 'Inter' everywhere in shared/shared.css with a 3-font stack:
+
+CONSTRAINTS
+Do not touch any font-size values for body text - only font-family, letter-spacing, and line-height. Zero layout reflow allowed.
 Build a glow + border animation system for all interactive elements. 1. In shared/shared.css add glow token variables:
 
 CONSTRAINTS

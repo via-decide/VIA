@@ -4,6 +4,7 @@ TARGET
 Validate and repair only the files touched by the previous implementation.
 
 TASK
+Upgrade all typography across the site to a distinctive, high-contrast type system. 1. Replace font-family: 'Inter' everywhere in shared/shared.css with a 3-font stack:
 Build a glow + border animation system for all interactive elements. 1. In shared/shared.css add glow token variables:
 Add a staggered fade-slide entrance animation system for all page content. 1. In shared/shared.css add: @keyframes fadeSlideIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } } 2. Create utility classes .anim-1 through .anim-8 each with:
 

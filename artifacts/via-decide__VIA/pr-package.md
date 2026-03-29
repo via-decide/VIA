@@ -1,3 +1,9 @@
+Branch: simba/build-a-glow-border-animation-system-for-all-int
+Title: Build a glow + border animation system for all interactive elements. ...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: The site reacts to interaction with light, not just color. Active states feel energized.
 Branch: simba/add-a-staggered-fade-slide-entrance-animation-sy
 Title: Add a staggered fade-slide entrance animation system for all page con...
 

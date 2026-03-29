@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Build a glow + border animation system for all interactive elements. 1. In shared/shared.css add glow token variables:
+
+CONSTRAINTS
+All glows must use CSS variables. Never hardcode rgba values outside :root. Pulse animation only on elements with .live or .active class - not globally.
 Add a staggered fade-slide entrance animation system for all page content. 1. In shared/shared.css add: @keyframes fadeSlideIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } } 2. Create utility classes .anim-1 through .anim-8 each with:
 
 CONSTRAINTS

@@ -1,3 +1,9 @@
+Branch: simba/replace-all-flat-solid-backgrounds-with-layered-
+Title: Replace all flat solid backgrounds with layered atmospheric depth bac...
+
+## Summary
+- Repo orchestration task for via-decide/VIA
+- Goal: The site feels like it exists inside a lit space, not pasted on a black rectangle.
 Branch: simba/upgrade-all-typography-across-the-site-to-a-dist
 Title: Upgrade all typography across the site to a distinctive, high-contras...
 

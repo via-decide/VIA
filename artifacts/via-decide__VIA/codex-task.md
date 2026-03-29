@@ -1,6 +1,10 @@
 You are working in repository via-decide/VIA on branch main.
 
 MISSION
+Replace all flat solid backgrounds with layered atmospheric depth backgrounds. 1. In shared/shared.css, replace background: #000 on body with:
+
+CONSTRAINTS
+Grid overlay must use pointer-events: none and z-index: 0. No visible performance regression - use will-change: transform only on animated elements.
 Upgrade all typography across the site to a distinctive, high-contrast type system. 1. Replace font-family: 'Inter' everywhere in shared/shared.css with a 3-font stack:
 
 CONSTRAINTS

@@ -14,6 +14,7 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <!-- Firebase SDK -->
+  <script src="../shared/config_env.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
@@ -1011,92 +1012,8 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // LOGIC ACADEMY
+    // WORLD MAP (Legacy - see Spatial Engine for main nav)
     // ═══════════════════════════════════════════════════════════════
-    const logicData = [
-      { id: 'thales', name: 'Thales', icon: '🏛️', color: '#fbbf24', x: 800, y: 1500, level: 1, cost: 120 },
-      { id: 'pythagoras', name: 'Pythagoras', icon: '📐', color: '#10b981', x: 1000, y: 1800, level: 1, cost: 250 },
-      { id: 'plato', name: 'Plato', icon: '🏛️', color: '#E2E8F0', x: 1200, y: 2100, level: 1, cost: 400 },
-      { id: 'euclid', name: 'Euclid', icon: '📐', color: '#3b82f6', x: 1600, y: 2100, level: 1, cost: 600 },
-      { id: 'archimedes', name: 'Archimedes', icon: '⚖️', color: '#ef4444', x: 1900, y: 1800, level: 1, cost: 900 },
-      { id: 'aryabhata', name: 'Aryabhata', icon: '🔭', color: '#ff8c00', x: 2400, y: 1200, level: 1, cost: 1200 },
-      { id: 'brahmagupta', name: 'Brahmagupta', icon: '⭕', color: '#34d399', x: 2600, y: 1600, level: 1, cost: 1500 }
-    ];
-
-    let logicMap = { x: -1000, y: -800, scale: 0.5 };
-
-    function initLogicMap() {
-      const layer = document.getElementById('logic-entities');
-      layer.innerHTML = '';
-      logicData.forEach(d => {
-        const el = document.createElement('div');
-        el.className = 'logic-entity';
-        el.style.left = d.x + 'px';
-        el.style.top = d.y + 'px';
-        el.innerHTML = `
-          <div class="logic-entity-glow" style="background: ${d.color}"></div>
-          <div class="logic-entity-icon" style="border-color: ${d.color}80; color: ${d.color};">${d.icon}</div>
-          <div class="logic-entity-label"><span class="logic-level-text" style="color:${d.color}">Lv. ${d.level}</span> ${d.name}</div>
-        `;
-        el.addEventListener('click', () => openLogicModal(d.id));
-        layer.appendChild(el);
-      });
-      setupLogicPhysics();
-      updateLogicTransform();
-    }
-
-    function updateLogicTransform() {
-      document.getElementById('logic-ww').style.transform = `translate(${logicMap.x}px, ${logicMap.y}px) scale(${logicMap.scale})`;
-    }
-
-    function setupLogicPhysics() {
-      const lVp = document.getElementById('logic-vp');
-      let drag = null;
-      lVp.addEventListener('pointerdown', (e) => {
-        if (e.target.closest('.logic-entity')) return;
-        drag = { sx: e.clientX, sy: e.clientY, cx: logicMap.x, cy: logicMap.y };
-      });
-      lVp.addEventListener('pointermove', (e) => {
-        if (!drag) return;
-        logicMap.x = drag.cx + (e.clientX - drag.sx);
-        logicMap.y = drag.cy + (e.clientY - drag.sy);
-        updateLogicTransform();
-      });
-      lVp.addEventListener('pointerup', () => { drag = null; });
-    }
-
-    function openLogicModal(entityId) {
-      const entity = logicData.find(e => e.id === entityId);
-      currentLogicEntity = entity;
-      document.getElementById('lm-icon').textContent = entity.icon;
-      document.getElementById('lm-icon').style.borderColor = entity.color;
-      document.getElementById('lm-icon').style.background = entity.color + '20';
-      document.getElementById('lm-title').textContent = entity.name;
-      document.getElementById('lm-level').textContent = entity.level;
-      document.getElementById('logic-modal').classList.add('active');
-    }
-
-    function closeLogicModal() {
-      document.getElementById('logic-modal').classList.remove('active');
-      currentLogicEntity = null;
-    }
-
-    function upgradeLogicEntity() {
-      if (!currentLogicEntity || globalSparks < currentLogicEntity.cost) {
-        showToast('Insufficient Sparks!');
-        return;
-      }
-      globalSparks -= currentLogicEntity.cost;
-      currentLogicEntity.level += 1;
-      currentLogicEntity.cost = Math.round(currentLogicEntity.cost * 1.5);
-      syncEconomyUI();
-      initLogicMap();
-      closeLogicModal();
-      showToast(`${currentLogicEntity.name} upgraded to Lv. ${currentLogicEntity.level}!`);
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    // WORLD MAP
     // ═══════════════════════════════════════════════════════════════
     const W_MAP = 3200, H_MAP = 1800;
     const ZONES = [
@@ -1237,7 +1154,7 @@
     ];
 
     let logicMap = { x: -1000, y: -800, scale: 0.5 };
-    let currentLogicEntity = null;
+    // currentLogicEntity already declared in Global State
     const lVp = document.getElementById('logic-vp'), lww = document.getElementById('logic-ww');
 
     function updateLogicTransform() {
@@ -1421,9 +1338,9 @@
     // GEMINI API INTEGRATION
     // ═══════════════════════════════════════════════════════════════
     async function callGemini(userPrompt, systemPrompt = "") {
-      const apiKey = ""; // Set this from environment or config
+      const apiKey = window.VIA_CONFIG?.GEMINI?.apiKey || ""; // Set this from environment or config
       if (!apiKey) {
-        return "Gemini API key not configured. Set apiKey in the code or environment.";
+        return "Gemini API key not configured. Set window.VIA_CONFIG.GEMINI.apiKey in your config file.";
       }
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
       const payload = {
@@ -1522,20 +1439,34 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // FIREBASE AUTHENTICATION
+    // FIREBASE AUTHENTICATION (Extracted from window.VIA_CONFIG)
     // ═══════════════════════════════════════════════════════════════
-    const firebaseConfig = {
-      apiKey: "AIzaSyB4ues4tuPmT_BVqTr_gzUQ5m0TPbLB5H4",
-      authDomain: "gen-lang-client-0530513864.firebaseapp.com",
-      projectId: "gen-lang-client-0530513864",
-      storageBucket: "gen-lang-client-0530513864.firebasestorage.app",
-      messagingSenderId: "783755173296",
-      appId: "1:783755173296:web:242974c84f464f979e8a75"
+    const firebaseConfig = window.VIA_CONFIG?.FIREBASE || {
+      apiKey: "SETUP_REQUIRED"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const database = firebase.database();
+    let auth = null;
+    let database = null;
+
+    if (firebaseConfig.apiKey !== "SETUP_REQUIRED") {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        auth = firebase.auth();
+        database = firebase.database();
+        console.log("Firebase initialized successfully.");
+      } catch (e) {
+        console.error("Firebase init failed:", e);
+      }
+    } else {
+      console.warn("VIA_CONFIG.FIREBASE missing. Running in limited UI mode.");
+      document.addEventListener('DOMContentLoaded', () => {
+        const statusEl = document.getElementById('auth-status');
+        if (statusEl) {
+          statusEl.innerText = "OFFLINE MODE: Config not found.";
+          statusEl.style.color = "var(--saffron)";
+        }
+      });
+    }
 
     let currentUser = null;
 

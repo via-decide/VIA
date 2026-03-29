@@ -1,338 +1,758 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    
-    <!-- Ultra SEO Meta Tags -->
-    <title>VIA Decide Engine — Autonomous Visual Architecture & Agent Workflows</title>
-    <meta name="description" content="VIA is a zero-dependency, highly visual orchestrator for software architecture, logic mapping, and autonomous agent workflows. Launch massive projects seamlessly from a single HTML file.">
-    <meta name="keywords" content="VIA, AI Agent Workflows, Visual Canvas, LogicHub, Code Generation, LLM Orchestration, Single File Application, Zero Dependencies, Software Architecture">
-    <meta name="author" content="VIA Team">
-    <link rel="canonical" href="https://github.com/via-decide/VIA">
-    
-    <!-- Open Graph (Social SEO) -->
-    <meta property="og:title" content="VIA Decide Engine — Autonomous Visual Architecture">
-    <meta property="og:description" content="A fundamentally different approach to software mapping. Zero npm. Zero bloat. 100% Visual.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://github.com/via-decide/VIA">
-    <meta property="og:image" content="https://via-decide.github.io/VIA/preview.png">
-    
-    <!-- Twitter Specific -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="VIA Decide Engine">
-    <meta name="twitter:description" content="Zero-npm visual architecture toolkit. Build logic, visualize topologies, invoke AI.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIA — Swipe OS for Human Agency</title>
 
-    <!-- JSON-LD Semantic Web Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "VIA Decide Engine",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Cross-Platform (Web)",
-      "description": "ViaDecide is a revolutionary zero-dependency ecosystem designed to orchestrate visual logic graphs, topological dependencies, and AI code generation natively within the browser.",
-      "url": "https://github.com/via-decide/VIA",
-      "offers": {
-        "@type": "Offer",
-        "price": "0.00",
-        "priceCurrency": "USD"
-      }
-    }
-    </script>
-
-    <!-- Tailwind & Fonts -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
 
-    <!-- Tailwind Config for exact branding -->
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              serif: ['Crimson Text', 'serif'],
-              mono: ['JetBrains Mono', 'monospace'],
-            },
-            colors: {
-              via: {
-                dark: '#050505',
-                card: '#0a0a0d',
-                border: '#27272a',
-                gold: '#ffd600',
-                goldHover: '#ffea00',
-                green: '#2ecc71',
-                red: '#ff4444'
-              }
-            },
-            backgroundImage: {
-              'dot-matrix': 'radial-gradient(rgba(82, 82, 91, 0.4) 1px, transparent 1px)',
-              'glow': 'conic-gradient(from 180deg at 50% 50%, #2a8af6 0deg, #a853ba 180deg, #e92a67 360deg)',
-            },
-            animation: {
-              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'bounce-subtle': 'bounce 2s infinite',
-              'shimmer': 'shimmer 2.5s linear infinite',
-              'float': 'float 6s ease-in-out infinite',
-            },
-            keyframes: {
-              shimmer: {
-                '0%': { backgroundPosition: '200% 0' },
-                '100%': { backgroundPosition: '-200% 0' }
-              },
-              float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-15px)' },
-              }
-            }
-          }
-        }
-      }
-    </script>
-
-    <!-- Core Styles -->
     <style>
-      body {
-        background-color: theme('colors.via.dark');
-        color: #f4f4f5;
-        overflow-x: hidden;
-      }
-      
-      .geometric-bg {
-        background-image: theme('backgroundImage.dot-matrix');
-        background-size: 24px 24px;
-        background-position: -12px -12px;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      /* Ultimate CTA Button — Impossible to Ignore */
-      .cta-button {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1.25rem 3rem;
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 800;
-        font-size: 1.25rem;
-        letter-spacing: 0.1em;
-        color: theme('colors.via.dark');
-        background: theme('colors.via.gold');
-        border: 2px solid transparent;
-        overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        text-transform: uppercase;
-        box-shadow: 0 0 40px rgba(255, 214, 0, 0.4), inset 0 0 0 0 rgba(255, 255, 255, 0.2);
-        z-index: 10;
-        clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-      }
+        :root {
+            --void: #030508;
+            --surface: #0a0d12;
+            --border: #1a1f2a;
+            --text: #e8eaef;
+            --text-dim: #a0a8b8;
+            --saffron: #ff671f;
+            --accent-green: #00e676;
+            --accent-blue: #00d1ff;
+            --accent-purple: #a78bfa;
+        }
 
-      .cta-button::before {
-        content: '';
-        position: absolute;
-        top: 0; left: -100%; width: 50%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
-        transform: skewX(-20deg);
-        animation: shine 4s ease-in-out infinite;
-      }
+        html {
+            scroll-behavior: smooth;
+        }
 
-      @keyframes shine {
-        0%, 100% { left: -100%; }
-        20%, 80% { left: 200%; }
-      }
+        body {
+            font-family: 'Syne', sans-serif;
+            background: var(--void);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-      .cta-button:hover {
-        transform: translateY(-4px) scale(1.02);
-        background: theme('colors.via.goldHover');
-        box-shadow: 0 15px 50px rgba(255, 214, 0, 0.6);
-        border: 2px solid #fff;
-      }
+        /* Typography */
+        h1, h2, h3 {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+        }
 
-      .cta-button:active {
-        transform: translateY(2px) scale(0.98);
-        box-shadow: 0 0 20px rgba(255, 214, 0, 0.4);
-      }
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            line-height: 1.1;
+        }
 
-      /* Secondary terminal styling */
-      .terminal-window {
-        background: theme('colors.via.card');
-        border: 1px solid theme('colors.via.border');
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(12px);
-      }
-      
-      .terminal-header {
-        background: linear-gradient(to right, #18181b, #09090b);
-        border-bottom: 1px solid theme('colors.via.border');
-      }
+        h2 {
+            font-size: clamp(1.75rem, 5vw, 3rem);
+            line-height: 1.2;
+        }
 
-      /* Animated Gradient Text */
-      .text-gradient {
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-image: linear-gradient(90deg, #ffffff, #a1a1aa, #ffffff);
-        background-size: 200% auto;
-        animation: shimmer 4s linear infinite;
-      }
+        h3 {
+            font-size: 1.25rem;
+        }
 
-      .text-gradient-gold {
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-image: linear-gradient(90deg, #ffd600, #ffea00, #ff8c00);
-      }
+        p {
+            font-size: 1rem;
+            color: var(--text-dim);
+        }
 
-      /* Custom scrollbar */
-      ::-webkit-scrollbar { width: 10px; }
-      ::-webkit-scrollbar-track { background: theme('colors.via.dark'); }
-      ::-webkit-scrollbar-thumb { background: theme('colors.via.border'); border-radius: 5px; }
-      ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        code, .mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+        }
+
+        /* Links & Interactive */
+        a {
+            color: var(--saffron);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--accent-green);
+        }
+
+        button, .btn {
+            background: var(--saffron);
+            color: var(--void);
+            border: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: 0.5rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        button:hover, .btn:hover {
+            background: var(--accent-green);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 230, 118, 0.2);
+        }
+
+        button.secondary {
+            background: transparent;
+            color: var(--saffron);
+            border: 1px solid var(--saffron);
+        }
+
+        button.secondary:hover {
+            background: rgba(255, 103, 31, 0.1);
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        /* Layout */
+        section {
+            padding: 6rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Header & Nav */
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(3, 5, 8, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--saffron), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--saffron);
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+            }
+        }
+
+        /* Hero */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            padding: 8rem 2rem;
+        }
+
+        .hero h1 {
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--saffron), var(--accent-green), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            color: var(--text);
+        }
+
+        .hero .cta-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-visual {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(255, 103, 31, 0.1), rgba(0, 230, 118, 0.1));
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-visual::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 103, 31, 0.2), transparent);
+            animation: drift 20s infinite;
+        }
+
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, 20px); }
+        }
+
+        .hero-visual p {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: var(--text-dim);
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 4rem 2rem;
+            }
+
+            .hero-visual {
+                height: 250px;
+            }
+        }
+
+        /* Features */
+        .features {
+            background: linear-gradient(180deg, rgba(255, 103, 31, 0.05), transparent);
+            padding: 8rem 2rem;
+        }
+
+        .features h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .features > .container > p {
+            text-align: center;
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--saffron);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(255, 103, 31, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+        }
+
+        /* Products */
+        .products {
+            padding: 8rem 2rem;
+        }
+
+        .products h2 {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            border-color: var(--saffron);
+            transform: translateY(-8px);
+            box-shadow: 0 16px 32px rgba(255, 103, 31, 0.15);
+        }
+
+        .product-preview {
+            background: linear-gradient(135deg, rgba(255, 103, 31, 0.1), rgba(0, 230, 118, 0.1));
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .product-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .product-card p {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            flex-grow: 1;
+        }
+
+        .product-card .btn {
+            align-self: flex-start;
+            font-size: 0.875rem;
+            padding: 0.75rem 1.5rem;
+        }
+
+        /* Manifesto */
+        .manifesto {
+            background: linear-gradient(180deg, rgba(0, 209, 255, 0.05), transparent);
+            padding: 8rem 2rem;
+        }
+
+        .manifesto .container {
+            max-width: 800px;
+        }
+
+        .manifesto h2 {
+            margin-bottom: 2rem;
+        }
+
+        .manifesto p {
+            margin-bottom: 1.5rem;
+            font-size: 1.0625rem;
+            color: var(--text);
+            line-height: 1.8;
+        }
+
+        .manifesto strong {
+            color: var(--saffron);
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            padding: 8rem 2rem;
+        }
+
+        .tech-stack h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .stack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .stack-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stack-item strong {
+            display: block;
+            color: var(--saffron);
+            margin-bottom: 0.5rem;
+        }
+
+        .stack-item p {
+            font-size: 0.9rem;
+        }
+
+        /* CTA */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(255, 103, 31, 0.1), rgba(0, 230, 118, 0.1));
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            margin-bottom: 2rem;
+            font-size: 1.0625rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+
+        .footer-credit {
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
-<body class="antialiased selection:bg-via-gold selection:text-via-dark geometric-bg relative min-h-screen">
-
-    <!-- Global ambient glow behind everything -->
-    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-via-gold/5 blur-[120px] pointer-events-none"></div>
-
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 w-full z-50 border-b border-via-border bg-via-dark/80 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <span class="font-mono font-bold text-xl text-via-gold tracking-tighter">VIA.</span>
-                <span class="font-serif font-semibold text-lg text-zinc-400 italic">Decide Engine</span>
-            </div>
-            <div class="hidden md:flex gap-8 font-mono text-sm tracking-widest text-zinc-400">
-                <a href="#features" class="hover:text-via-gold transition-colors block">FEATURES</a>
-                <a href="#terminal" class="hover:text-via-gold transition-colors block">CORE</a>
-                <a href="logichub.html" class="hover:text-via-gold transition-colors block">LOGICHUB</a>
-            </div>
-            <div>
-                <a href="viadecide.html" class="px-5 py-2 font-mono text-xs font-bold border border-via-border hover:border-via-gold text-white hover:text-via-gold transition-all rounded bg-via-card">
-                    INITIALIZE >_
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header class="relative pt-40 pb-32 flex flex-col items-center justify-center min-h-[90vh] text-center px-4">
-        
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-via-gold/10 border border-via-gold/20 text-via-gold font-mono text-xs font-bold tracking-widest mb-10 animate-float">
-            <span class="w-2 h-2 rounded-full bg-via-green animate-pulse"></span>
-            SYSTEM ONLINE // V2.0
-        </div>
-
-        <h1 class="font-sans font-black text-6xl md:text-8xl lg:text-[7rem] tracking-tight leading-[1.05] mb-8 max-w-5xl mx-auto relative z-10 drop-shadow-2xl">
-            <span class="text-white">Orchestrate</span><br>
-            <span class="text-gradient-gold">Without Limits.</span>
-        </h1>
-
-        <p class="font-serif text-xl md:text-3xl text-zinc-400 max-w-3xl mx-auto mb-16 leading-relaxed italic">
-            Zero npm dependencies. A standalone executable visual canvas designed to engineer, verify, and generate native logic instantly.
-        </p>
-
-        <!-- THE ULTIMATE CTA -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10 w-full max-w-md mx-auto">
-            <a href="viadecide.html" class="cta-button w-full sm:w-auto hover:after:w-full">
-                LAUNCH ENGINE
-            </a>
-            
-            <p class="absolute -bottom-8 font-mono text-xs text-zinc-500 tracking-widest">
-                [ NO INSTALLATION REQUIRED ]
-            </p>
-        </div>
-
-        <!-- CLI / Terminal Preview -->
-        <div id="terminal" class="mt-32 w-full max-w-4xl mx-auto terminal-window rounded-xl overflow-hidden relative z-10 animate-float" style="animation-delay: 1s; animation-duration: 8s;">
-            <div class="terminal-header h-12 flex items-center px-4 gap-2">
-                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
-                <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
-                <span class="ml-4 font-mono text-xs text-zinc-500">via-boot-sequence.sh</span>
-            </div>
-            <div class="p-6 font-mono text-sm leading-loose text-left overflow-hidden h-[240px]">
-                <div class="text-zinc-500">> Initiating runtime environment...</div>
-                <div class="text-via-green">> SUCCESS: Bypass npm packaging [2ms]</div>
-                <div class="text-zinc-500">> Loading LogicHub Canvas...</div>
-                <div class="text-via-green">> SUCCESS: Visual logic mounted [4ms]</div>
-                <div class="text-zinc-500">> Connecting Anthropic Engine...</div>
-                <div class="text-via-gold">> OK: Awaiting architecture verification.</div>
-                <div class="mt-4 text-white typing-effect font-bold">> READY. SELECT LAUNCH ENGINE TO PROCEED <span class="animate-pulse bg-white text-white">_</span></div>
-            </div>
-        </div>
+<body>
+    <header>
+        <nav>
+            <div class="logo">VIA</div>
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#products">Sections</a></li>
+                <li><a href="#manifesto">Manifesto</a></li>
+                <li><a href="./viadecide.html" class="btn">Launch App</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <!-- Features Section -->
-    <section id="features" class="py-32 border-t border-via-border relative bg-[#050505]">
-        <!-- Top gradient mask for section transition -->
-        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-via-gold to-transparent opacity-20"></div>
-
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-24">
-                <h2 class="font-mono text-via-gold tracking-widest font-bold mb-4">ARCHITECTURE REDEFINED</h2>
-                <h3 class="font-sans text-4xl md:text-5xl font-black text-white">Native Web Execution.</h3>
+    <!-- Hero -->
+    <section class="hero">
+        <div>
+            <h1>Swipe OS for Human Agency</h1>
+            <p>Experience a kinetic interface that responds to your intentions. Card-based decision making meets interactive systems for learning, creating, and managing your digital world.</p>
+            <div class="cta-group">
+                <a href="./viadecide.html" class="btn">Enter the Engine</a>
+                <a href="https://github.com/via-decide/via-decide" class="btn secondary">GitHub</a>
             </div>
+        </div>
+        <div class="hero-visual">
+            <p>Swipe, Decide, Create</p>
+        </div>
+    </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                
-                <!-- Feature 1 -->
-                <a href="viadecide.html" class="group block p-8 rounded-2xl border border-via-border bg-via-card hover:border-via-gold transition-colors relative overflow-hidden h-full">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-via-gold/5 blur-3xl transition-opacity group-hover:bg-via-gold/10 pointer-events-none"></div>
-                    <div class="w-12 h-12 flex items-center justify-center rounded border border-via-border bg-via-dark text-via-gold font-mono text-xl font-bold mb-6 group-hover:-translate-y-1 transition-transform">01</div>
-                    <h4 class="font-sans text-2xl font-bold mb-4 text-white">Standalone Core</h4>
-                    <p class="font-serif text-zinc-400 leading-relaxed">
-                        Execute the engine via a single HTML bundle. Ignore `node_modules`. VIA utilizes modular frontend principles optimized purely natively.
-                    </p>
-                </a>
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2>Why VIA</h2>
+            <p>A sovereign digital ecosystem built from the ground up for human decision-making and personal agency.</p>
 
-                <!-- Feature 2 -->
-                <a href="logichub.html" class="group block p-8 rounded-2xl border border-via-border bg-via-card hover:border-via-gold transition-colors relative overflow-hidden h-full">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-via-green/5 blur-3xl transition-opacity group-hover:bg-via-green/10 pointer-events-none"></div>
-                    <div class="w-12 h-12 flex items-center justify-center rounded border border-via-border bg-via-dark text-via-green font-mono text-xl font-bold mb-6 group-hover:-translate-y-1 transition-transform">02</div>
-                    <h4 class="font-sans text-2xl font-bold mb-4 text-white">LogicHub Visuals</h4>
-                    <p class="font-serif text-zinc-400 leading-relaxed">
-                        Drag, link, and architect the entire topography of your software visually on an interactive, mathematical canvas grid.
-                    </p>
-                </a>
-
-                <!-- Feature 3 -->
-                <div class="group p-8 rounded-2xl border border-via-border bg-via-card hover:border-via-gold transition-colors relative overflow-hidden h-full">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-via-gold/5 blur-3xl transition-opacity group-hover:bg-via-gold/10 pointer-events-none"></div>
-                    <div class="w-12 h-12 flex items-center justify-center rounded border border-via-border bg-via-dark text-via-gold font-mono text-xl font-bold mb-6 group-hover:-translate-y-1 transition-transform">03</div>
-                    <h4 class="font-sans text-2xl font-bold mb-4 text-white">AI Enforcement</h4>
-                    <p class="font-serif text-zinc-400 leading-relaxed">
-                        Topological sorting feeds context downstream into native LLM gateways, dynamically building and evaluating complex architectures.
-                    </p>
+            <div class="grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Kinetic Cards</h3>
+                    <p>Swipe-based interface with physics-driven animations. Intuitive gesture recognition for pass/via decision making.</p>
                 </div>
 
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🎮</div>
+                    <h3>Interactive Systems</h3>
+                    <p>Orchard farming, Logic Academy entity maps, World exploration—embedded learning through gameplay.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">💰</div>
+                    <h3>Local Economy</h3>
+                    <p>Sparks and Trust—a decentralized currency system managed entirely in localStorage. Your data, your rules.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🔐</div>
+                    <h3>Privacy First</h3>
+                    <p>No tracking, no analytics. Optional Firebase auth for sync. Full control over your information.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Responsive Design</h3>
+                    <p>Desktop, tablet, and mobile—crafted to feel native across all platforms with touch and mouse support.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">📖</div>
+                    <h3>Vanilla JavaScript</h3>
+                    <p>No framework dependencies. Pure HTML, CSS, and JS—lightweight, fast, and transparent.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Bottom CTA Bar -->
-    <section class="py-24 border-t border-via-border geometric-bg relative text-center">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-[300px] rounded-[100%] bg-via-gold/5 blur-[80px] pointer-events-none"></div>
-        <div class="relative z-10 px-6">
-            <h2 class="font-sans text-4xl md:text-6xl font-black mb-10 text-white tracking-tight">Begin The Operation.</h2>
-            <a href="viadecide.html" class="cta-button">
-                LAUNCH ENGINE
-            </a>
+    <!-- Products/Sections -->
+    <section class="products" id="products">
+        <div class="container">
+            <h2>Explore the Sections</h2>
+
+            <div class="product-grid">
+                <div class="product-card fade-in">
+                    <div class="product-preview">📇</div>
+                    <div class="product-content">
+                        <h3>Swipe Feed</h3>
+                        <p>The core kinetic experience. Browse and interact with cards using swipe gestures. Every decision you make shapes your path forward.</p>
+                        <a href="./viadecide.html" class="btn">Explore</a>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-preview">⚙️</div>
+                    <div class="product-content">
+                        <h3>Engine Tools</h3>
+                        <p>A grid of utility tools for managing your economy, settings, and integrations. Quick access to essential operations.</p>
+                        <a href="./viadecide.html" class="btn">Explore</a>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-preview">🌱</div>
+                    <div class="product-content">
+                        <h3>Orchard</h3>
+                        <p>Plant, grow, and harvest. A farming game that teaches patience and compound growth. Watch your digital ecosystem flourish.</p>
+                        <a href="./viadecide.html" class="btn">Explore</a>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-preview">🧠</div>
+                    <div class="product-content">
+                        <h3>Logic Academy</h3>
+                        <p>An interactive map of philosophical entities. Upgrade their thinking, unlock new paths, and build your personalized knowledge graph.</p>
+                        <a href="./viadecide.html" class="btn">Explore</a>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-preview">🗺️</div>
+                    <div class="product-content">
+                        <h3>World Map</h3>
+                        <p>Pan and explore an infinite procedurally-generated world. Discover territories, unlock zones, and chart your own course.</p>
+                        <a href="./viadecide.html" class="btn">Explore</a>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-preview">👤</div>
+                    <div class="product-content">
+                        <h3>Profile</h3>
+                        <p>Your identity in the system. View your achievements, currency holdings, and personal data. Fully under your control.</p>
+                        <a href="./viadecide.html" class="btn">Explore</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Manifesto -->
+    <section class="manifesto">
+        <div class="container">
+            <h2>Our Vision</h2>
+            <p>
+                <strong>We believe in sovereign digital systems.</strong> The internet should be a place where you maintain full agency over your data, your decisions, and your growth. VIA is built on this principle.
+            </p>
+            <p>
+                No algorithms deciding what you see. No dark patterns nudging your behavior. No data brokers harvesting your attention. Instead: a clean, honest interface that responds to your intentions and respects your autonomy.
+            </p>
+            <p>
+                The <strong>Swipe OS</strong> is our answer to interface bloat. One gesture, one decision, one step forward. Combined with interactive systems that reward engagement and thought, VIA creates space for meaningful digital interaction.
+            </p>
+            <p>
+                This is a manifesto in code. <strong>Fork it. Remix it. Make it yours.</strong> VIA is open source because digital sovereignty means transparency.
+            </p>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="tech-stack">
+        <div class="container">
+            <h2>Built With</h2>
+
+            <div class="stack-grid">
+                <div class="stack-item">
+                    <strong>Vanilla JavaScript</strong>
+                    <p>Pure DOM manipulation, kinetic physics, gesture detection</p>
+                </div>
+                <div class="stack-item">
+                    <strong>Phosphor Icons</strong>
+                    <p>Lightweight, customizable icon library from CDN</p>
+                </div>
+                <div class="stack-item">
+                    <strong>localStorage</strong>
+                    <p>Economy system, game state, user preferences</p>
+                </div>
+                <div class="stack-item">
+                    <strong>Canvas API</strong>
+                    <p>World map terrain, minimap rendering, procedural generation</p>
+                </div>
+                <div class="stack-item">
+                    <strong>Firebase Auth</strong>
+                    <p>Optional passwordless authentication for cloud sync</p>
+                </div>
+                <div class="stack-item">
+                    <strong>CSS Grid & Flexbox</strong>
+                    <p>Responsive layouts, no framework required</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Activity Feed -->
+    <section style="padding: 8rem 2rem; background: linear-gradient(180deg, transparent, rgba(255, 103, 31, 0.05));">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 1rem;">🚀 Project Activity</h2>
+            <p style="text-align: center; margin-bottom: 3rem; max-width: 700px; margin-left: auto; margin-right: auto; color: var(--text-dim);">
+                Real-time updates from our development. Follow commits, new tools, and progress as we build the future of human agency.
+            </p>
+
+            <!-- Activity Feed Component -->
+            <div id="viadecide-feed"></div>
+            <script src="feed-component.js"></script>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Enter?</h2>
+            <p>The engine awaits. Your decisions shape the world.</p>
+            <a href="./viadecide.html" class="btn">Launch VIA</a>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="border-t border-via-border bg-[#020202] py-12 px-6">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-2">
-                <span class="font-mono font-bold text-lg text-via-gold">VIA.</span>
-                <span class="font-mono text-sm text-zinc-600">// SYSTEM ORCHESTRATION</span>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="https://github.com/via-decide/via-decide">GitHub</a>
+                <a href="https://github.com/via-decide">Organization</a>
+                <a href="mailto:hello@viadecide.com">Contact</a>
+                <a href="./viadecide.html">Launch App</a>
             </div>
-            <p class="font-mono text-xs text-zinc-500">© 2026 VIA Open Source. Root Level Access.</p>
+            <div class="footer-credit">
+                VIA — Swipe OS for Human Agency © 2025. Open source and free forever.
+            </div>
         </div>
     </footer>
 
+    <script>
+        // Fade-in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

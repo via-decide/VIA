@@ -40,11 +40,11 @@
 
     .main-area { display: flex; flex: 1; position: relative; overflow: hidden; }
     .palette { width: 220px; padding: 1rem; border-right: 1px solid var(--border); background: var(--card); z-index: 10; display: flex; flex-direction: column; gap: 1rem; }
-    .palette-item { padding: 1rem; border: 1px solid var(--border); text-align: center; cursor: grab; font-family: var(--font-code); color: var(--text-white); background: var(--bg); user-select: none; transition: border-color 0.2s; }
-    .palette-item:hover { border-color: var(--gold); }
+    .palette-item { padding: 1rem; border: 1px solid var(--border); text-align: center; cursor: grab; font-family: var(--font-code); color: var(--text-white); background: var(--bg); user-select: none; transition: border-color 0.2s, box-shadow 0.2s; touch-action: none; border-radius: 6px; }
+    .palette-item:hover { border-color: var(--gold); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
     .palette-item:active { cursor: grabbing; border-color: var(--gold); }
 
-    .canvas { flex: 1; position: relative; background: radial-gradient(circle, var(--border) 1px, transparent 1px); background-size: 20px 20px; overflow: hidden; touch-action: none; }
+    .canvas { flex: 1; position: relative; background-color: var(--card); background-image: linear-gradient(rgba(82,82,91,0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(82,82,91,0.18) 1px, transparent 1px); background-size: 28px 28px; overflow: hidden; touch-action: none; border-left: 1px solid var(--border); box-shadow: inset 0 2px 20px rgba(0,0,0,0.5); }
     #arrows-svg { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 1; }
     #blocks-layer { position: absolute; top:0; left:0; width:100%; height:100%; z-index: 2; }
 
@@ -55,8 +55,8 @@
     .action-bar button#btn-export { border-color: var(--border); transition: all 0.3s; }
 
     /* Block styling. Add pointer-events to handle internal click vs drag. */
-    .block { position: absolute; width: 160px; padding: 1rem; background: var(--card); border: 2px solid var(--text-white); border-radius: 8px; font-family: var(--font-sans); cursor: grab; user-select: none; display: flex; flex-direction: column; gap: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: box-shadow 0.2s; }
-    .block:active { cursor: grabbing; box-shadow: 0 8px 20px rgba(0,0,0,0.8); }
+    .block { position: absolute; width: 160px; padding: 1rem; background: var(--card); border: 2px solid var(--text-white); border-radius: 8px; font-family: var(--font-sans); cursor: grab; user-select: none; touch-action: none; display: flex; flex-direction: column; gap: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: box-shadow 0.15s, outline 0.15s; }
+    .block:active, .block.selected { cursor: grabbing; box-shadow: 0 8px 32px rgba(0,0,0,0.8); outline: 2px solid var(--gold); outline-offset: 2px; z-index: 100 !important; }
     .block-header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-code); font-size: 0.75rem; color: var(--text-grey); pointer-events: none; }
     .block-type { color: var(--gold); }
     .block-label { font-weight: 700; font-size: 1rem; text-align: center; background: transparent; border: none; color: var(--text-white); width: 100%; outline: none; border-bottom: 1px solid transparent; text-overflow: ellipsis; }
@@ -82,7 +82,7 @@
     @keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(255, 214, 0, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(255, 214, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 214, 0, 0); } }
 
     /* Draw nodes for connections */
-    .port { position: absolute; width: 14px; height: 14px; background: var(--bg); border: 2px solid var(--text-grey); border-radius: 50%; cursor: crosshair; z-index: 5; transition: all 0.2s; }
+    .port { position: absolute; width: 14px; height: 14px; background: var(--bg); border: 2px solid var(--text-grey); border-radius: 50%; cursor: crosshair; z-index: 5; transition: all 0.2s; touch-action: none; }
     .port.in { left: -8px; top: calc(50% - 7px); }
     .port.out { right: -8px; top: calc(50% - 7px); }
     .port:hover { border-color: var(--gold); background: var(--gold); transform: scale(1.2); }
@@ -119,14 +119,14 @@
 
   <div class="main-area">
     <div class="palette">
-      <div class="palette-item" draggable="true" ondragstart="handleDragStart(event, 'auth')">[AUTH]</div>
-      <div class="palette-item" draggable="true" ondragstart="handleDragStart(event, 'database')">[DATABASE]</div>
-      <div class="palette-item" draggable="true" ondragstart="handleDragStart(event, 'api')">[API]</div>
-      <div class="palette-item" draggable="true" ondragstart="handleDragStart(event, 'ui')">[UI]</div>
-      <div class="palette-item" draggable="true" ondragstart="handleDragStart(event, 'deploy')">[DEPLOY]</div>
+      <div class="palette-item" data-type="auth">[AUTH]</div>
+      <div class="palette-item" data-type="database">[DATABASE]</div>
+      <div class="palette-item" data-type="api">[API]</div>
+      <div class="palette-item" data-type="ui">[UI]</div>
+      <div class="palette-item" data-type="deploy">[DEPLOY]</div>
     </div>
     
-    <div class="canvas" id="canvas" ondrop="handleDrop(event)" ondragover="allowDrop(event)">
+    <div class="canvas" id="canvas">
       <svg id="arrows-svg">
         <defs>
           <marker id="arrowhead-pending" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -194,8 +194,9 @@ window.onload = () => {
   let isDrawingConnection = false;
   let sourceBlockId = null;
   
-  canvas.addEventListener('mousemove', (e) => {
+  document.addEventListener('pointermove', (e) => {
     if (isDraggingBlock) {
+      e.preventDefault();
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left - offsetX;
       const y = e.clientY - rect.top - offsetY;
@@ -209,6 +210,7 @@ window.onload = () => {
         renderConnections();
       }
     } else if (isDrawingConnection) {
+      e.preventDefault();
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
@@ -220,10 +222,11 @@ window.onload = () => {
       const drawPath = document.getElementById('drawing-path');
       drawPath.setAttribute('d', `M ${srcX} ${srcY} C ${srcX + 50} ${srcY}, ${x - 50} ${y}, ${x} ${y}`);
     }
-  });
+  }, { passive: false });
 
-  canvas.addEventListener('mouseup', (e) => {
+  document.addEventListener('pointerup', (e) => {
     if (isDraggingBlock) {
+      isDraggingBlock.classList.remove('selected');
       isDraggingBlock = null;
       saveMap();
     }
@@ -234,6 +237,26 @@ window.onload = () => {
     }
   });
 
+  document.querySelectorAll('.palette-item').forEach(el => {
+    el.addEventListener('pointerdown', (e) => {
+      if (e.button === 2) return;
+      e.preventDefault();
+      const type = el.dataset.type;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left - 80;
+      const y = e.clientY - rect.top - 40;
+      const newBlockId = createBlockReturnId(type, Math.max(0, x), Math.max(0, y));
+      if (newBlockId) {
+        isDraggingBlock = document.getElementById(newBlockId);
+        if (isDraggingBlock) {
+            isDraggingBlock.classList.add('selected');
+            offsetX = 80;
+            offsetY = 40;
+        }
+      }
+    });
+  });
+
   document.addEventListener('click', (e) => {
     const menu = document.getElementById('ai-context-menu');
     if (menu.style.display === 'flex' && !menu.contains(e.target)) {
@@ -242,25 +265,29 @@ window.onload = () => {
     }
   });
 
-  window.handleBlockMouseDown = (e, el) => {
+  window.handleBlockPointerDown = (e, el) => {
     if (e.target.classList.contains('port') || e.target.classList.contains('block-delete') || e.target.tagName === 'INPUT') return;
     if (e.button === 2) return; // Right click
+    e.preventDefault();
     isDraggingBlock = el;
+    isDraggingBlock.classList.add('selected');
     const rect = el.getBoundingClientRect();
     offsetX = e.clientX - rect.left;
     offsetY = e.clientY - rect.top;
   };
   
-  window.handlePortMouseDown = (e, blockId, type) => {
+  window.handlePortPointerDown = (e, blockId, type) => {
     e.stopPropagation();
+    e.preventDefault();
     if (type === 'out') {
       isDrawingConnection = true;
       sourceBlockId = blockId;
     }
   };
   
-  window.handlePortMouseUp = (e, targetBlockId, type) => {
+  window.handlePortPointerUp = (e, targetBlockId, type) => {
     e.stopPropagation();
+    e.preventDefault();
     if (isDrawingConnection && type === 'in' && sourceBlockId && sourceBlockId !== targetBlockId) {
       // Connect source to target
       if (!logicMap.connections.some(c => c.from === sourceBlockId && c.to === targetBlockId)) {
@@ -306,28 +333,11 @@ function log(msg, type = "normal") {
 }
 
 // --- DRAG AND DROP ---
-function handleDragStart(e, type) {
-  e.dataTransfer.setData("type", type);
-}
-function allowDrop(e) {
-  e.preventDefault();
-}
-function handleDrop(e) {
-  e.preventDefault();
-  const type = e.dataTransfer.getData("type");
-  if (type) {
-    const rect = document.getElementById("canvas").getBoundingClientRect();
-    const x = e.clientX - rect.left - 70;
-    const y = e.clientY - rect.top - 40;
-    createBlock(type, x, y);
-  }
-}
-
 function addBlockCenter(type) {
-  createBlock(type, 300, 200);
+  createBlockReturnId(type, 300, 200);
 }
 
-function createBlock(type, x, y) {
+function createBlockReturnId(type, x, y) {
   const bObj = {
     id: "BLK_" + Math.random().toString(36).substring(2,7).toUpperCase(),
     label: type.charAt(0).toUpperCase() + type.slice(1) + " Layer",
@@ -347,6 +357,7 @@ function createBlock(type, x, y) {
   updateBlockStates();
   renderCanvas();
   saveMap();
+  return bObj.id;
 }
 
 function deleteBlock(id) {
@@ -451,11 +462,11 @@ function renderCanvas() {
       </div>
       <input type="text" class="block-label" value="${b.label}" onchange="updateBlockLabel('${b.id}', this.value)">
       <div class="block-status" title="${b.errorMsg}">${icon}${statusText}</div>
-      <div class="port in" onmousedown="handlePortMouseDown(event, '${b.id}', 'in')" onmouseup="handlePortMouseUp(event, '${b.id}', 'in')"></div>
-      <div class="port out" onmousedown="handlePortMouseDown(event, '${b.id}', 'out')" onmouseup="handlePortMouseUp(event, '${b.id}', 'out')"></div>
+      <div class="port in" onpointerdown="handlePortPointerDown(event, '${b.id}', 'in')" onpointerup="handlePortPointerUp(event, '${b.id}', 'in')"></div>
+      <div class="port out" onpointerdown="handlePortPointerDown(event, '${b.id}', 'out')" onpointerup="handlePortPointerUp(event, '${b.id}', 'out')"></div>
     `;
     
-    el.onmousedown = (e) => handleBlockMouseDown(e, el);
+    el.onpointerdown = (e) => handleBlockPointerDown(e, el);
     // Right click for orphans
     el.oncontextmenu = (e) => {
       e.preventDefault();

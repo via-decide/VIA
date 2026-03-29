@@ -2,6 +2,7 @@
   "repo": "via-decide/VIA",
   "mode": "codex_then_antigravity",
   "branch": "simba/build-a-glow-border-animation-system-for-all-int",
+  "branch": "simba/add-a-staggered-fade-slide-entrance-animation-sy",
   "files_to_create": [
     "codex-task.md",
     "antigravity-repair-task.md",

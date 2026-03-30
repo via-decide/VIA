@@ -11,4 +11,3 @@ window.VIA_CONFIG = {
     apiKey: "AIzaSyB4ues4tuPmT_BVqTr_gzUQ5m0TPbLB5H4"
   }
 };
-console.log("VIA_CONFIG Initialized.");

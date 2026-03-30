@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>LOGICHUB // MAP</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;700;800&family=Inconsolata:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #000000;
@@ -14,6 +15,7 @@
       --green: #2ecc71;
       --red: #ff4444;
       --yellow: #ffcc00;
+      --cyan: #00e5ff;
       --text-white: #ffffff;
       --text-grey: #888888;
       --font-serif: 'Crimson Text', serif;
@@ -25,52 +27,62 @@
       --error: #ff4444;
       --orphan: #ffcc00;
       --locked: #333333;
+      --snap-color: #00e5ff;
     }
+    * { box-sizing: border-box; }
     body { background: var(--bg); color: var(--text-white); font-family: var(--font-sans); margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    
     .top-bar { display: flex; justify-content: space-between; padding: 1rem 2rem; border-bottom: 1px solid var(--border); background: var(--card); align-items: center; z-index: 10; }
     .title { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 600; }
     .api-input { padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--gold); font-family: var(--font-code); outline: none; width: 350px; }
-    
-    #lh-logger { padding: 1rem 2rem; background: var(--bg); border-bottom: 1px solid var(--border); height: 85px; font-family: var(--font-code); font-size: 0.85rem; color: var(--text-grey); display: flex; flex-direction: column; justify-content: flex-end; z-index: 10; }
-    .log-line { min-height: 1.2rem; margin-top: 4px; }
+
+    #lh-logger { padding: 1rem 2rem; background: var(--bg); border-bottom: 1px solid var(--border); height: 100px; overflow-y: auto; font-family: var(--font-code); font-size: 0.85rem; color: var(--text-grey); display: flex; flex-direction: column; z-index: 10; scrollbar-width: thin; scrollbar-color: var(--border) var(--bg); }
+    #lh-logger::-webkit-scrollbar { width: 6px; }
+    #lh-logger::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 3px; }
+
+    .log-line { min-height: 1.2rem; margin-top: 4px; transition: color 0.2s; word-break: break-word; }
     .log-line.active { color: var(--green); }
     .log-line.danger { color: var(--red); }
     .log-line.primary { color: var(--gold); }
     .log-line.normal { color: var(--text-white); }
 
     .main-area { display: flex; flex: 1; position: relative; overflow: hidden; }
-    .palette { width: 220px; padding: 1rem; border-right: 1px solid var(--border); background: var(--card); z-index: 10; display: flex; flex-direction: column; gap: 1rem; }
-    .palette-item { padding: 1rem; border: 1px solid var(--border); text-align: center; cursor: grab; font-family: var(--font-code); color: var(--text-white); background: var(--bg); user-select: none; transition: border-color 0.2s; }
-    .palette-item:hover { border-color: var(--gold); }
-    .palette-item:active { cursor: grabbing; border-color: var(--gold); }
+    .palette { width: 220px; padding: 1rem; border-right: 1px solid var(--border); background: var(--card); z-index: 10; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; }
+    .palette-item { padding: 1rem; border: 1px solid var(--border); text-align: center; cursor: pointer; font-family: var(--font-code); color: var(--text-white); background: var(--bg); user-select: none; transition: border-color 0.2s, box-shadow 0.2s; border-radius: 6px; }
+    .palette-item:hover { border-color: var(--gold); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+    .palette-item:active { border-color: var(--gold); background: rgba(255, 214, 0, 0.1); }
 
-    .canvas { flex: 1; position: relative; background: radial-gradient(circle, var(--border) 1px, transparent 1px); background-size: 20px 20px; overflow: hidden; touch-action: none; }
+    .canvas { flex: 1; position: relative; background-color: var(--card); background-image: radial-gradient(rgba(82,82,91,0.4) 1px, transparent 1px); background-size: 24px 24px; background-position: -12px -12px; overflow: hidden; touch-action: none; border-left: 1px solid var(--border); box-shadow: inset 0 2px 20px rgba(0,0,0,0.5); }
+    .canvas.drawing { cursor: crosshair; }
+
     #arrows-svg { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 1; }
     #blocks-layer { position: absolute; top:0; left:0; width:100%; height:100%; z-index: 2; }
 
-    .action-bar { padding: 1rem 2rem; border-top: 1px solid var(--border); background: var(--card); display: flex; justify-content: space-between; z-index: 10; }
-    .action-bar button { padding: 0.75rem 1.5rem; font-family: var(--font-sans); font-weight: 700; border: 1px solid var(--border); background: var(--bg); color: var(--text-white); cursor: pointer; border-radius: 4px; transition: all 0.2s; font-size: 0.9rem; }
+    .action-bar { padding: 1rem 2rem; border-top: 1px solid var(--border); background: var(--card); display: flex; justify-content: space-between; z-index: 10; gap: 10px; }
+    .action-bar button { padding: 0.75rem 1.5rem; font-family: var(--font-sans); font-weight: 700; border: 1px solid var(--border); background: var(--bg); color: var(--text-white); cursor: pointer; border-radius: 4px; transition: all 0.2s; font-size: 0.9rem; flex: 1; }
     .action-bar button:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
     .action-bar button:disabled { color: var(--text-grey); cursor: not-allowed; opacity: 0.6; }
-    .action-bar button#btn-export { border-color: var(--border); transition: all 0.3s; }
 
-    /* Block styling. Add pointer-events to handle internal click vs drag. */
-    .block { position: absolute; width: 160px; padding: 1rem; background: var(--card); border: 2px solid var(--text-white); border-radius: 8px; font-family: var(--font-sans); cursor: grab; user-select: none; display: flex; flex-direction: column; gap: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: box-shadow 0.2s; }
-    .block:active { cursor: grabbing; box-shadow: 0 8px 20px rgba(0,0,0,0.8); }
+    /* Block styling */
+    .block { position: absolute; width: 160px; padding: 1rem; background: var(--card); border: 2px solid var(--text-white); border-radius: 8px; font-family: var(--font-sans); cursor: grab; user-select: none; touch-action: none; display: flex; flex-direction: column; gap: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: box-shadow 0.15s, outline 0.15s, transform 0.15s, border-color 0.2s; }
+    .block:active, .block.selected { cursor: grabbing; box-shadow: 0 12px 32px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,214,0,0.5); outline: 2px solid var(--gold); outline-offset: 4px; transform: scale(1.02); z-index: 100 !important; }
+    .block.snap-target { outline: 2px solid var(--snap-color) !important; outline-offset: 4px; box-shadow: 0 0 20px rgba(0,229,255,0.35) !important; }
+    
     .block-header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-code); font-size: 0.75rem; color: var(--text-grey); pointer-events: none; }
     .block-type { color: var(--gold); }
     .block-label { font-weight: 700; font-size: 1rem; text-align: center; background: transparent; border: none; color: var(--text-white); width: 100%; outline: none; border-bottom: 1px solid transparent; text-overflow: ellipsis; }
     .block-label:focus { border-bottom: 1px solid var(--text-grey); }
     .block-status { font-family: var(--font-code); font-size: 0.7rem; text-align: center; padding: 4px; border-radius: 4px; pointer-events: none; }
-    .block-delete { position: absolute; top: -10px; right: -10px; background: var(--red); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; cursor: pointer; display: none; z-index: 10; }
-    .block:hover .block-delete { display: flex; }
+    
+    .block-delete { position: absolute; top: -10px; right: -10px; background: var(--red); color: white; width: 24px; height: 24px; border-radius: 50%; display: none; justify-content: center; align-items: center; font-size: 12px; cursor: pointer; z-index: 10; font-weight: bold; }
+    .block:hover .block-delete, .block.selected .block-delete { display: flex; }
 
     /* Visual states */
     .block.state-PENDING { border-color: var(--text-white); }
     .block.state-PENDING .block-status { background: var(--pending); color: white; }
     .block.state-LOCKED { border-color: var(--text-grey); color: var(--text-grey); opacity: 0.6; }
     .block.state-LOCKED .block-status { background: var(--locked); color: var(--text-grey); }
-    .block.state-GENERATING { border-color: var(--generating); box-shadow: 0 0 15px rgba(255, 214, 0, 0.4); animation: pulse-gold 1.5s infinite; }
+    .block.state-GENERATING { border-color: var(--generating); box-shadow: 0 0 15px rgba(255,214,0,0.4); animation: pulse-gold 1.5s infinite; }
     .block.state-GENERATING .block-status { background: var(--generating); color: var(--bg); font-weight: bold; }
     .block.state-VERIFIED { border-color: var(--verified); }
     .block.state-VERIFIED .block-status { background: var(--verified); color: var(--bg); font-weight: bold; }
@@ -79,61 +91,162 @@
     .block.state-ORPHANED { border-color: var(--orphan); border-style: dashed; }
     .block.state-ORPHANED .block-status { background: var(--orphan); color: var(--bg); font-weight: bold; }
 
-    @keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(255, 214, 0, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(255, 214, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 214, 0, 0); } }
+    @keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(255,214,0,0.4); } 70% { box-shadow: 0 0 0 15px rgba(255,214,0,0); } 100% { box-shadow: 0 0 0 0 rgba(255,214,0,0); } }
 
-    /* Draw nodes for connections */
-    .port { position: absolute; width: 14px; height: 14px; background: var(--bg); border: 2px solid var(--text-grey); border-radius: 50%; cursor: crosshair; z-index: 5; transition: all 0.2s; }
-    .port.in { left: -8px; top: calc(50% - 7px); }
-    .port.out { right: -8px; top: calc(50% - 7px); }
-    .port:hover { border-color: var(--gold); background: var(--gold); transform: scale(1.2); }
+    /* Ports */
+    .port-wrapper { position: absolute; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: crosshair; z-index: 5; touch-action: none; }
+    .port-wrapper.in  { left: -20px; top: calc(50% - 20px); }
+    .port-wrapper.out { right: -20px; top: calc(50% - 20px); }
+    .port { width: 14px; height: 14px; background: var(--bg); border: 2px solid var(--text-grey); border-radius: 50%; transition: all 0.15s; pointer-events: none; }
+    .port-wrapper:hover .port, .port-wrapper.hot .port { border-color: var(--gold); background: var(--gold); transform: scale(1.3); }
+    .port-wrapper.snap-ready .port { border-color: var(--snap-color) !important; background: var(--snap-color) !important; transform: scale(1.6) !important; box-shadow: 0 0 12px var(--snap-color); }
 
-    .arrow-path { fill: none; stroke: var(--pending); stroke-width: 3; pointer-events: visibleStroke; cursor: pointer; transition: stroke 0.3s; }
-    .arrow-path:hover { stroke: var(--red); }
+    .arrow-path { fill: none; stroke: var(--pending); stroke-width: 2.5; pointer-events: visibleStroke; cursor: pointer; transition: stroke 0.3s; }
+    .arrow-path:hover { stroke: var(--red); stroke-width: 4; }
     .arrow-path.verified { stroke: var(--verified); }
-    .arrow-head { fill: var(--pending); transition: fill 0.3s; }
-    .arrow-head.verified { fill: var(--verified); }
-    
-    .drawing-path { fill: none; stroke: var(--gold); stroke-width: 3; stroke-dasharray: 6 4; pointer-events: none; }
+    .arrow-head { transition: fill 0.3s; }
+    .arrow-head.verified { fill: var(--verified) !important; }
+
+    .drawing-path { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-dasharray: 7 4; pointer-events: none; opacity: 0.85; }
+    .drawing-path.snapped { stroke: var(--snap-color); stroke-dasharray: none; opacity: 1; }
 
     /* AI Context Menu */
-    #ai-context-menu { position: absolute; background: var(--card); border: 1px solid var(--orphan); border-radius: 8px; padding: 1rem; width: 280px; z-index: 100; display: none; flex-direction: column; gap: 0.75rem; font-size: 0.85rem; box-shadow: 0 8px 30px rgba(0,0,0,0.8); }
+    #ai-context-menu { position: absolute; background: var(--card); border: 1px solid var(--orphan); border-radius: 8px; padding: 1rem; width: 280px; z-index: 100; display: none; flex-direction: column; gap: 0.75rem; font-size: 0.85rem; box-shadow: 0 8px 30px rgba(0,0,0,0.8); max-width: 90vw; }
     #ai-context-menu h4 { margin: 0; color: var(--orphan); font-family: var(--font-sans); }
-    .ai-idea { padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; transition: background 0.2s; color: var(--text-white); background: rgba(255, 204, 0, 0.05); }
-    .ai-idea:hover { background: rgba(255, 204, 0, 0.15); border-color: var(--orphan); }
+    .ai-idea { padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; transition: background 0.2s; color: var(--text-white); background: rgba(255,204,0,0.05); }
+    .ai-idea:hover { background: rgba(255,204,0,0.15); border-color: var(--orphan); }
     #ai-loader { display: none; color: var(--text-grey); font-family: var(--font-code); font-size: 0.8rem; }
+
+    /* =========================================================
+       EXPORT OVERLAY UI (THE VIBECODER TASK LAUNCHER)
+       ========================================================= */
+    #export-overlay {
+      position: fixed; inset: 0; background: var(--bg); z-index: 99999; overflow-y: auto; display: none;
+      font-family: 'Inconsolata', monospace;
+    }
+    #export-overlay::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(255, 214, 0, .04) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 214, 0, .04) 1px, transparent 1px);
+      background-size: 40px 40px; pointer-events: none; z-index: 0;
+    }
+    .btn-close-export {
+      position: absolute; top: 20px; right: 20px; background: transparent; color: var(--text-grey);
+      border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer;
+      font-family: 'Syne', sans-serif; font-weight: bold; transition: all 0.2s; z-index: 10;
+    }
+    .btn-close-export:hover { color: var(--gold); border-color: var(--gold); }
     
+    .wrap { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
+    .header { margin-bottom: 48px; border-left: 3px solid var(--gold); padding-left: 20px; }
+    .header-eyebrow { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .header h1 { font-family: 'Syne', sans-serif; font-size: clamp(26px, 5vw, 40px); font-weight: 800; color: var(--text-white); line-height: 1.1; margin-bottom: 10px; }
+    .header h1 em { font-style: normal; color: var(--gold); }
+    .header-sub { font-size: 13px; color: var(--text-grey); max-width: 520px; line-height: 1.7; font-family: 'Inter', sans-serif; }
+    
+    .stats-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
+    .stat-pill { background: #0a0a0a; border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; font-size: 12px; color: var(--text-grey); display: flex; align-items: center; gap: 6px; }
+    .stat-pill span { color: var(--text-white); font-weight: 600; }
+    .stat-btn { cursor: pointer; transition: all 0.2s; }
+    .stat-btn:hover { background: rgba(0,229,255,0.1); border-color: var(--cyan); color: var(--cyan); }
+    
+    .copy-all-wrap { margin-bottom: 32px; }
+    .btn-copy-all { background: var(--gold); color: #000; border: none; border-radius: 10px; padding: 12px 24px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .06em; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all .15s; outline: none; box-shadow: 0 0 15px rgba(255, 214, 0, 0.2); }
+    .btn-copy-all:hover { background: #ffea00; transform: translateY(-1px); box-shadow: 0 0 20px rgba(255, 214, 0, 0.4); }
+    .btn-copy-all:active { transform: scale(.97); }
+    .btn-copy-all.copied { background: var(--cyan); box-shadow: 0 0 15px rgba(0, 229, 255, 0.3); }
+
+    .section-label { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--text-grey); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    
+    .tasks { display: flex; flex-direction: column; gap: 16px; }
+    .task-card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color .2s, box-shadow .2s; }
+    .task-card:hover { border-color: #333333; box-shadow: 0 0 0 1px rgba(255, 214, 0, .08) inset; }
+    
+    .card-topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--border); background: #141414; cursor: pointer; user-select: none; gap: 12px; }
+    .card-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .task-num { width: 28px; height: 28px; border-radius: 7px; background: #333333; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; color: var(--gold); flex-shrink: 0; }
+    .task-meta { min-width: 0; }
+    .task-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .task-branch { font-size: 11px; color: var(--text-grey); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .tag { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; background: rgba(255,214,0,.10); color: var(--gold); border: 1px solid rgba(255,214,0,.2); }
+    .chevron { font-size: 12px; color: var(--text-grey); transition: transform .2s; }
+    .task-card.open .chevron { transform: rotate(180deg); }
+    
+    .card-body { display: none; }
+    .task-card.open .card-body { display: block; }
+    
+    .info-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0; border-bottom: 1px solid var(--border); }
+    .info-cell { padding: 10px 18px; border-right: 1px solid var(--border); font-size: 12px; font-family: 'Inter', sans-serif;}
+    .info-cell:last-child { border-right: none; }
+    .info-key { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-grey); margin-bottom: 3px; }
+    .info-val { color: var(--text-white); font-weight: 600; }
+    
+    .code-area { position: relative; }
+    .code-label { padding: 10px 18px 6px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-grey); display: flex; align-items: center; justify-content: space-between; }
+    
+    .btn-copy { background: transparent; border: 1px solid #333333; border-radius: 6px; color: var(--text-grey); font-family: 'Inconsolata', monospace; font-size: 11px; padding: 4px 10px; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 5px; outline: none; }
+    .btn-copy:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-copy.copied { border-color: var(--cyan); color: var(--cyan); }
+    
+    pre.task-code { background: #000; border-top: 1px solid var(--border); padding: 16px 18px; font-family: 'Inconsolata', monospace; font-size: 12.5px; line-height: 1.65; color: #fffbbf; overflow-x: auto; white-space: pre; max-height: 420px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #333 transparent; user-select: all; margin: 0; }
+    pre.task-code::-webkit-scrollbar { width: 5px; height: 5px; }
+    pre.task-code::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+    #toast { position: fixed; bottom: 28px; right: 24px; background: var(--gold); color: #000; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; padding: 10px 20px; border-radius: 999px; box-shadow: 0 4px 20px rgba(255, 214, 0,.3); z-index: 999999; transform: translateY(60px); opacity: 0; transition: all .25s cubic-bezier(.34,1.56,.64,1); pointer-events: none; }
+    #toast.show { transform: translateY(0); opacity: 1; }
+
+    /* =========================================================
+       MOBILE RESPONSIVE ADJUSTMENTS
+       ========================================================= */
+    @media (max-width: 768px) {
+      .top-bar { flex-direction: column; align-items: stretch; gap: 0.75rem; padding: 1rem; }
+      .api-input { width: 100%; }
+      .main-area { flex-direction: column; }
+      .palette { width: 100%; flex-direction: row; overflow-x: auto; padding: 0.75rem; border-right: none; border-bottom: 1px solid var(--border); gap: 0.75rem; }
+      .palette-item { flex: 0 0 auto; padding: 0.5rem 1rem; font-size: 0.9rem; }
+      .action-bar { padding: 0.75rem; flex-wrap: wrap; }
+      .action-bar button { flex: 1 1 100%; padding: 0.75rem 0.5rem; font-size: 0.8rem; }
+      #lh-logger { height: 95px; padding: 0.5rem 1rem; }
+      .block { width: 140px; padding: 0.75rem; }
+      .block-delete { display: flex; top: -10px; right: -10px; width: 28px; height: 28px; font-size: 14px; }
+      #ai-context-menu { width: calc(100vw - 40px); left: 20px !important; }
+      .header h1 { font-size: 28px; }
+      .btn-close-export { top: 10px; right: 10px; font-size: 10px; padding: 6px 10px; }
+    }
   </style>
 </head>
 <body>
 
   <div class="top-bar">
     <div class="title">LOGICHUB // <span id="map-id">MAP_XXXXX</span></div>
-    <input type="password" id="api-key" class="api-input" placeholder="Anthropic API Key" onchange="saveApiKey(this.value)">
+    <input type="password" id="api-key" class="api-input" placeholder="Gemini API Key" onchange="saveApiKey(this.value)">
   </div>
 
   <div id="lh-logger">
-    <div class="log-line" id="log-1">> LOGICHUB BOOTING...</div>
-    <div class="log-line" id="log-2">> SYSTEM INITIALIZED</div>
-    <div class="log-line active" id="log-3">> LOGICHUB READY</div>
+    <!-- Logs are injected here dynamically now to support scrolling -->
   </div>
 
   <div class="main-area">
     <div class="palette">
-      <div class="palette-item" draggable="true" ondragstart="handleDragStart(event, 'auth')">[AUTH]</div>
-      <div class="palette-item" draggable="true" ondragstart="handleDragStart(event, 'database')">[DATABASE]</div>
-      <div class="palette-item" draggable="true" ondragstart="handleDragStart(event, 'api')">[API]</div>
-      <div class="palette-item" draggable="true" ondragstart="handleDragStart(event, 'ui')">[UI]</div>
-      <div class="palette-item" draggable="true" ondragstart="handleDragStart(event, 'deploy')">[DEPLOY]</div>
+      <div class="palette-item" onclick="addBlockCenter('auth')" data-type="auth">[AUTH]</div>
+      <div class="palette-item" onclick="addBlockCenter('database')" data-type="database">[DATABASE]</div>
+      <div class="palette-item" onclick="addBlockCenter('api')" data-type="api">[API]</div>
+      <div class="palette-item" onclick="addBlockCenter('ui')" data-type="ui">[UI]</div>
+      <div class="palette-item" onclick="addBlockCenter('deploy')" data-type="deploy">[DEPLOY]</div>
     </div>
-    
-    <div class="canvas" id="canvas" ondrop="handleDrop(event)" ondragover="allowDrop(event)">
+
+    <div class="canvas" id="canvas">
       <svg id="arrows-svg">
         <defs>
           <marker id="arrowhead-pending" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" class="arrow-head"/>
+            <polygon points="0 0, 10 3.5, 0 7" class="arrow-head" fill="#444444"/>
           </marker>
           <marker id="arrowhead-verified" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" class="arrow-head verified"/>
+            <polygon points="0 0, 10 3.5, 0 7" class="arrow-head verified" fill="#2ecc71"/>
+          </marker>
+          <marker id="arrowhead-snap" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#00e5ff"/>
           </marker>
         </defs>
         <g id="connections-group"></g>
@@ -144,97 +257,166 @@
   </div>
 
   <div class="action-bar">
-    <button id="btn-add" onclick="addBlockCenter('ui')">[+ ADD BLOCK]</button>
     <button id="btn-validate" onclick="validateAll(getApiKey())">[VALIDATE ALL BLOCKS]</button>
+    <button id="btn-view-ui" onclick="showExportUI()" disabled>[VIEW CODE & PROMPTS — LOCKED]</button>
     <button id="btn-export" onclick="exportArchitecturePDF(logicMap)" disabled>[EXPORT PDF — LOCKED]</button>
   </div>
 
-  <!-- Isolated Node AI Context Menu -->
+  <!-- AI Menu -->
   <div id="ai-context-menu">
     <h4>Orphaned Block Settings</h4>
-    <p style="margin: 0; color: var(--text-grey); font-family: var(--font-code); font-size: 0.75rem;">This block is isolated. What could it become?</p>
-    <button onclick="getContextIdeas()" style="background: var(--bg); color: var(--orphan); border: 1px solid var(--orphan); padding: 6px; cursor: pointer; border-radius: 4px; font-weight: bold;">Generate Connection Ideas</button>
-    <div id="ai-loader">> Contacting Anthropic...</div>
-    <div id="ai-ideas-container" style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;"></div>
+    <p style="margin:0;color:var(--text-grey);font-family:var(--font-code);font-size:0.75rem;">This block is isolated. What could it become?</p>
+    <button onclick="getContextIdeas()" style="background:var(--bg);color:var(--orphan);border:1px solid var(--orphan);padding:6px;cursor:pointer;border-radius:4px;font-weight:bold;margin-top:8px;">Generate Connection Ideas</button>
+    <div id="ai-loader">> Contacting Gemini...</div>
+    <div id="ai-ideas-container" style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;"></div>
   </div>
 
+  <!-- THE VIBECODER EXPORT OVERLAY -->
+  <div id="export-overlay">
+    <div class="wrap">
+      <button class="btn-close-export" onclick="document.getElementById('export-overlay').style.display='none'">✕ CLOSE</button>
+      
+      <div class="header">
+        <div class="header-eyebrow">LOGICHUB // ARCHITECTURE EXPORT</div>
+        <h1 id="export-map-title">Map<br><em>ID</em></h1>
+        <p class="header-sub">Below are the exact AI context prompts and the final vanilla code generated for your architecture. Expand a block to copy its logic directly into your IDE or LLM.</p>
+      </div>
+      
+      <div class="stats-bar">
+        <div class="stat-pill" id="export-stat-blocks">🗺️ <span>0</span> blocks</div>
+        <div class="stat-pill">🎯 mode: <span>gemini_flash</span></div>
+        <div class="stat-pill stat-btn" onclick="exportArchitectureMarkdown(logicMap)">📄 <span>Download as .MD</span></div>
+      </div>
+
+      <div class="copy-all-wrap">
+        <button class="btn-copy-all" id="btn-copy-all" onclick="copyAllPrompts()">
+          <span>⚡</span> Copy All Task Prompts
+        </button>
+      </div>
+
+      <div class="section-label">Compiled Architecture Code</div>
+      <div class="tasks" id="tasks-container"></div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
 <script>
-// --- PHASE 3: DATA MODEL ---
-let logicMap = {
-  id: "MAP_" + Math.random().toString(36).substring(2,7).toUpperCase(),
-  name: "My Web App",
-  blocks: [],
-  connections: [],
-  status: "DRAFT",
-  createdAt: Date.now()
-};
+// ─── GLOBALS ──────────────────────────────────────────────────────────────────
+let logicMap = { id: "MAP_" + Math.random().toString(36).substring(2,7).toUpperCase(), name: "My Web App", blocks: [], connections: [], status: "DRAFT", createdAt: Date.now() };
+const FILE_MAP = { auth:"auth.js", database:"db.js", api:"routes.js", ui:"dashboard.html", deploy:"deploy.sh" };
+let isDraggingBlock = null, offsetX = 0, offsetY = 0, isDrawingConnection = false, sourceBlockId = null, snapTargetId = null;        
+const SNAP_RADIUS = 50;         
 
-const FILE_MAP = {
-  auth: "auth.js",
-  database: "db.js",
-  api: "routes.js",
-  ui: "dashboard.html",
-  deploy: "deploy.sh"
-};
+// Store generated prompts and code for the UI
+window.exportPrompts = [];
+window.exportCodes = [];
 
-// --- INITIALIZE ---
+function getPortCenter(blockId, portType) {
+  const blockEl = document.getElementById(blockId);
+  if (!blockEl) return null;
+  const wrapper = blockEl.querySelector(`.port-wrapper.${portType}`);
+  if (!wrapper) return null;
+  const canvasRect = document.getElementById('canvas').getBoundingClientRect();
+  const r = wrapper.getBoundingClientRect();
+  return { x: r.left + r.width / 2 - canvasRect.left, y: r.top + r.height / 2 - canvasRect.top };
+}
+
+function findSnapTarget(cursorX, cursorY) {
+  let best = null, bestDist = SNAP_RADIUS;
+  logicMap.blocks.forEach(b => {
+    if (b.id === sourceBlockId) return;
+    if (logicMap.connections.some(c => c.from === sourceBlockId && c.to === b.id)) return;
+    const pos = getPortCenter(b.id, 'in');
+    if (!pos) return;
+    const dist = Math.hypot(cursorX - pos.x, cursorY - pos.y);
+    if (dist < bestDist) { best = b.id; bestDist = dist; }
+  });
+  return best;
+}
+
 window.onload = () => {
   document.getElementById("map-id").innerText = logicMap.id;
   const k = sessionStorage.getItem("LH_API_KEY");
   if (k) document.getElementById("api-key").value = k;
   
+  log("LOGICHUB BOOTING...", "normal");
+  log("SYSTEM INITIALIZED", "normal");
+  log("LOGICHUB READY", "active");
+
   loadMap();
-  
-  // Setup canvas dragging 
-  const canvas = document.getElementById("canvas");
-  let isDraggingBlock = null;
-  let offsetX = 0; let offsetY = 0;
-  
-  // Setup connection drawing
-  let isDrawingConnection = false;
-  let sourceBlockId = null;
-  
-  canvas.addEventListener('mousemove', (e) => {
+  const canvas = document.getElementById('canvas');
+
+  document.addEventListener('pointermove', (e) => {
     if (isDraggingBlock) {
+      e.preventDefault();
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left - offsetX;
-      const y = e.clientY - rect.top - offsetY;
-      
+      const GRID = 24;
+      const rawX = e.clientX - rect.left - offsetX;
+      const rawY = e.clientY - rect.top  - offsetY;
       const b = logicMap.blocks.find(bk => bk.id === isDraggingBlock.id);
       if (b) {
-        b.x = Math.max(0, Math.min(x, rect.width - 160));
-        b.y = Math.max(0, Math.min(y, rect.height - 100));
+        b.x = Math.round(Math.max(0, Math.min(rawX, rect.width  - 160)) / GRID) * GRID;
+        b.y = Math.round(Math.max(0, Math.min(rawY, rect.height - 100)) / GRID) * GRID;
         isDraggingBlock.style.left = b.x + 'px';
-        isDraggingBlock.style.top = b.y + 'px';
+        isDraggingBlock.style.top  = b.y + 'px';
         renderConnections();
       }
-    } else if (isDrawingConnection) {
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      const srcEl = document.getElementById(sourceBlockId);
-      const srcX = parseInt(srcEl.style.left) + 160; 
-      const srcY = parseInt(srcEl.style.top) + 40;
-      
-      const drawPath = document.getElementById('drawing-path');
-      drawPath.setAttribute('d', `M ${srcX} ${srcY} C ${srcX + 50} ${srcY}, ${x - 50} ${y}, ${x} ${y}`);
+      return;
     }
-  });
 
-  canvas.addEventListener('mouseup', (e) => {
+    if (!isDrawingConnection) return;
+    e.preventDefault();
+
+    const rect = canvas.getBoundingClientRect();
+    const curX = e.clientX - rect.left;
+    const curY = e.clientY - rect.top;
+    const srcPos = getPortCenter(sourceBlockId, 'out');
+    if (!srcPos) return;
+
+    const newSnap = findSnapTarget(curX, curY);
+    if (newSnap !== snapTargetId) {
+      if (snapTargetId) {
+        document.getElementById(snapTargetId)?.classList.remove('snap-target');
+        document.getElementById(snapTargetId)?.querySelector('.port-wrapper.in')?.classList.remove('snap-ready');
+      }
+      snapTargetId = newSnap;
+      if (snapTargetId) {
+        document.getElementById(snapTargetId)?.classList.add('snap-target');
+        document.getElementById(snapTargetId)?.querySelector('.port-wrapper.in')?.classList.add('snap-ready');
+      }
+    }
+
+    let endX = curX, endY = curY;
+    const drawPath = document.getElementById('drawing-path');
+
+    if (snapTargetId) {
+      const snapPos = getPortCenter(snapTargetId, 'in');
+      if (snapPos) { endX = snapPos.x; endY = snapPos.y; }
+      drawPath.classList.add('snapped');
+      drawPath.setAttribute('marker-end', 'url(#arrowhead-snap)');
+    } else {
+      drawPath.classList.remove('snapped');
+      drawPath.setAttribute('marker-end', '');
+    }
+
+    const cx = (endX - srcPos.x) * 0.5;
+    drawPath.setAttribute('d', `M ${srcPos.x} ${srcPos.y} C ${srcPos.x + cx} ${srcPos.y}, ${endX - cx} ${endY}, ${endX} ${endY}`);
+  }, { passive: false });
+
+  document.addEventListener('pointerup', (e) => {
     if (isDraggingBlock) {
+      isDraggingBlock.classList.remove('selected');
       isDraggingBlock = null;
       saveMap();
     }
     if (isDrawingConnection) {
-      isDrawingConnection = false;
-      document.getElementById('drawing-path').setAttribute('d', '');
-      sourceBlockId = null;
+      if (snapTargetId) completeConnection(snapTargetId);
+      cancelDrawing();
     }
   });
 
-  document.addEventListener('click', (e) => {
+  document.addEventListener('pointerdown', (e) => {
     const menu = document.getElementById('ai-context-menu');
     if (menu.style.display === 'flex' && !menu.contains(e.target)) {
       menu.style.display = 'none';
@@ -242,594 +424,400 @@ window.onload = () => {
     }
   });
 
-  window.handleBlockMouseDown = (e, el) => {
-    if (e.target.classList.contains('port') || e.target.classList.contains('block-delete') || e.target.tagName === 'INPUT') return;
-    if (e.button === 2) return; // Right click
+  window.handleBlockPointerDown = (e, el) => {
+    if (e.target.closest('.port-wrapper') || e.target.classList.contains('block-delete') || e.target.tagName === 'INPUT') return;
+    if (e.button === 2) return;
+    e.preventDefault();
     isDraggingBlock = el;
-    const rect = el.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
+    el.classList.add('selected');
+    const r = el.getBoundingClientRect();
+    offsetX = e.clientX - r.left;
+    offsetY = e.clientY - r.top;
   };
-  
-  window.handlePortMouseDown = (e, blockId, type) => {
-    e.stopPropagation();
-    if (type === 'out') {
-      isDrawingConnection = true;
-      sourceBlockId = blockId;
-    }
+
+  window.handlePortPointerDown = (e, blockId, type) => {
+    e.stopPropagation(); e.preventDefault();
+    if (type !== 'out') return;
+    e.target.releasePointerCapture(e.pointerId);   
+    isDrawingConnection = true; sourceBlockId = blockId; snapTargetId = null;
+    document.getElementById('canvas').classList.add('drawing');
+    e.target.closest('.port-wrapper')?.classList.add('hot');
   };
-  
-  window.handlePortMouseUp = (e, targetBlockId, type) => {
-    e.stopPropagation();
-    if (isDrawingConnection && type === 'in' && sourceBlockId && sourceBlockId !== targetBlockId) {
-      // Connect source to target
-      if (!logicMap.connections.some(c => c.from === sourceBlockId && c.to === targetBlockId)) {
-        logicMap.connections.push({ from: sourceBlockId, to: targetBlockId });
-        
-        const srcObj = logicMap.blocks.find(b => b.id === sourceBlockId);
-        const tgtObj = logicMap.blocks.find(b => b.id === targetBlockId);
-        if (!srcObj.connectedTo.includes(targetBlockId)) srcObj.connectedTo.push(targetBlockId);
-        if (!tgtObj.dependsOn.includes(sourceBlockId)) tgtObj.dependsOn.push(sourceBlockId);
-        
-        log(`CONNECTED: ${srcObj.label} → ${tgtObj.label}`, "normal");
-        updateBlockStates();
-        renderConnections();
-        saveMap();
-      }
-    }
-    isDrawingConnection = false;
-    document.getElementById('drawing-path').setAttribute('d', '');
-    sourceBlockId = null;
+
+  window.handlePortPointerUp = (e, targetBlockId, type) => {
+    e.stopPropagation(); e.preventDefault();
+    if (!isDrawingConnection || type !== 'in' || !sourceBlockId || sourceBlockId === targetBlockId) return;
+    completeConnection(targetBlockId);
+    cancelDrawing();
   };
 };
 
-function getApiKey() {
-  return document.getElementById("api-key").value;
-}
-function saveApiKey(val) {
-  sessionStorage.setItem("LH_API_KEY", val);
-}
-
-// --- PHASE 8: LOG SYSTEM ---
-const logLines = ["log-1", "log-2", "log-3"];
-function log(msg, type = "normal") {
-  logLines.forEach((id, i) => {
-    const el = document.getElementById(id);
-    if (i < logLines.length - 1) {
-      el.textContent = document.getElementById(logLines[i + 1]).textContent;
-      el.className = "log-line " + document.getElementById(logLines[i + 1]).className.split(' ')[1];
-    } else {
-      el.textContent = `> ${msg}`;
-      el.className = `log-line ${type}`;
-    }
-  });
+function completeConnection(targetBlockId) {
+  if (logicMap.connections.some(c => c.from === sourceBlockId && c.to === targetBlockId)) return;
+  logicMap.connections.push({ from: sourceBlockId, to: targetBlockId });
+  const src = logicMap.blocks.find(b => b.id === sourceBlockId);
+  const tgt = logicMap.blocks.find(b => b.id === targetBlockId);
+  if (src && !src.connectedTo.includes(targetBlockId)) src.connectedTo.push(targetBlockId);
+  if (tgt && !tgt.dependsOn.includes(sourceBlockId)) tgt.dependsOn.push(sourceBlockId);
+  log(`CONNECTED: ${src?.label} → ${tgt?.label}`, "normal");
+  updateBlockStates(); renderConnections(); saveMap();
 }
 
-// --- DRAG AND DROP ---
-function handleDragStart(e, type) {
-  e.dataTransfer.setData("type", type);
-}
-function allowDrop(e) {
-  e.preventDefault();
-}
-function handleDrop(e) {
-  e.preventDefault();
-  const type = e.dataTransfer.getData("type");
-  if (type) {
-    const rect = document.getElementById("canvas").getBoundingClientRect();
-    const x = e.clientX - rect.left - 70;
-    const y = e.clientY - rect.top - 40;
-    createBlock(type, x, y);
+function cancelDrawing() {
+  if (snapTargetId) {
+    document.getElementById(snapTargetId)?.classList.remove('snap-target');
+    document.getElementById(snapTargetId)?.querySelector('.port-wrapper.in')?.classList.remove('snap-ready');
+    snapTargetId = null;
   }
+  document.querySelectorAll('.port-wrapper.hot').forEach(p => p.classList.remove('hot'));
+  document.getElementById('drawing-path').setAttribute('d', '');
+  document.getElementById('drawing-path').classList.remove('snapped');
+  document.getElementById('drawing-path').setAttribute('marker-end', '');
+  document.getElementById('canvas').classList.remove('drawing');
+  isDrawingConnection = false; sourceBlockId = null;
+}
+
+function getApiKey() { return document.getElementById("api-key").value; }
+function saveApiKey(val) { sessionStorage.setItem("LH_API_KEY", val); }
+
+function log(msg, type = "normal") {
+  const logger = document.getElementById("lh-logger");
+  const el = document.createElement("div"); el.className = `log-line ${type}`; el.textContent = `> ${msg}`;
+  logger.appendChild(el);
+  while(logger.children.length > 20) { logger.removeChild(logger.firstChild); }
+  logger.scrollTop = logger.scrollHeight;
 }
 
 function addBlockCenter(type) {
-  createBlock(type, 300, 200);
+  const rect = document.getElementById('canvas').getBoundingClientRect();
+  const offsetX = Math.floor(Math.random() * 40) - 20;
+  const offsetY = Math.floor(Math.random() * 40) - 20;
+  const x = Math.max(20, Math.min((rect.width / 2) - 80 + offsetX, rect.width - 160));
+  const y = Math.max(20, Math.min((rect.height / 2) - 50 + offsetY, rect.height - 100));
+  createBlockReturnId(type, x, y);
 }
 
-function createBlock(type, x, y) {
+function createBlockReturnId(type, x, y) {
   const bObj = {
     id: "BLK_" + Math.random().toString(36).substring(2,7).toUpperCase(),
-    label: type.charAt(0).toUpperCase() + type.slice(1) + " Layer",
-    type: type,
-    x: x,
-    y: y,
-    dependsOn: [],
-    connectedTo: [],
-    status: "PENDING",
-    generatedCode: "",
-    filename: FILE_MAP[type] || "module.js",
-    errorMsg: "",
-    createdAt: Date.now()
+    label: type.charAt(0).toUpperCase() + type.slice(1) + " Layer", type, x, y,
+    dependsOn: [], connectedTo: [], status: "PENDING", generatedCode: "", filename: FILE_MAP[type] || "module.js", errorMsg: "", createdAt: Date.now()
   };
   logicMap.blocks.push(bObj);
   log(`ADDED BLOCK: ${bObj.label}`, "normal");
-  updateBlockStates();
-  renderCanvas();
-  saveMap();
+  updateBlockStates(); renderCanvas(); saveMap(); return bObj.id;
 }
 
 function deleteBlock(id) {
   logicMap.blocks = logicMap.blocks.filter(b => b.id !== id);
   logicMap.connections = logicMap.connections.filter(c => c.from !== id && c.to !== id);
-  logicMap.blocks.forEach(b => {
-    b.dependsOn = b.dependsOn.filter(dep => dep !== id);
-    b.connectedTo = b.connectedTo.filter(con => con !== id);
-  });
+  logicMap.blocks.forEach(b => { b.dependsOn = b.dependsOn.filter(d => d !== id); b.connectedTo = b.connectedTo.filter(c => c !== id); });
   log(`DELETED BLOCK: ${id}`, "danger");
-  updateBlockStates();
-  renderCanvas();
-  saveMap();
+  updateBlockStates(); renderCanvas(); saveMap();
 }
 
 function updateBlockLabel(id, label) {
   const b = logicMap.blocks.find(bk => bk.id === id);
-  if (b) {
-    b.label = label;
-    saveMap();
-  }
+  if (b) { b.label = label; saveMap(); }
 }
 
 function removeConnection(from, to) {
   logicMap.connections = logicMap.connections.filter(c => !(c.from === from && c.to === to));
-  const srcObj = logicMap.blocks.find(b => b.id === from);
-  const tgtObj = logicMap.blocks.find(b => b.id === to);
-  if (srcObj) srcObj.connectedTo = srcObj.connectedTo.filter(c => c !== to);
-  if (tgtObj) tgtObj.dependsOn = tgtObj.dependsOn.filter(c => c !== from);
+  const src = logicMap.blocks.find(b => b.id === from);
+  const tgt = logicMap.blocks.find(b => b.id === to);
+  if (src) src.connectedTo = src.connectedTo.filter(c => c !== to);
+  if (tgt) tgt.dependsOn = tgt.dependsOn.filter(d => d !== from);
   log(`REMOVED CONNECTION`, "danger");
-  updateBlockStates();
-  renderConnections();
-  saveMap();
+  updateBlockStates(); renderConnections(); saveMap();
 }
 
-// --- PHASE 4: THE VERIFIED FLAG SYSTEM ---
-function canVerify(block, allBlocks) {
-  const deps = block.dependsOn || [];
-  if (deps.length === 0) return true;
-  return deps.every(depId => {
-    const parent = allBlocks.find(b => b.id === depId);
-    return parent && parent.status === "VERIFIED";
-  });
-}
-
-function hasOrphan(blocks, connections) {
-  return blocks.some(block => {
-    const hasConnection = connections.some(
-      c => c.from === block.id || c.to === block.id
-    );
-    return !hasConnection;
-  });
-}
-
+function canVerify(block, allBlocks) { return block.dependsOn.every(depId => { const p = allBlocks.find(b => b.id === depId); return p && p.status === "VERIFIED"; }); }
+function hasOrphan(blocks, connections) { return blocks.some(b => !connections.some(c => c.from === b.id || c.to === b.id)); }
 function isArchitectureConfirmed(map) {
-  const { blocks, connections } = map;
-  const allVerified = blocks.length > 0 && blocks.every(b => b.status === "VERIFIED");
-  const noOrphans = blocks.length > 0 && !hasOrphan(blocks, connections);
-  const hasMinBlocks = blocks.length >= 2;
-  return allVerified && noOrphans && hasMinBlocks;
+  return map.blocks.length >= 2 && map.blocks.every(b => b.status === "VERIFIED") && !hasOrphan(map.blocks, map.connections);
 }
 
 function updateBlockStates() {
   logicMap.blocks.forEach(b => {
-    if (b.status !== "VERIFIED" && b.status !== "GENERATING" && b.status !== "ERROR") {
-      const isOrph = !logicMap.connections.some(c => c.from === b.id || c.to === b.id);
-      if (isOrph) b.status = "ORPHANED";
-      else if (!canVerify(b, logicMap.blocks)) b.status = "LOCKED";
-      else b.status = "PENDING";
-    }
+    if (b.status === "VERIFIED" || b.status === "GENERATING" || b.status === "ERROR") return;
+    const isOrph = !logicMap.connections.some(c => c.from === b.id || c.to === b.id);
+    if (isOrph) b.status = "ORPHANED";
+    else if (!canVerify(b, logicMap.blocks)) b.status = "LOCKED";
+    else b.status = "PENDING";
   });
   checkArchitectureGate();
 }
 
-// --- RENDER LOGIC ---
 function renderCanvas() {
   const layer = document.getElementById("blocks-layer");
   layer.innerHTML = '';
-  
   logicMap.blocks.forEach(b => {
     const el = document.createElement("div");
-    el.className = `block state-${b.status}`;
-    el.id = b.id;
-    el.style.left = b.x + "px";
-    el.style.top = b.y + "px";
-    
-    let icon = "";
-    if (b.status === "LOCKED") icon = "🔒 ";
-    else if (b.status === "GENERATING") icon = "⏳ ";
-    else if (b.status === "VERIFIED") icon = "✓ ";
-    else if (b.status === "ERROR") icon = "✗ ";
-    else if (b.status === "ORPHANED") icon = "⚠️ ";
-
-    let statusText = b.status;
-    if (b.status === "PENDING") statusText = "DRAG TO CONNECT";
-    
+    el.className = `block state-${b.status}`; el.id = b.id; el.style.left = b.x + "px"; el.style.top  = b.y + "px";
+    const icons = { LOCKED:"🔒 ", GENERATING:"⏳ ", VERIFIED:"✓ ", ERROR:"✗ ", ORPHANED:"⚠️ " };
+    const icon = icons[b.status] || ""; const statusText = b.status === "PENDING" ? "DRAG TO CONNECT" : b.status;
     el.innerHTML = `
       <div class="block-delete" onclick="deleteBlock('${b.id}')">✕</div>
-      <div class="block-header">
-        <span class="block-type">[${b.type.toUpperCase()}]</span>
-        <span title="${b.filename}">${b.filename}</span>
-      </div>
+      <div class="block-header"><span class="block-type">[${b.type.toUpperCase()}]</span><span title="${b.filename}">${b.filename}</span></div>
       <input type="text" class="block-label" value="${b.label}" onchange="updateBlockLabel('${b.id}', this.value)">
       <div class="block-status" title="${b.errorMsg}">${icon}${statusText}</div>
-      <div class="port in" onmousedown="handlePortMouseDown(event, '${b.id}', 'in')" onmouseup="handlePortMouseUp(event, '${b.id}', 'in')"></div>
-      <div class="port out" onmousedown="handlePortMouseDown(event, '${b.id}', 'out')" onmouseup="handlePortMouseUp(event, '${b.id}', 'out')"></div>
+      <div class="port-wrapper in" onpointerdown="handlePortPointerDown(event,'${b.id}','in')" onpointerup="handlePortPointerUp(event,'${b.id}','in')"><div class="port"></div></div>
+      <div class="port-wrapper out" onpointerdown="handlePortPointerDown(event,'${b.id}','out')" onpointerup="handlePortPointerUp(event,'${b.id}','out')"><div class="port"></div></div>
     `;
-    
-    el.onmousedown = (e) => handleBlockMouseDown(e, el);
-    // Right click for orphans
-    el.oncontextmenu = (e) => {
-      e.preventDefault();
-      if (b.status === "ORPHANED") {
-        showAIContextMenu(e, b.id);
-      }
-    };
-    
+    el.onpointerdown = (e) => handleBlockPointerDown(e, el);
+    el.oncontextmenu = (e) => { e.preventDefault(); if (b.status === "ORPHANED") showAIContextMenu(e, b.id); };
     layer.appendChild(el);
   });
-  
   renderConnections();
 }
 
 function renderConnections() {
-  const group = document.getElementById("connections-group");
-  group.innerHTML = '';
-  
+  const group = document.getElementById("connections-group"); group.innerHTML = '';
   logicMap.connections.forEach(c => {
-    const srcObj = logicMap.blocks.find(b => b.id === c.from);
-    const tgtObj = logicMap.blocks.find(b => b.id === c.to);
+    const srcObj = logicMap.blocks.find(b => b.id === c.from); const tgtObj = logicMap.blocks.find(b => b.id === c.to);
     if (!srcObj || !tgtObj) return;
-    
-    const srcX = srcObj.x + 160;
-    const srcY = srcObj.x > -1 ? srcObj.y + 40 : 0;
-    const tgtX = tgtObj.x;
-    const tgtY = tgtObj.x > -1 ? tgtObj.y + 40 : 0;
-    
+    const srcPos = getPortCenter(c.from, 'out'); const tgtPos = getPortCenter(c.to, 'in');
+    if (!srcPos || !tgtPos) return;
     const isBothVerified = srcObj.status === "VERIFIED" && tgtObj.status === "VERIFIED";
-    const marker = isBothVerified ? "url(#arrowhead-verified)" : "url(#arrowhead-pending)";
-    const pathClass = isBothVerified ? "arrow-path verified" : "arrow-path";
-    
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", `M ${srcX} ${srcY} C ${srcX + 50} ${srcY}, ${tgtX - 50} ${tgtY}, ${tgtX} ${tgtY}`);
-    path.setAttribute("class", pathClass);
-    path.setAttribute("marker-end", marker);
+    const cx = Math.abs(tgtPos.x - srcPos.x) * 0.5;
+    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d", `M ${srcPos.x} ${srcPos.y} C ${srcPos.x+cx} ${srcPos.y}, ${tgtPos.x-cx} ${tgtPos.y}, ${tgtPos.x} ${tgtPos.y}`);
+    path.setAttribute("class", isBothVerified ? "arrow-path verified" : "arrow-path");
+    path.setAttribute("marker-end", isBothVerified ? "url(#arrowhead-verified)" : "url(#arrowhead-pending)");
     path.onclick = () => removeConnection(c.from, c.to);
     group.appendChild(path);
   });
 }
 
-// --- PHASE 5: AI CODE GENERATION ---
+// ─── GEMINI AI CODE GENERATION ────────────────────────────────────────────────
 async function generateCodeForBlock(block, allBlocks, apiKey) {
-  if (!apiKey) {
-    block.status = "ERROR";
-    block.errorMsg = "API Key missing";
-    renderCanvas();
-    return;
-  }
+  if (!apiKey) { block.status = "ERROR"; block.errorMsg = "API Key missing"; renderCanvas(); return; }
+  block.status = "GENERATING"; renderCanvas();
 
-  block.status = "GENERATING";
-  renderCanvas();
-
-  const parentBlocks = block.dependsOn.map(id =>
-    allBlocks.find(b => b.id === id)
-  ).filter(Boolean);
-
-  const context = parentBlocks.map(p =>
-    `// ${p.label} (${p.filename})\n${p.generatedCode}`
-  ).join("\n\n");
-
-  const prompt = `
-You are generating code for one block of a web application.
-
-## Block Info
-- Label: ${block.label}
-- Type: ${block.type}
-- Filename: ${block.filename}
-
-## Dependency Context (code from parent blocks this block depends on)
-${context || "// No dependencies — this is a root block"}
-
-## Task
-Generate clean, production-ready vanilla JavaScript code for this block.
-- Zero npm dependencies
-- Use modern ES6+ syntax
-- Export functions/classes needed by child blocks
-- Include brief inline comments
-- If this block has no dependencies, generate a self-contained module
-- Return ONLY the code. No markdown. No explanation. Just the code.
-`.trim();
+  const context = block.dependsOn.map(id => allBlocks.find(b => b.id === id)).filter(Boolean).map(p => `// ${p.label} (${p.filename})\n${p.generatedCode}`).join("\n\n");
+  const prompt = `You are generating code for one block of a web application.\n\n## Block Info\n- Label: ${block.label}\n- Type: ${block.type}\n- Filename: ${block.filename}\n\n## Dependency Context\n${context || "// No dependencies — this is a root block"}\n\n## Task\nGenerate clean, production-ready vanilla JavaScript code for this block.\n- Zero npm dependencies\n- Use modern ES6+ syntax\n- Export functions/classes needed by child blocks\n- Include brief inline comments\n- Return ONLY the code. No markdown. No explanation.`.trim();
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-3-5-sonnet-20241022", // Use a model that definitely exists
-        max_tokens: 1500,
-        messages: [{ role: "user", content: prompt }]
-      })
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }] })
     });
-
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
-
-    let code = data.content[0].text.trim();
-    if (code.startsWith("```")) {
-      const lines = code.split("\n");
-      lines.shift();
-      if (lines[lines.length - 1].startsWith("```")) lines.pop();
-      code = lines.join("\n").trim();
-    }
-    
-    block.generatedCode = code;
-    block.status = "VERIFIED";
-
-  } catch (err) {
-    block.status = "ERROR";
-    block.errorMsg = err.message || "Unknown error";
-  }
-
-  updateBlockStates();
-  renderCanvas();
-  saveMap();
+    let code = data.candidates[0].content.parts[0].text.trim();
+    if (code.startsWith("```")) { const lines = code.split("\n"); lines.shift(); if (lines[lines.length-1].startsWith("```")) lines.pop(); code = lines.join("\n").trim(); }
+    block.generatedCode = code; block.status = "VERIFIED";
+  } catch (err) { block.status = "ERROR"; block.errorMsg = err.message || "Unknown error"; }
+  updateBlockStates(); renderCanvas(); saveMap();
 }
 
-// --- PHASE 12: VALIDATION SEQUENCE ---
 async function validateAll(apiKey) {
-  if (!apiKey) {
-    log("ERROR: ANTHROPIC API KEY REQUIRED", "danger");
-    return;
-  }
-
-  if (hasOrphan(logicMap.blocks, logicMap.connections)) {
-    log("ORPHANED BLOCKS DETECTED — CONNECT OR REMOVE", "danger");
-    return;
-  }
-
+  if (!apiKey) { log("ERROR: GEMINI API KEY REQUIRED", "danger"); return; }
+  if (hasOrphan(logicMap.blocks, logicMap.connections)) { log("ORPHANED BLOCKS DETECTED — CONNECT OR REMOVE", "danger"); return; }
   const sorted = topologicalSort(logicMap.blocks, logicMap.connections);
-
   for (const block of sorted) {
-    if (block.status === "VERIFIED") {
-      log(`SKIP ${block.id} — ALREADY VERIFIED`, "normal");
-      continue;
-    }
-    if (!canVerify(block, logicMap.blocks)) {
-      log(`BLOCKED: ${block.id} waiting on dependencies`, "danger");
-      break; 
-    }
+    if (block.status === "VERIFIED") { log(`SKIP ${block.id} — ALREADY VERIFIED`, "normal"); continue; }
+    if (!canVerify(block, logicMap.blocks)) { log(`BLOCKED: ${block.id} waiting on deps`, "danger"); break; }
     log(`GENERATING: ${block.label}...`, "primary");
     await generateCodeForBlock(block, logicMap.blocks, apiKey);
-
-    if (block.status === "ERROR") {
-      log(`FAILED: ${block.id} — ${block.errorMsg}`, "danger");
-      break;
-    }
-
+    if (block.status === "ERROR") { log(`FAILED: ${block.id} — ${block.errorMsg}`, "danger"); break; }
     log(`VERIFIED: ${block.label} ✓`, "active");
     saveMap();
   }
-
   checkArchitectureGate();
 }
 
 function topologicalSort(blocks, connections) {
-  const visited = new Set();
-  const result = [];
-
+  const visited = new Set(), result = [];
   function visit(block) {
-    if (visited.has(block.id)) return;
-    visited.add(block.id);
-    const parents = block.dependsOn
-      .map(id => blocks.find(b => b.id === id))
-      .filter(Boolean);
-    parents.forEach(visit);
-    result.push(block);
+    if (visited.has(block.id)) return; visited.add(block.id);
+    block.dependsOn.map(id => blocks.find(b => b.id === id)).filter(Boolean).forEach(visit); result.push(block);
   }
-
-  blocks.forEach(visit);
-  return result;
+  blocks.forEach(visit); return result;
 }
 
+// ─── GATE KEEPER ──────────────────────────────────────────────────────────────
 function checkArchitectureGate() {
   const confirmed = isArchitectureConfirmed(logicMap);
-  const exportBtn = document.getElementById("btn-export");
-  exportBtn.disabled = !confirmed;
+  const btnPdf = document.getElementById("btn-export");
+  const btnUi = document.getElementById("btn-view-ui");
+
+  btnPdf.disabled = !confirmed; btnUi.disabled = !confirmed;
   
   if (confirmed) {
-    exportBtn.textContent = "[EXPORT PDF — ARCHITECTURE CONFIRMED ✓]";
-    exportBtn.style.color = "var(--green)";
-    exportBtn.style.borderColor = "var(--green)";
-    log("ARCHITECTURE CONFIRMED — PDF READY", "active");
-    logicMap.status = "CONFIRMED";
-    saveMap();
+    btnPdf.textContent = "[EXPORT PDF ✓]"; btnPdf.style.color = "var(--green)"; btnPdf.style.borderColor = "var(--green)";
+    btnUi.textContent = "[VIEW CODE & PROMPTS ✓]"; btnUi.style.color = "var(--cyan)"; btnUi.style.borderColor = "var(--cyan)";
+    log("ARCHITECTURE CONFIRMED — EXPORTS READY", "active"); logicMap.status = "CONFIRMED"; saveMap();
   } else {
-    exportBtn.textContent = "[EXPORT PDF — LOCKED]";
-    exportBtn.style.color = "var(--text-grey)";
-    exportBtn.style.borderColor = "var(--border)";
+    btnPdf.textContent = "[EXPORT PDF — LOCKED]"; btnPdf.style.color = "var(--text-grey)"; btnPdf.style.borderColor = "var(--border)";
+    btnUi.textContent = "[VIEW CODE & PROMPTS — LOCKED]"; btnUi.style.color = "var(--text-grey)"; btnUi.style.borderColor = "var(--border)";
   }
 }
 
-// --- PHASE 7: PDF EXPORT ---
-function exportArchitecturePDF(map) {
-  if (!isArchitectureConfirmed(map)) {
-    log("ARCHITECTURE NOT CONFIRMED — CANNOT EXPORT", "danger");
-    return;
-  }
+// ─── PDF EXPORT ───────────────────────────────────────────────────────────────
+async function exportArchitecturePDF(map) {
+  if (!isArchitectureConfirmed(map)) return;
+  const { jsPDF } = window.jspdf; const doc = new jsPDF(); const ML = 15, W = 180; let y = 20;
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const ML = 15;
-  const W = 180;
-  let y = 20;
+  doc.setFont("times","bold"); doc.setFontSize(16); doc.text(`LOGICHUB // ${map.id}`, 105, y, {align:"center"}); doc.setFontSize(10);
+  doc.text(`MAP: ${map.name}  |  BLOCKS: ${map.blocks.length}`, 105, y+6, {align:"center"}); doc.line(ML, y+10, 195, y+10); y += 18;
 
-  // Header
-  doc.setFont("times", "bold");
-  doc.setFontSize(16);
-  doc.text(`LOGICHUB // ${map.id}`, 105, y, { align: "center" });
-  doc.setFontSize(10);
-  doc.text(`MAP: ${map.name}  |  BLOCKS: ${map.blocks.length}`, 105, y + 6, { align: "center" });
-  doc.line(ML, y + 10, 195, y + 10);
-  y += 18;
+  doc.setFont("courier","bold"); doc.setFontSize(9); doc.setTextColor(80); doc.text("ARCHITECTURE DIAGRAM", ML, y); y += 5;
+  doc.setFont("courier","normal"); doc.setFontSize(8); const diagram = buildASCIIDiagram(map);
+  const dLines = doc.splitTextToSize(diagram, W); doc.text(dLines, ML, y); y += dLines.length * 4 + 8; doc.line(ML, y, 195, y); y += 6;
 
-  // Architecture Diagram (ASCII)
-  doc.setFont("courier", "bold");
-  doc.setFontSize(9);
-  doc.setTextColor(80);
-  doc.text("ARCHITECTURE DIAGRAM", ML, y); y += 5;
-  doc.setFont("courier", "normal");
-  doc.setFontSize(8);
-  const diagram = buildASCIIDiagram(map);
-  const dLines = doc.splitTextToSize(diagram, W);
-  doc.text(dLines, ML, y); y += (dLines.length * 4) + 8;
-  doc.line(ML, y, 195, y); y += 6;
-
-  // Per-block sections
-  map.blocks.forEach((block, i) => {
+  map.blocks.forEach(block => {
     if (y > 240) { doc.addPage(); y = 20; }
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.setTextColor(100);
-    doc.text(`${block.id} // ${block.type.toUpperCase()} // STATUS: ${block.status}`, ML, y); y += 5;
-
-    doc.setFont("times", "bold");
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text(block.label, ML, y); y += 5;
-
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
-    doc.text(`FILE: ${block.filename}`, ML, y); y += 4;
-
-    if (block.dependsOn.length > 0) {
-      doc.text(`DEPENDS ON: ${block.dependsOn.join(", ")}`, ML, y); y += 4;
-    }
-
-    doc.setFont("courier", "normal");
-    doc.setFontSize(7);
-    doc.setTextColor(40);
-    let code = block.generatedCode || "// No code available";
-    const codeLines = doc.splitTextToSize(
-      code.substring(0, 500) + (code.length > 500 ? "\n// ... (truncated)" : ""),
-      W
-    );
-    doc.text(codeLines, ML, y); y += (codeLines.length * 3.5) + 6;
-
-    doc.setDrawColor(200); doc.setLineWidth(0.1); doc.line(ML, y, 195, y); y += 5;
+    doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(100); doc.text(`${block.id} // ${block.type.toUpperCase()} // ${block.status}`, ML, y); y += 5;
+    doc.setFont("times","bold"); doc.setFontSize(12); doc.setTextColor(0); doc.text(block.label, ML, y); y += 5;
+    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.text(`FILE: ${block.filename}`, ML, y); y += 4;
+    if (block.dependsOn.length > 0) { doc.text(`DEPENDS ON: ${block.dependsOn.join(", ")}`, ML, y); y += 4; }
+    doc.setFont("courier","normal"); doc.setFontSize(7); doc.setTextColor(40);
+    const code = block.generatedCode || "// No code available"; const codeLines = doc.splitTextToSize(code.substring(0,500) + (code.length>500?"\n// ...(truncated)":""), W);
+    doc.text(codeLines, ML, y); y += codeLines.length * 3.5 + 6; doc.setDrawColor(200); doc.setLineWidth(0.1); doc.line(ML, y, 195, y); y += 5;
   });
 
-  doc.save(`LOGICHUB_${map.id}.pdf`);
-  map.status = "EXPORTED";
-  log(`EXPORTED: LOGICHUB_${map.id}.pdf`, "active");
-  saveMap();
+  const filename = `LOGICHUB_${map.id}.pdf`;
+  try {
+    const pdfBlob = doc.output('blob'); const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ title: `LogicHub Architecture: ${map.id}`, text: 'Exported architecture blueprint.', files: [file] });
+      log(`SHARED: ${filename}`, "active");
+    } else { doc.save(filename); log(`DOWNLOADED: ${filename}`, "active"); }
+  } catch (error) { doc.save(filename); log(`DOWNLOADED: ${filename} (Fallback)`, "active"); }
+}
+
+// ─── MARKDOWN FILE EXPORT ─────────────────────────────────────────────────────
+async function exportArchitectureMarkdown(map) {
+  if (!isArchitectureConfirmed(map)) return;
+  let md = `# LOGICHUB // ${map.id}\n\n**Map:** ${map.name} | **Blocks:** ${map.blocks.length} | **Date:** ${new Date().toLocaleString()}\n\n`;
+  md += `## 🗺️ Architecture Diagram\n\`\`\`text\n${buildASCIIDiagram(map)}\n\`\`\`\n\n---\n\n`;
+
+  map.blocks.forEach(b => {
+    md += `## 🧱 [${b.type.toUpperCase()}] ${b.label}\n- **Filename:** \`${b.filename}\`\n`;
+    if (b.dependsOn.length) md += `- **Depends On Blocks:** \`${b.dependsOn.join('`, `')}\`\n`;
+    const context = b.dependsOn.map(id => map.blocks.find(bk => bk.id === id)).filter(Boolean).map(p => `// ${p.label} (${p.filename})\n${p.generatedCode}`).join("\n\n");
+    const prompt = `You are generating code for one block of a web application.\n\n## Block Info\n- Label: ${b.label}\n- Type: ${b.type}\n- Filename: ${b.filename}\n\n## Dependency Context\n${context || "// No dependencies"}\n\n## Task\nGenerate clean, production-ready vanilla JavaScript code for this block.\n- Zero npm dependencies\n- Use modern ES6+ syntax\n- Export functions/classes needed by child blocks\n- Include brief inline comments\n- Return ONLY the code. No markdown. No explanation.`.trim();
+    md += `\n### 🤖 AI Generation Prompt\n> *Copy this exact prompt into Gemini/Claude to regenerate this module manually.*\n\n\`\`\`text\n${prompt}\n\`\`\`\n\n### 💻 Generated Code Output\n\`\`\`javascript\n${b.generatedCode || "// No code generated."}\n\`\`\`\n\n---\n\n`;
+  });
+
+  const filename = `LOGICHUB_${map.id}.md`; const blob = new Blob([md], { type: 'text/markdown' }); const file = new File([blob], filename, { type: 'text/markdown' });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ title: `LogicHub Code: ${map.id}`, files: [file] }); log(`SHARED: ${filename}`, "active");
+    } else {
+      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); log(`DOWNLOADED: ${filename}`, "active");
+    }
+  } catch (error) { log(`DOWNLOAD FAILED`, "danger"); }
 }
 
 function buildASCIIDiagram(map) {
   const lines = [];
-  const roots = map.blocks.filter(b => b.dependsOn.length === 0);
-  
   function walk(block, depth = 0) {
-    const indent = "  ".repeat(depth);
-    lines.push(`${indent}[${block.label}]`);
-    const children = map.connections
-      .filter(c => c.from === block.id)
-      .map(c => map.blocks.find(b => b.id === c.to))
-      .filter(Boolean);
-    if (children.length > 0) lines.push(`${indent}  ↓`);
+    lines.push("  ".repeat(depth) + `[${block.label}]`);
+    const children = map.connections.filter(c => c.from === block.id).map(c => map.blocks.find(b => b.id === c.to)).filter(Boolean);
+    if (children.length) lines.push("  ".repeat(depth) + "  ↓");
     children.forEach(child => walk(child, depth + 1));
   }
-
-  roots.forEach(r => walk(r));
+  map.blocks.filter(b => b.dependsOn.length === 0).forEach(r => walk(r));
   return lines.join("\n") || "[EMPTY MAP]";
 }
 
-// --- PHASE 11: PERSISTENCE ---
-function saveMap() {
-  sessionStorage.setItem("LH_MAP", JSON.stringify(logicMap));
-}
-function loadMap() {
-  const saved = sessionStorage.getItem("LH_MAP");
-  if (saved) {
-    logicMap = JSON.parse(saved);
-  }
-  document.getElementById("map-id").innerText = logicMap.id;
-  updateBlockStates();
-  renderCanvas();
+// ─── VIBECODER EXPORT UI OVERLAY ──────────────────────────────────────────────
+function escapeHtml(str) { return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toggleCard(i) { document.getElementById(`task-${i}`).classList.toggle('open'); }
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+
+function fallbackCopyText(text, btn) {
+  const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); btn.classList.add('copied'); const orig = btn.innerHTML; btn.innerHTML = '✓ Copied!'; setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 1800); showToast('Copied to clipboard ✓'); } 
+  catch (err) { alert("Copy failed!"); } document.body.removeChild(ta);
 }
 
-// --- ORPHAN AI IDEAS ---
-function showAIContextMenu(e, blockId) {
-  const menu = document.getElementById('ai-context-menu');
-  menu.style.display = 'flex';
-  menu.style.left = e.clientX + 'px';
-  menu.style.top = e.clientY + 'px';
-  menu.dataset.blockId = blockId;
-  document.getElementById('ai-ideas-container').innerHTML = '';
+window.copyText = function(btnId, arrName, idx) {
+  const btn = document.getElementById(btnId);
+  const text = window[arrName][idx];
+  if (!navigator.clipboard) { fallbackCopyText(text, btn); return; }
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied'); const orig = btn.innerHTML; btn.innerHTML = '✓ Copied!'; setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 1800); showToast('Copied to clipboard ✓');
+  }).catch(() => fallbackCopyText(text, btn));
+};
+
+window.copyAllPrompts = function() {
+  const all = window.exportPrompts.join('\n\n---\n\n'); const btn = document.getElementById('btn-copy-all');
+  if (!navigator.clipboard) { fallbackCopyText(all, btn); return; }
+  navigator.clipboard.writeText(all).then(() => {
+    btn.classList.add('copied'); btn.innerHTML = '<span>✓</span> All Copied!'; setTimeout(() => { btn.innerHTML = '<span>⚡</span> Copy All Task Prompts'; btn.classList.remove('copied'); }, 2000); showToast('All prompts copied ✓');
+  }).catch(() => fallbackCopyText(all, btn));
+};
+
+function showExportUI() {
+  if (!isArchitectureConfirmed(logicMap)) return;
+  document.getElementById('export-map-title').innerHTML = `Map<br><em>${logicMap.id}</em>`;
+  document.getElementById('export-stat-blocks').innerHTML = `🗺️ <span>${logicMap.blocks.length}</span> blocks`;
+  
+  window.exportPrompts = [];
+  window.exportCodes = [];
+  
+  const container = document.getElementById('tasks-container');
+  container.innerHTML = '';
+  
+  const sorted = topologicalSort(logicMap.blocks, logicMap.connections);
+  
+  sorted.forEach((b, i) => {
+    const context = b.dependsOn.map(id => logicMap.blocks.find(bk => bk.id === id)).filter(Boolean).map(p => `// ${p.label} (${p.filename})\n${p.generatedCode}`).join("\n\n");
+    const prompt = `You are generating code for one block of a web application.\n\n## Block Info\n- Label: ${b.label}\n- Type: ${b.type}\n- Filename: ${b.filename}\n\n## Dependency Context\n${context || "// No dependencies"}\n\n## Task\nGenerate clean, production-ready vanilla JavaScript code for this block.\n- Zero npm dependencies\n- Use modern ES6+ syntax\n- Export functions/classes needed by child blocks\n- Include brief inline comments\n- Return ONLY the code. No markdown. No explanation.`.trim();
+    
+    window.exportPrompts[i] = prompt;
+    window.exportCodes[i] = b.generatedCode || "// Error compiling code.";
+    
+    const card = document.createElement('div');
+    card.className = 'task-card'; card.id = `task-${i}`;
+    card.innerHTML = `
+      <div class="card-topbar" onclick="toggleCard(${i})">
+        <div class="card-left"><div class="task-num">${i+1}</div><div class="task-meta"><div class="task-title">${b.label}</div><div class="task-branch">${b.filename}</div></div></div>
+        <div class="card-right"><span class="tag">[${b.type.toUpperCase()}]</span><span class="chevron">▼</span></div>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <div class="info-cell"><div class="info-key">Depends On</div><div class="info-val">${b.dependsOn.length ? b.dependsOn.length + ' blocks' : 'Root'}</div></div>
+          <div class="info-cell"><div class="info-key">Status</div><div class="info-val" style="color:var(--green)">${b.status}</div></div>
+        </div>
+        <div class="code-area">
+          <div class="code-label"><span>AI Generation Prompt</span><button class="btn-copy" id="cp-pr-${i}" onclick="copyText('cp-pr-${i}', 'exportPrompts', ${i})">⧉ Copy Prompt</button></div>
+          <pre class="task-code">${escapeHtml(prompt)}</pre>
+        </div>
+        <div class="code-area" style="border-top: 1px solid #222;">
+          <div class="code-label"><span style="color: var(--cyan);">Generated Code Output</span><button class="btn-copy" id="cp-cd-${i}" onclick="copyText('cp-cd-${i}', 'exportCodes', ${i})">⧉ Copy Code</button></div>
+          <pre class="task-code" style="color: #a7f3d0;">${escapeHtml(b.generatedCode)}</pre>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  
+  document.getElementById('export-overlay').style.display = 'block';
 }
+
+function saveMap() { sessionStorage.setItem("LH_MAP", JSON.stringify(logicMap)); }
+function loadMap() { const saved = sessionStorage.getItem("LH_MAP"); if (saved) logicMap = JSON.parse(saved); document.getElementById("map-id").innerText = logicMap.id; updateBlockStates(); renderCanvas(); }
 
 async function getContextIdeas() {
-  const menu = document.getElementById('ai-context-menu');
-  const blockId = menu.dataset.blockId;
-  const apiKey = getApiKey();
-  
-  if (!apiKey) {
-    alert("Anthropic API key required for suggestions.");
-    return;
-  }
-  
-  const block = logicMap.blocks.find(b => b.id === blockId);
-  const otherBlocks = logicMap.blocks.filter(b => b.id !== blockId);
-  
-  if (otherBlocks.length === 0) {
-    document.getElementById('ai-ideas-container').innerHTML = '<div style="color:var(--text-grey)">Add more blocks to get connection ideas.</div>';
-    return;
-  }
-  
-  document.getElementById('ai-loader').style.display = 'block';
-  
-  const ctx = otherBlocks.map(b => `${b.id}: ${b.label} [${b.type}]`).join(", ");
-  
+  const menu = document.getElementById('ai-context-menu'); const blockId = menu.dataset.blockId; const apiKey = getApiKey();
+  if (!apiKey) { alert("Gemini API key required."); return; }
+  const block = logicMap.blocks.find(b => b.id === blockId); const others = logicMap.blocks.filter(b => b.id !== blockId);
+  if (!others.length) { document.getElementById('ai-ideas-container').innerHTML = '<div style="color:var(--text-grey)">Add more blocks first.</div>'; return; }
+  document.getElementById('ai-loader').style.display = 'block'; const ctx = others.map(b => `${b.id}: ${b.label} [${b.type}]`).join(", ");
+  const prompt = `I have an orphaned block: "${block.label}" [${block.type}]. Other blocks: ${ctx}. Generate exactly 3 connection ideas as: "Connect TO [target_id]: [reason]" or "Connect FROM [target_id]: [reason]". No markdown. Just 3 lines.`;
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 300,
-        messages: [{ role: "user", content: `I have an orphaned logical architecture block: "${block.label}" [${block.type}]. Other existing blocks are: ${ctx}. Generate exactly 3 connection ideas in the format: "Connect TO [target_id]: [brief reason]" or "Connect FROM [target_id]: [brief reason]". Avoid markdown. Just print 3 lines.` }]
-      })
-    });
-    const data = await res.json();
-    document.getElementById('ai-loader').style.display = 'none';
-    
-    if (data.error) throw new Error(data.error.message);
-    
-    const lines = data.content[0].text.trim().split('\n').filter(l => l.trim().length > 0).slice(0, 3);
-    const container = document.getElementById('ai-ideas-container');
-    container.innerHTML = '';
-    
-    lines.forEach(line => {
-      const el = document.createElement('div');
-      el.className = 'ai-idea';
-      el.textContent = line;
-      container.appendChild(el);
-    });
-    
-  } catch(e) {
-    document.getElementById('ai-loader').style.display = 'none';
-    document.getElementById('ai-ideas-container').innerHTML = `<div style="color:var(--red)">Error: ${e.message}</div>`;
-  }
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }] }) });
+    const data = await res.json(); document.getElementById('ai-loader').style.display = 'none'; if (data.error) throw new Error(data.error.message);
+    const lines = data.candidates[0].content.parts[0].text.trim().split('\n').filter(l => l.trim()).slice(0,3);
+    const container = document.getElementById('ai-ideas-container'); container.innerHTML = '';
+    lines.forEach(line => { const el = document.createElement('div'); el.className = 'ai-idea'; el.textContent = line; container.appendChild(el); });
+  } catch(err) { document.getElementById('ai-loader').style.display = 'none'; document.getElementById('ai-ideas-container').innerHTML = `<div style="color:var(--red)">Error: ${err.message}</div>`; }
 }
-
 </script>
 </body>
 </html>
+
+

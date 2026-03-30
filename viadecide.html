@@ -13,7 +13,7 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <!-- Firebase SDK -->
-  <script src="../shared/config_env.js"></script>
+  <script src="./shared/config_env.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
@@ -598,13 +598,13 @@
             <div class="tools-grid">
               <div class="tool-card">
                 <div class="tool-icon" style="background: var(--saffron); color: var(--void);">🚀</div>
-                <div class="tool-tag">RELEASE</div>
+                <div class="tool-tag">SYSTEM UPDATE</div>
                 <div class="tool-name">Kinetic 3.0</div>
                 <div class="tool-desc">Tactile physical engine integrated into VIA ecosystem.</div>
               </div>
               <div class="tool-card">
                 <div class="tool-icon" style="background: var(--neon); color: var(--void);">🗺️</div>
-                <div class="tool-tag">WORLD</div>
+                <div class="tool-tag">ECOSYSTEM</div>
                 <div class="tool-name">Spatial Engine</div>
                 <div class="tool-desc">Enhanced 3D zoom and touch-optimized territory discovery.</div>
               </div>
@@ -1580,8 +1580,8 @@
       document.addEventListener('DOMContentLoaded', () => {
         const statusEl = document.getElementById('auth-status');
         if (statusEl) {
-          statusEl.innerText = "OFFLINE MODE: Config not found.";
-          statusEl.style.color = "var(--saffron)";
+          statusEl.innerText = "System secure. Authenticating...";
+          statusEl.style.color = "var(--text)";
         }
       });
     }

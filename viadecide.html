@@ -443,16 +443,28 @@
     #world-tc { position: absolute; top: 0; left: 0; display: block; pointer-events: none; }
     .zn { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
     .zn-ring { position: absolute; border: 2px solid; border-radius: 50%; animation: spin 20s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .zn-orb { position: relative; width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 28px; border: 2px solid; z-index: 3; cursor: pointer; transition: all 0.2s; }
-    .zn-orb:hover { transform: scale(1.1); }
-    .zn-cnt { position: absolute; bottom: -8px; right: -8px; width: 24px; height: 24px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
-    .zn-lbl { position: absolute; top: -35px; font-family: var(--font-display); font-size: 13px; font-weight: 700; white-space: nowrap; z-index: 2; }
-    #mm { position: absolute; bottom: 16px; right: 16px; z-index: 40; width: 150px; height: 90px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    #mm-c { display: block; width: 150px; height: 90px; }
-    #mm-vp { position: absolute; border: 2px solid var(--saffron); box-sizing: border-box; opacity: 0.8; }
-
-    .float-reward { position: absolute; color: #FFD700; font-size: 20px; font-weight: 800; font-family: var(--font-display); pointer-events: none; z-index: 100; animation: floatUpScore 1s ease-out forwards; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+       /* ═══════════════════════════════════════════════════════════════
+       NEW KINETIC UI STYLES (ViaLogic + Alchemist)
+       ═══════════════════════════════════════════════════════════════ */
+    .logic-node-kinetic { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: translate(-50%, -50%); cursor: pointer; z-index: 10; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .logic-node-kinetic:hover { transform: translate(-50%, -50%) scale(1.15) translateY(-8px); filter: brightness(1.2); }
+    .logic-path-line { fill: none; stroke: var(--saffron); stroke-width: 2; stroke-dasharray: 8 6; animation: dash 60s linear infinite; opacity: 0.3; }
+    
+    .stack-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1200px; overflow: hidden; }
+    .card-kinetic { position: relative; width: min(320px, 85vw); height: min(480px, 60vh); background: var(--card); border: 1px solid var(--border2); border-radius: 28px; padding: 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-shadow: 0 40px 80px rgba(0,0,0,0.8); will-change: transform; transform-style: preserve-3d; transition: transform 0.1s ease-out; }
+    .card-text { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: #fff; line-height: 1.4; word-wrap: break-word; }
+    .card-meta { margin-top: 30px; font-family: var(--font-mono); font-size: 0.65rem; color: var(--saffron); letter-spacing: 2px; text-transform: uppercase; padding: 6px 12px; border: 1px solid var(--saffron); border-radius: 4px; opacity: 0.6; }
+    
+    .nope-label, .via-label { position: absolute; top: 30px; border: 4px solid; padding: 10px 20px; border-radius: 8px; font-weight: 900; font-size: 1.5rem; text-transform: uppercase; opacity: 0; transform: rotate(-15deg); pointer-events: none; z-index: 20; transition: opacity 0.1s; }
+    .nope-label { right: 30px; border-color: #ff4757; color: #ff4757; transform: rotate(15deg); }
+    .via-label { left: 30px; border-color: #2ed573; color: #2ed573; }
+    
+    @keyframes dash { to { stroke-dashoffset: -1000; } }
+    @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-80px) scale(1.5); opacity: 0; } }
+    @keyframes pulse-glow { 0% { transform: scale(0.8); opacity: 0.12; } 100% { transform: scale(1.2); opacity: 0; } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  </style>
+0.5); }
     @keyframes floatUpScore { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-60px) scale(1.5); opacity: 0; } }
     @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-80px) scale(1.5); opacity: 0; } }
     @keyframes pulse-glow { 0% { transform: scale(0.8); opacity: 0.12; } 100% { transform: scale(1.2); opacity: 0; } }
@@ -482,71 +494,50 @@
 
     <div class="content-area">
       <div class="section-container">
-        <!-- FEED SECTION -->
+        <!-- FEED SECTION (Alchemist 3D Stack) -->
         <div id="feed" class="section active">
-          <div class="card-stack" id="card-stack"></div>
-          <div class="swipe-hint nope">PASS</div>
-          <div class="swipe-hint via">VIA</div>
-          <div class="progress-track"><div class="progress-bar"></div></div>
+          <div class="stack-container" id="card-stack-viewport">
+            <!-- Cards will be injected via JS -->
+          </div>
+          <div id="feed-controls" style="position: absolute; bottom: 30px; left: 0; right: 0; display: flex; justify-content: center; gap: 30px; z-index: 100;">
+            <button class="btn-tactile active" onclick="swipeDirection('left')" style="width: 54px; height: 54px; border-radius: 50%; color: #ff4757;">✖</button>
+            <button class="btn-tactile active" onclick="swipeDirection('right')" style="width: 54px; height: 54px; border-radius: 50%; color: #2ed573;">✔</button>
+          </div>
         </div>
 
-        <!-- TOOLS SECTION -->
-        <div id="tools" class="section">
-          <div class="tools-viewport">
+        <!-- WORLD SECTION -->
+        <div id="world" class="section">
+          <div id="world-vp">
+            <div id="world-ww">
+              <canvas id="world-tc" width="3200" height="1800"></canvas>
+              <div id="world-dl"></div>
+            </div>
+            <div id="mm"><canvas id="mm-c"></canvas><div id="mm-vp"></div></div>
+          </div>
+        </div>
+
+        <!-- UPDATES SECTION -->
+        <div id="updates" class="section">
+          <div class="tools-viewport" style="padding: 20px;">
             <div class="tools-header">
-              <h2>Engine</h2>
-              <p>Decision tools & utilities</p>
+              <h2>Ecosystem Updates</h2>
+              <p>Chronological sync of Kinetic releases</p>
             </div>
-            <div class="tools-grid" id="tools-grid"></div>
+            <div id="updates-list" style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;"></div>
           </div>
         </div>
 
-        <!-- ORCHADE SECTION -->
-        <div id="orchard" class="section">
-          <div id="orchade-vp">
-            <div class="orchade-tabs">
-              <div class="orchade-tab active" data-tab="orchard">🌾 Orchard</div>
-              <div class="orchade-tab" data-tab="shop">🛍️ Shop</div>
-              <div class="orchade-tab" data-tab="tools">🔧 Tools</div>
-              <div class="orchade-tab" data-tab="leaderboard">🏆 Board</div>
+        <!-- VIALOGIC SECTION (ViaLogic Map) -->
+        <div id="vialogic" class="section">
+          <div id="logic-viewport" style="position: absolute; inset: 0; overflow: hidden; touch-action: none; background: #05060F;">
+            <div id="logic-map-container" style="position: absolute; width: 3000px; height: 3000px; transform-origin: 0 0; will-change: transform;">
+              <svg id="logic-paths-svg" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;"></svg>
+              <div id="logic-entities-layer"></div>
             </div>
-            <div class="orchade-content" id="orchade-content"></div>
-          </div>
-        </div>
-
-        <!-- LOGIC SECTION -->
-        <div id="logic" class="section">
-          <div id="logic-vp">
-            <div id="logic-ww">
-              <svg id="logic-paths" style="width: 4000px; height: 4000px;"></svg>
-              <div id="logic-entities"></div>
-            </div>
-            <div id="logic-modal">
-              <div class="lm-content">
-                <button class="lm-close" onclick="closeLogicModal()">✕</button>
-                <div class="lm-header">
-                  <div class="lm-icon" id="lm-icon"></div>
-                  <h2 class="lm-title" id="lm-title"></h2>
-                  <p class="lm-subtitle" id="lm-subtitle"></p>
-                </div>
-                <div class="lm-body">
-                  <div class="lm-stats-card">
-                    <div class="lm-level-badge"><span>Level</span><span id="lm-level"></span></div>
-                    <div class="lm-stats-list">
-                      <div class="lm-stat-row"><span class="lm-stat-label" id="lm-buff1-name"></span><span class="lm-stat-val" id="lm-buff1-val"></span></div>
-                      <div class="lm-stat-row"><span class="lm-stat-label" id="lm-buff2-name"></span><span class="lm-stat-val" id="lm-buff2-val"></span></div>
-                    </div>
-                  </div>
-                  <div class="lm-actions">
-                    <button class="lm-action-btn lm-enter-btn" onclick="closeLogicModal()">Back</button>
-                    <button class="lm-action-btn lm-upgrade-btn" id="lm-upgrade-btn" onclick="upgradeLogicEntity()">UPGRADE<div class="lm-cost-row"><span id="lm-cost-label"></span><span id="lm-cost-current" class="lm-cost-current"></span></div></button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="logic-hud-top">
-              <span class="logic-sparks" id="logic-sparks">0 ✨</span>
-              <a href="logichub.html" style="margin-left: 12px; font-weight: bold; color: #ffd600; text-decoration: none; border: 1px solid #ffd600; padding: 4px 10px; border-radius: 12px; background: rgba(255, 214, 0, 0.1);">LogicHub v1.0</a>
+            <div class="hud-controls" style="position: absolute; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 50;">
+              <button class="btn-tactile active" onclick="zoomLogic(0.2)" style="width: 44px; height: 44px;">+</button>
+              <button class="btn-tactile active" onclick="zoomLogic(-0.2)" style="width: 44px; height: 44px;">-</button>
+              <button class="btn-tactile active" onclick="centerLogicMap()" style="width: 44px; height: 44px;">🎯</button>
             </div>
           </div>
         </div>
@@ -623,7 +614,7 @@
     </div>
 
     <div class="bottom-nav glass">
-      <button class="nav-btn" data-section="logic"><span class="nav-icon">🧠</span><span>LogicHub</span></button>
+      <button class="nav-btn" data-section="vialogic"><span class="nav-icon">🧠</span><span>LogicHub</span></button>
       <button class="nav-btn" data-section="world"><span class="nav-icon">🗺️</span><span>World</span></button>
       <button class="nav-btn" data-section="updates"><span class="nav-icon">🔔</span><span>Updates</span></button>
       <button class="nav-btn active" data-section="feed"><span class="nav-icon">📇</span><span>Feed</span></button>
@@ -1645,6 +1636,181 @@
       });
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // CORE NAVIGATION
+    // ═══════════════════════════════════════════════════════════════
+    function showSection(sectionId) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+      
+      const target = document.getElementById(sectionId);
+      if (target) target.classList.add('active');
+      
+      const navBtn = document.querySelector(`.nav-btn[data-section="${sectionId}"]`);
+      if (navBtn) navBtn.classList.add('active');
+      
+      const label = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
+      const labelEl = document.getElementById('section-label');
+      if (labelEl) labelEl.textContent = label;
+      
+      if (sectionId === 'vialogic') setTimeout(centerLogicMap, 100);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ALCHEMIST 3D FEED INTEGRATION
+    // ═══════════════════════════════════════════════════════════════
+    let feedIndex = 0;
+    const feedPulseData = [
+      { id: 1, text: "The first step toward intelligence is the refusal to accept consensus without proof.", meta: "AXIOM // 0x01", color: "#ffd600" },
+      { id: 2, text: "Observation is the highest form of worship in the temple of reason.", meta: "LOG // SYNC", color: "#2ecc71" },
+      { id: 3, text: "A mind that remains static in a dynamic universe is already decaying.", meta: "KINETIC // 3.0", color: "#ff4444" },
+      { id: 4, text: "Data is the soil, but Logic is the seed that creates the orchard.", meta: "AXIOM // ROOT", color: "#ffd600" },
+      { id: 5, text: "The architect of the mind must first be a laborer in the field of facts.", meta: "SYNC // STREAM", color: "#3498db" }
+    ];
+
+    function renderFeedStack() {
+      const viewport = document.getElementById('card-stack-viewport');
+      if (!viewport) return;
+
+      const item = feedPulseData[feedIndex];
+      
+      if (!item) {
+        viewport.innerHTML = `<div style="color: var(--text-muted); text-align: center;"><h2>ALL PULSES SYNCED</h2><button onclick="feedIndex=0;renderFeedStack()" class="btn-tactile active" style="margin-top:20px;">RELOAD</button></div>`;
+        return;
+      }
+
+      viewport.innerHTML = `
+        <div id="active-card" class="card-kinetic">
+          <div class="via-label">VIA</div>
+          <div class="nope-label">PASS</div>
+          <div class="card-text">"${item.text}"</div>
+          <div class="card-meta" style="border-color: ${item.color}; color: ${item.color};">${item.meta}</div>
+        </div>
+      `;
+      setupSwipePhysics();
+    }
+
+    function setupSwipePhysics() {
+      const card = document.getElementById('active-card');
+      const viaLabel = card.querySelector('.via-label');
+      const nopeLabel = card.querySelector('.nope-label');
+      
+      let startX = 0, currentX = 0, isDragging = false;
+
+      card.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        card.style.transition = 'none';
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        currentX = e.clientX - startX;
+        const rotate = currentX / 10;
+        card.style.transform = `translateX(${currentX}px) rotate(${rotate}deg)`;
+        
+        if (currentX > 50) {
+          viaLabel.style.opacity = Math.min(1, (currentX - 50) / 100);
+          nopeLabel.style.opacity = 0;
+        } else if (currentX < -50) {
+          nopeLabel.style.opacity = Math.min(1, (Math.abs(currentX) - 50) / 100);
+          viaLabel.style.opacity = 0;
+        } else {
+          viaLabel.style.opacity = 0;
+          nopeLabel.style.opacity = 0;
+        }
+      });
+
+      window.addEventListener('pointerup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        if (Math.abs(currentX) > 120) {
+          swipeDirection(currentX > 0 ? 'right' : 'left');
+        } else {
+          card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+          card.style.transform = 'translateX(0) rotate(0)';
+          viaLabel.style.opacity = 0;
+          nopeLabel.style.opacity = 0;
+        }
+        currentX = 0;
+      });
+    }
+
+    function swipeDirection(dir) {
+      const card = document.getElementById('active-card');
+      if (!card) return;
+      const x = dir === 'right' ? 1000 : -1000;
+      card.style.transition = 'transform 0.5s ease-in, opacity 0.5s';
+      card.style.transform = `translateX(${x}px) rotate(${x/10}deg)`;
+      card.style.opacity = '0';
+      setTimeout(() => { feedIndex++; renderFeedStack(); }, 300);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // VIALOGIC MAP INTEGRATION
+    // ═══════════════════════════════════════════════════════════════
+    let logicState = { x: -600, y: -600, scale: 0.7 };
+    const LORE_DATA = [
+      { id: 'thales', name: 'Thales', icon: '🏛️', color: '#fbbf24', x: 800, y: 1500, level: 1 },
+      { id: 'pythagoras', name: 'Pythagoras', icon: '📐', color: '#10b981', x: 1000, y: 1800, level: 2 },
+      { id: 'aryabhata', name: 'Aryabhata', icon: '🔭', color: '#ff8c00', x: 2400, y: 1200, level: 1 },
+      { id: 'archimedes', name: 'Archimedes', icon: '⚖️', color: '#ef4444', x: 1900, y: 1800, level: 3 }
+    ];
+
+    function initLogicMap() {
+      const layer = document.getElementById('logic-entities-layer');
+      if (!layer) return;
+      layer.innerHTML = '';
+      LORE_DATA.forEach(n => {
+        const el = document.createElement('div');
+        el.className = 'logic-node-kinetic';
+        el.style.left = n.x + 'px';
+        el.style.top = n.y + 'px';
+        el.innerHTML = `
+          <div style="width: 76px; height: 76px; background: #0F172A; border: 2px solid ${n.color}; border-radius: 22px; display: flex; align-items:center; justify-content:center; font-size: 34px; color: ${n.color}; box-shadow: 0 12px 30px rgba(0,0,0,0.6);">${n.icon}</div>
+          <div style="margin-top: 14px; background: rgba(15,23,42,0.85); border: 1px solid rgba(255,255,255,0.12); padding: 7px 16px; border-radius: 24px; font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap;">Lv.${n.level} ${n.name}</div>
+        `;
+        el.onclick = () => showSheet(n.name, `INTELLIGENCE NODE // ${n.name.toUpperCase()}\nStatus: Active Engagement\nResource Multiplier: x${(1 + n.level*0.4).toFixed(1)}`);
+        layer.appendChild(el);
+      });
+      setupLogicPanning();
+      updateLogicTransform();
+    }
+
+    function setupLogicPanning() {
+      const v = document.getElementById('logic-viewport');
+      if (!v) return;
+      let isDragging = false, start = { x:0, y:0 };
+      v.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('.logic-node-kinetic')) return;
+        isDragging = true;
+        start = { x: e.clientX - logicState.x, y: e.clientY - logicState.y };
+        v.style.cursor = 'grabbing';
+      });
+      window.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        logicState.x = e.clientX - start.x;
+        logicState.y = e.clientY - start.y;
+        updateLogicTransform();
+      });
+      window.addEventListener('pointerup', () => { isDragging = false; v.style.cursor = 'grab'; });
+    }
+
+    function updateLogicTransform() {
+      const container = document.getElementById('logic-map-container');
+      if (container) container.style.transform = `translate(${logicState.x}px, ${logicState.y}px) scale(${logicState.scale})`;
+    }
+
+    function zoomLogic(d) {
+      logicState.scale = Math.max(0.3, Math.min(2.0, logicState.scale + d));
+      updateLogicTransform();
+    }
+
+    function centerLogicMap() {
+      logicState = { x: window.innerWidth/2 - (1200 * logicState.scale), y: window.innerHeight/2 - (1500 * logicState.scale), scale: 0.7 };
+      updateLogicTransform();
+    }
+
     function updateUserProfile(user) {
       const nameEl = document.getElementById('user-name');
       const emailEl = document.getElementById('user-email-display');
@@ -1693,25 +1859,21 @@
     // ═══════════════════════════════════════════════════════════════
     function initializeApp() {
       loadGameState();
-      renderCards('card-stack', cardData);
-      renderTools();
+      renderFeedStack();
       initLogicMap();
       initWorldMap();
       syncEconomyUI();
-      updateProfileDisplay();
+      
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.onclick = () => showSection(btn.dataset.section);
+      });
 
-      // Update economy display
+      // Periodic Sync
       setInterval(() => {
         syncEconomyUI();
         updateProfileDisplay();
-        if (currentUser) {
-          saveUserGameState(currentUser.uid);
-        }
-      }, 2000);
-
-      window.addEventListener('resize', () => {
-        resizeWorldViewport();
-      });
+        if (currentUser) saveUserGameState(currentUser.uid);
+      }, 3000);
     }
 
     function updateProfileDisplay() {

@@ -1,121 +1,506 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#ff671f">
-  <title>VIADECIDE // LOGICHUB</title>
-
-  <!-- PWA MANIFEST -->
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="./icon-512.png">
-
-  <!-- FONTS -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  
-  <style>
-    /* Premium Sophisticated Index Styles */
-    header { height: 80px; padding: 0 8%; }
-    .hero-3d {
-      height: 85vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      perspective: 2000px; overflow: hidden; position: relative;
-    }
-    .hero-orb {
-      width: 300px; height: 300px; background: radial-gradient(circle at 30% 30%, var(--saffron), transparent 70%);
-      border-radius: 50%; filter: blur(60px); opacity: 0.4; position: absolute; z-index: -1;
-      animation: orbit 20s linear infinite;
-    }
-    @keyframes orbit { from { transform: rotate(0) translateX(100px) rotate(0); } to { transform: rotate(360deg) translateX(100px) rotate(-360deg); } }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ViaDecide | Autonomous Spatial Architecture</title>
+    <meta name="description" content="Zero-dependency visual orchestrator and spatial engine tools by Dharam Daxini.">
     
-    .hero-content {
-      text-align: center; transform-style: preserve-3d; animation: heroEntrance 1.5s cubic-bezier(0.19, 1, 0.22, 1);
-    }
-    @keyframes heroEntrance { from { opacity: 0; transform: translateZ(-200px) rotateX(20deg); } to { opacity: 1; transform: translateZ(0) rotateX(0); } }
-    
-    .hero-title {
-      font-family: var(--font-display); font-size: 5rem; font-weight: 900; line-height: 0.9;
-      background: linear-gradient(to bottom, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      letter-spacing: -0.05em; margin-bottom: 24px;
-    }
-    .hero-subtitle {
-      font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 40px; line-height: 1.6;
-    }
-    .btn-launch-3d {
-      padding: 20px 48px; font-size: 1.1rem; border-radius: 99px; background: #fff; color: #000;
-      font-weight: 900; text-decoration: none; display: inline-flex; align-items: center; gap: 12px;
-      box-shadow: 0 20px 40px rgba(255,103,31,0.3); transition: all 0.4s; transform-style: preserve-3d;
-    }
-    .btn-launch-3d:hover { transform: translateY(-5px) translateZ(20px); box-shadow: 0 30px 60px rgba(255,103,31,0.5); }
-    
-    .feature-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; padding: 80px 8%;
-      max-width: 1400px; margin: 0 auto;
-    }
-    .feat-card {
-      background: rgba(15,23,42,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 40px;
-      border-radius: 32px; backdrop-filter: blur(12px); transition: all 0.3s;
-    }
-    .feat-card:hover { border-color: var(--saffron); background: rgba(15,23,42,0.6); }
-    .feat-icon { font-size: 2rem; margin-bottom: 20px; display: block; }
-    .feat-title { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 12px; }
-    .feat-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@600;800&display=swap" rel="stylesheet">
 
-    @media (max-width: 900px) {
-      .hero-title { font-size: 3.5rem; }
-      .feature-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+    <style>
+        /* ========================================================
+           CORE VARIABLES & RESET (ZERO FRAMEWORKS)
+           ======================================================== */
+        :root {
+            --void: #030406;
+            --saffron: #ff671f;
+            --cyan: #00e5ff;
+            --green: #00ff88;
+            --text-main: #ffffff;
+            --text-muted: #888899;
+            --glass-bg: rgba(10, 12, 16, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --font-display: 'Syne', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--void);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            overflow-x: hidden;
+            /* Hide default scrollbar, we will use custom logic */
+            scrollbar-width: none; 
+            cursor: none; /* Custom cursor */
+        }
+        body::-webkit-scrollbar { display: none; }
+
+        /* ========================================================
+           THE 3D SCROLL STAGE
+           ======================================================== */
+        /* This element creates the physical scroll height */
+        #scroll-proxy {
+            position: absolute;
+            top: 0; left: 0; width: 1px;
+            height: 500vh; /* Determines how long the scroll journey is */
+            z-index: -1;
+        }
+
+        /* The viewport acts as the camera lens */
+        #viewport {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            perspective: 1200px;
+            overflow: hidden;
+            pointer-events: none; /* Let clicks pass through to panels */
+        }
+
+        /* The camera container moves along the Z-axis */
+        #camera {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        /* Custom HTML5 Canvas for Neural Background */
+        #warp-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2;
+            background: radial-gradient(circle at center, #0a0b10 0%, var(--void) 100%);
+        }
+
+        /* ========================================================
+           SPATIAL PANELS
+           ======================================================== */
+        .panel {
+            position: absolute;
+            top: 50%; left: 50%;
+            /* Center the panel before 3D transforms */
+            transform: translate(-50%, -50%);
+            width: 90vw; max-width: 1000px;
+            text-align: center;
+            pointer-events: auto; /* Re-enable clicks */
+            transform-style: preserve-3d;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: border-color 0.4s ease;
+        }
+
+        /* Hover Physics classes applied via JS */
+        .magnetic { transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1); }
+
+        /* Typography */
+        h1, h2, h3 { font-family: var(--font-display); font-weight: 800; line-height: 1.1; }
+        .hero-title { font-size: clamp(2.5rem, 8vw, 7rem); letter-spacing: -0.04em; margin-bottom: 1rem; }
+        .hero-subtitle { color: var(--text-muted); font-size: clamp(0.9rem, 2vw, 1.5rem); max-width: 600px; margin: 0 auto 2rem; font-weight: 400; line-height: 1.6; }
+        
+        .gradient-text-saffron { background: linear-gradient(90deg, #ff671f, #ffaa00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-text-cyan { background: linear-gradient(90deg, #00e5ff, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .tag { display: inline-block; padding: 6px 16px; border-radius: 100px; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.5rem; font-weight: 700; }
+        .tag-saffron { background: rgba(255, 103, 31, 0.1); color: var(--saffron); border: 1px solid rgba(255, 103, 31, 0.3); }
+        .tag-cyan { background: rgba(0, 229, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 229, 255, 0.3); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 1.2rem 2.5rem; border-radius: 12px; font-family: var(--font-display);
+            font-weight: 800; font-size: 1rem; text-decoration: none; text-transform: uppercase;
+            letter-spacing: 0.05em; transition: all 0.3s ease; position: relative; overflow: hidden;
+            cursor: none;
+        }
+        .btn-primary { background: var(--saffron); color: #000; box-shadow: 0 0 30px rgba(255, 103, 31, 0.3); }
+        .btn-primary:hover { background: #ff8c00; box-shadow: 0 0 50px rgba(255, 103, 31, 0.6); transform: scale(1.05); }
+        
+        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--glass-border); }
+        .btn-outline:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 30px rgba(0, 229, 255, 0.2); background: rgba(0, 229, 255, 0.05); }
+
+        /* ── FIX: btn-group replaces the broken Tailwind-like flex classes ── */
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .brand-logo {
+            width: 100px; height: 100px; border-radius: 20px; object-fit: cover;
+            margin: 0 auto 2rem; border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 40px rgba(255, 103, 31, 0.3);
+            animation: pulse-glow 4s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 20px 40px rgba(255, 103, 31, 0.2); transform: translateZ(20px); }
+            100% { box-shadow: 0 20px 60px rgba(255, 103, 31, 0.5); transform: translateZ(40px); }
+        }
+
+        /* Custom OS Cursor */
+        #cursor-dot { position: fixed; top: 0; left: 0; width: 6px; height: 6px; background: var(--text-main); border-radius: 50%; pointer-events: none; z-index: 99999; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background 0.2s; }
+        #cursor-ring { position: fixed; top: 0; left: 0; width: 36px; height: 36px; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; pointer-events: none; z-index: 99998; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, border-color 0.3s; will-change: transform; }
+
+        /* Social Grid */
+        .social-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem; }
+        .social-link { padding: 1rem; border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-muted); text-decoration: none; transition: all 0.3s; display: flex; flex-direction: column; gap: 0.5rem; }
+        .social-link span { font-family: var(--font-display); font-weight: 700; color: var(--text-main); }
+        .social-link:hover { border-color: var(--saffron); background: rgba(255, 103, 31, 0.05); transform: translateY(-5px); }
+        /* Active state for touch devices */
+        .social-link:active { border-color: var(--saffron); background: rgba(255, 103, 31, 0.08); transform: scale(0.97); }
+
+        /* Fixed HUD */
+        .hud-nav { position: fixed; top: 1.5rem; left: 1.25rem; right: 1.25rem; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; }
+        .hud-nav > * { pointer-events: auto; }
+        .hud-brand { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; letter-spacing: -0.05em; }
+        .hud-status { font-size: 0.7rem; color: var(--green); display: flex; align-items: center; gap: 0.5rem; letter-spacing: 0.08em; }
+        .hud-status::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px var(--green); animation: blink 2s infinite; }
+        
+        .hud-depth { position: fixed; bottom: 1.5rem; right: 1.25rem; font-size: 0.7rem; color: var(--text-muted); z-index: 100; text-align: right; }
+        .hud-depth span { font-size: 1.5rem; font-family: var(--font-display); color: var(--text-main); display: block; }
+
+        .scroll-hint { margin-top: 3rem; font-size: 0.7rem; color: var(--text-muted); letter-spacing: 0.2em; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        
+        /* ========================================================
+           MOBILE ADJUSTMENTS
+           ======================================================== */
+        @media (max-width: 768px) {
+            /* Disable custom cursor on touch */
+            body { cursor: auto; }
+            #cursor-dot, #cursor-ring { display: none; }
+
+            /* Cards */
+            .glass-card { padding: 1.75rem 1.25rem; border-radius: 18px; }
+
+            /* Buttons: stack vertically, full width */
+            .btn { padding: 1rem 1.25rem; cursor: pointer; }
+            .btn-group { flex-direction: column; width: 100%; }
+            .btn-group .btn { width: 100%; }
+
+            /* Social grid: force 2 columns on phones */
+            .social-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .social-link { padding: 0.85rem 0.75rem; }
+
+            /* HUD: keep it from overflowing */
+            .hud-nav { top: 1rem; left: 1rem; right: 1rem; }
+            .hud-brand { font-size: 1.2rem; }
+            .hud-status { font-size: 0.65rem; }
+
+            /* Depth readout: move left so it doesn't crowd */
+            .hud-depth { bottom: 1rem; right: 1rem; }
+            .hud-depth span { font-size: 1.1rem; }
+
+            /* Logo */
+            .brand-logo { width: 72px; height: 72px; border-radius: 16px; margin-bottom: 1.5rem; }
+
+            /* Scroll hint */
+            .scroll-hint { margin-top: 2rem; font-size: 0.65rem; }
+
+            /* Perspective tweak for portrait: reduce so panels don't clip */
+            #viewport { perspective: 900px; }
+        }
+
+        @media (max-width: 380px) {
+            .hero-title { font-size: clamp(2rem, 10vw, 3rem); }
+            .social-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">VIA<span>DECIDE</span></div>
-    <div style="display: flex; gap: 16px; align-items: center;">
-      <a href="logichub.html" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">Intelligence</a>
-      <button id="btn-install-os" class="btn-saffron-glow" style="display: none; padding: 10px 20px; font-size: 0.75rem;">INSTALL VIA</button>
-      <a href="viadecide.html" class="btn-saffron-glow" style="text-decoration: none; padding: 12px 24px;">LAUNCH ENGINE</a>
+    <!-- OS HUD -->
+    <nav class="hud-nav">
+        <div class="hud-brand">VIA<span style="color:var(--saffron)">.</span></div>
+        <div class="hud-status">ENGINE ONLINE</div>
+    </nav>
+    
+    <div class="hud-depth">
+        Z-AXIS DEPTH
+        <span id="depth-readout">0000</span>
     </div>
-  </header>
 
-  <main>
-    <section class="hero-3d">
-      <div class="hero-orb"></div>
-      <div class="hero-content">
-        <h1 class="hero-title">Sovereign<br>Kinetic OS</h1>
-        <p class="hero-subtitle">The Bharat-first digital ecosystem built for decision engineering, spatial mathematics, and tactile sovereign tools.</p>
-        <a href="viadecide.html" class="btn-launch-3d">ENTER THE MATRIX <span>→</span></a>
-      </div>
-    </section>
+    <!-- Custom Cursor -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
 
-    <div class="feature-grid">
-      <div class="feat-card">
-        <span class="feat-icon">🧬</span>
-        <h3 class="feat-title">Decision Logic</h3>
-        <p class="feat-desc">44 professional decision tools mapped onto an interactive 3D logic academy.</p>
-      </div>
-      <div class="feat-card">
-        <span class="feat-icon">🗺️</span>
-        <h3 class="feat-title">Spatial World</h3>
-        <p class="feat-desc">Discover the ViaDecide ecosystem through a touch-optimized, high-fidelity spatial map.</p>
-      </div>
-      <div class="feat-card">
-        <span class="feat-icon">🌾</span>
-        <h3 class="feat-title">Sovereign Data</h3>
-        <p class="feat-desc">Your profile, your seeds. A private, secure environment for your digital legacy.</p>
-      </div>
-    </div>
-  </main>
+    <!-- Hardware Accelerated Background -->
+    <canvas id="warp-canvas"></canvas>
 
-  <!-- FOOTER -->
-  <footer>
-    <p>&copy; 2026 ViaDecide Spatial OS. License: Apache 2.0</p>
-    <div style="margin-top:10px;">
-      <a href="https://github.com/via-decide/via-OS">Repo: via-OS</a>
-      <a href="https://github.com/via-decide/decide.engine-tools">Repo: engine-tools</a>
-    </div>
-  </footer>
+    <!-- Scroll proxy creates the scrollbar -->
+    <div id="scroll-proxy"></div>
 
-  <script src="main.js"></script>
+    <!-- The 3D Lens -->
+    <main id="viewport">
+        <div id="camera">
+            
+            <!-- PANEL 0: HERO (Z = 0) -->
+            <section class="panel" style="transform: translate(-50%, -50%) translateZ(0px);">
+                <img src="1000221390.jpg" alt="DH Logo" class="brand-logo magnetic" onerror="this.style.display='none'">
+                <div class="tag tag-saffron">Sol 1 // Epoch 2026</div>
+                <h1 class="hero-title">Visual Logic.<br><span class="gradient-text-saffron">Autonomous Core.</span></h1>
+                <p class="hero-subtitle">Zero dependencies. Pure spatial execution. Architect, verify, and deploy using the browser's native physics engine.</p>
+                <!-- FIX: replaced broken Tailwind-like classes with .btn-group -->
+                <div class="btn-group">
+                    <a href="https://github.com/via-decide/decide.engine-tools" target="_blank" class="btn btn-primary magnetic">Initialize Protocol</a>
+                </div>
+                <p class="scroll-hint">[ SCROLL TO DIVE DEEPER ]</p>
+            </section>
+
+            <!-- PANEL 1: LOGICHUB FLAGSHIP (Z = -2000px) -->
+            <section class="panel" style="transform: translate(-50%, -50%) translateZ(-2000px);">
+                <div class="glass-card">
+                    <div class="tag tag-cyan">Flagship Tool</div>
+                    <h2 class="hero-title" style="font-size: clamp(2rem, 5vw, 4rem);">LogicHub Engine</h2>
+                    <p class="hero-subtitle">The ultimate node-based orchestrator. Map complex topologies visually, let Gemini write the native code, and export to .MD instantly.</p>
+                    <a href="logichub.html" class="btn btn-outline magnetic">Mount Canvas</a>
+                </div>
+            </section>
+
+            <!-- PANEL 2: THE REPO (Z = -4000px) -->
+            <section class="panel" style="transform: translate(-50%, -50%) translateZ(-4000px);">
+                <div class="glass-card" style="border-color: rgba(255, 214, 0, 0.2);">
+                    <div class="tag" style="background: rgba(255, 214, 0, 0.1); color: #ffd600; border: 1px solid rgba(255,214,0,0.3);">Open Source</div>
+                    <h2 class="hero-title" style="font-size: clamp(2rem, 5vw, 4rem);">Decide.Engine Tools</h2>
+                    <p class="hero-subtitle">The foundational repository. Every tool, every spatial script, engineered without a single `node_modules` folder. Pure Vanilla.</p>
+                    <a href="https://github.com/via-decide/decide.engine-tools" target="_blank" class="btn btn-outline magnetic" style="border-color: #ffd600; color: #ffd600;">Access GitHub</a>
+                </div>
+            </section>
+
+            <!-- PANEL 3: SOCIAL / UPLINK (Z = -6000px) -->
+            <section class="panel" style="transform: translate(-50%, -50%) translateZ(-6000px);">
+                <h2 class="hero-title" style="font-size: clamp(2rem, 5vw, 4rem);">Establish Uplink.</h2>
+                <p class="hero-subtitle">Dharam Daxini // Chief Architect</p>
+                
+                <div class="social-grid">
+                    <a href="viadecide.html" class="social-link magnetic" style="border-color: var(--green);">
+                        <small>CORE HUB</small>
+                        <span style="color: var(--green);">ViaDecide</span>
+                    </a>
+                    <a href="https://youtube.com/@decide.engine" target="_blank" class="social-link magnetic">
+                        <small>YOUTUBE</small>
+                        <span>decide.engine</span>
+                    </a>
+                    <a href="https://open.spotify.com/search/dharamdaxini" target="_blank" class="social-link magnetic">
+                        <small>SPOTIFY</small>
+                        <span>Dharam Daxini</span>
+                    </a>
+                    <a href="https://instagram.com/dharamdaxini" target="_blank" class="social-link magnetic">
+                        <small>INSTAGRAM</small>
+                        <span>@dharamdaxini</span>
+                    </a>
+                    <a href="https://instagram.com/vialogic" target="_blank" class="social-link magnetic">
+                        <small>INSTAGRAM</small>
+                        <span>@vialogic</span>
+                    </a>
+                </div>
+                <div style="margin-top: 3rem; opacity: 0.5; font-size: 0.7rem;">END OF TRANSMISSION</div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        /* ========================================================
+           1. PURE VANILLA 3D SCROLL INTERPOLATION
+           ======================================================== */
+        const camera = document.getElementById('camera');
+        const depthReadout = document.getElementById('depth-readout');
+        
+        let currentScroll = 0;
+        let targetScroll = 0;
+        
+        // Z-axis configuration
+        // 1px of scroll = 2.5px of Z-depth movement
+        const scrollMultiplier = 2.5; 
+        const maxDepth = 6500; 
+
+        // Update target on scroll
+        window.addEventListener('scroll', () => {
+            targetScroll = window.scrollY;
+        });
+
+        // Animation Loop for buttery smooth Lerp (Linear Interpolation)
+        function update3DCamera() {
+            // Lerp formula: current += (target - current) * friction
+            currentScroll += (targetScroll - currentScroll) * 0.08;
+            
+            // Calculate Z translation. Scrolling down moves camera POSITIVE Z.
+            // Which means the #camera container translates POSITIVE Z, bringing negative Z panels forward.
+            let zTranslation = currentScroll * scrollMultiplier;
+            
+            // Cap it so we don't fly past the last panel into the abyss
+            if(zTranslation > maxDepth) zTranslation = maxDepth;
+
+            // Apply hardware-accelerated 3D transform
+            camera.style.transform = `translateZ(${zTranslation}px)`;
+            
+            // Update HUD
+            depthReadout.innerText = Math.round(zTranslation).toString().padStart(4, '0');
+
+            requestAnimationFrame(update3DCamera);
+        }
+        update3DCamera();
+
+
+        /* ========================================================
+           2. CUSTOM HTML5 CANVAS NEURAL PARTICLE ENGINE
+           ======================================================== */
+        const canvas = document.getElementById('warp-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height, cx, cy;
+        const particles = [];
+        // FIX: reduce particle count on mobile for GPU performance
+        const isMobile = window.innerWidth <= 768;
+        const numParticles = isMobile ? 300 : 800;
+        const fov = 800; // Field of view for 3D projection
+
+        function initCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            cx = width / 2;
+            cy = height / 2;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+                this.z = Math.random() * 2000; // Distribute initially
+            }
+            reset() {
+                this.x = (Math.random() - 0.5) * 3000; // Spread wide
+                this.y = (Math.random() - 0.5) * 3000;
+                this.z = 2000; // Spawn deep in the background
+                this.speed = 2 + Math.random() * 5;
+            }
+            update(scrollVelocity) {
+                // Move towards camera. Add extra speed based on scroll velocity.
+                this.z -= this.speed + (scrollVelocity * 0.5);
+                
+                // If it passes the camera, reset it deep
+                if (this.z <= 0) {
+                    this.reset();
+                }
+            }
+            draw() {
+                // 3D to 2D Projection Formula
+                const scale = fov / (fov + this.z);
+                const x2d = cx + this.x * scale;
+                const y2d = cy + this.y * scale;
+
+                // Opacity based on depth (fade in from black)
+                const opacity = Math.max(0, 1 - (this.z / 2000));
+                
+                // Size based on scale
+                const size = Math.max(0.5, 3 * scale);
+
+                ctx.fillStyle = `rgba(255, 103, 31, ${opacity})`; // Saffron dots
+                ctx.beginPath();
+                ctx.arc(x2d, y2d, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        initCanvas();
+        for (let i = 0; i < numParticles; i++) particles.push(new Particle());
+
+        window.addEventListener('resize', initCanvas);
+
+        let lastScroll = 0;
+        function animateCanvas() {
+            // Calculate scroll velocity for warp speed effect
+            const velocity = Math.abs(currentScroll - lastScroll);
+            lastScroll = currentScroll;
+
+            ctx.clearRect(0, 0, width, height);
+            
+            particles.forEach(p => {
+                p.update(velocity);
+                p.draw();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+
+
+        /* ========================================================
+           3. MAGNETIC UI PHYSICS & CUSTOM CURSOR
+           ======================================================== */
+        const dot = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+        const magnetics = document.querySelectorAll('.magnetic');
+
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let ringX = mouseX;
+        let ringY = mouseY;
+
+        // Track mouse
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Dot follows instantly
+            dot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+        });
+
+        // Ring follows with Lerp delay
+        function animateCursor() {
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+            ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+            requestAnimationFrame(animateCursor);
+        }
+        if(window.innerWidth > 768) animateCursor(); // Only on desktop
+
+        // Magnetic Button Logic
+        magnetics.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const hx = rect.left + rect.width / 2;
+                const hy = rect.top + rect.height / 2;
+                
+                // Calculate distance from center of button
+                const dx = (e.clientX - hx) * 0.3; // Pull strength X
+                const dy = (e.clientY - hy) * 0.3; // Pull strength Y
+                
+                btn.style.transform = `translate(${dx}px, ${dy}px) scale(1.05)`;
+                
+                // Cursor interaction
+                ring.style.width = '50px';
+                ring.style.height = '50px';
+                ring.style.borderColor = 'var(--saffron)';
+                dot.style.background = 'var(--saffron)';
+            });
+
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = `translate(0px, 0px) scale(1)`;
+                ring.style.width = '36px';
+                ring.style.height = '36px';
+                ring.style.borderColor = 'rgba(255,255,255,0.4)';
+                dot.style.background = 'var(--text-main)';
+            });
+        });
+
+    </script>
 </body>
 </html>

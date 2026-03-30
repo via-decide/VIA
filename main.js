@@ -21,45 +21,48 @@ window.addEventListener('beforeinstallprompt', (e) => {
   // Stash the event
   deferredPrompt = e;
   
-  // Optional: Visual indicator that install is ready
-  const installBtn = document.getElementById('btn-install-os');
-  if (installBtn) {
-    installBtn.style.opacity = '1';
-    installBtn.innerHTML = 'INSTALL VIA OS';
-  }
+  // Show all install buttons
+  const installBtns = document.querySelectorAll('#btn-install-os');
+  installBtns.forEach(btn => {
+    btn.style.display = 'inline-block';
+    btn.innerHTML = 'INSTALL VIA OS';
+  });
 });
 
 // 3. INSTALL EVENT HANDLER
-document.getElementById('btn-install-os').addEventListener('click', async () => {
-  if (deferredPrompt) {
-    // Show the native prompt
-    deferredPrompt.prompt();
-    
-    // Wait for the user's choice
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('User accepted the VIA OS install');
+document.addEventListener('click', async (e) => {
+  if (e.target && e.target.id === 'btn-install-os') {
+    if (deferredPrompt) {
+      // Show the native prompt
+      deferredPrompt.prompt();
+      
+      // Wait for the user's choice
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('User accepted the VIA OS install');
+      } else {
+        console.log('User dismissed the VIA OS install');
+      }
+      
+      // Clear the stashed event
+      deferredPrompt = null;
     } else {
-      console.log('User dismissed the VIA OS install');
+      // Fallback info for iOS / Desktop where prompt might not fire
+      alert("PWA install not ready. On iPhone, tap 'Share' then 'Add to Home Screen'.");
     }
-    
-    // Clear the stashed event
-    deferredPrompt = null;
-  } else {
-    // Fallback info for iOS / Desktop where prompt might not fire
-    alert("PWA install not ready. On iPhone, tap 'Share' then 'Add to Home Screen'.");
   }
 });
 
 // 4. AFTER INSTALLATION CLEANUP
 window.addEventListener('appinstalled', (event) => {
   console.log('VIA OS installed successfully');
-  const installBtn = document.getElementById('btn-install-os');
-  if (installBtn) {
-    installBtn.innerHTML = 'SYSTEM INSTALLED';
-    installBtn.style.background = '#00ff88'; // Matrix Green
-    installBtn.style.boxShadow = '0 0 15px rgba(0, 255, 136, 0.4)';
-  }
+  const installBtns = document.querySelectorAll('#btn-install-os');
+  installBtns.forEach(btn => {
+    btn.innerHTML = 'SYSTEM INSTALLED';
+    btn.style.background = '#00ff88'; // Matrix Green
+    btn.style.boxShadow = '0 0 15px rgba(0, 255, 136, 0.4)';
+    btn.style.color = '#000';
+  });
 });
 
 // 5. HUD COMPONENT ANIMATIONS (Simple scroll entrance)

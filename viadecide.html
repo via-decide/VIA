@@ -474,7 +474,10 @@
   <div id="app">
     <div class="status-bar glass">
       <div class="status-logo">🎯 <span>VIA</span></div>
-      <div class="status-meta"><span class="status-dot"></span><span id="section-label">Feed</span></div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button id="btn-install-os" class="btn-tactile active" style="display: none; padding: 6px 14px; font-size: 11px; font-weight: 800; border-radius: 99px;">INSTALL</button>
+        <div class="status-meta"><span class="status-dot"></span><span id="section-label">Feed</span></div>
+      </div>
     </div>
 
     <div class="content-area">
@@ -1714,5 +1717,6 @@
     // ═══════════════════════════════════════════════════════════════
     document.getElementById('google-signin-btn').addEventListener('click', signInWithGoogle);
   </script>
+  <script src="main.js"></script>
 </body>
 </html>

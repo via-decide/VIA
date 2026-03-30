@@ -1610,13 +1610,25 @@
     async function signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       try {
-        document.getElementById('auth-status').textContent = 'Signing in...';
-        await auth.signInWithPopup(provider);
+        document.getElementById('auth-status').textContent = 'Redirecting to Google...';
+        await auth.signInWithRedirect(provider);
       } catch (error) {
         console.error('Auth error:', error);
         document.getElementById('auth-status').textContent = 'Sign in failed: ' + error.message;
       }
     }
+
+    // Handle Redirect Result
+    auth.getRedirectResult().then((result) => {
+      if (result && result.user) {
+        console.log("Redirect sign-in successful:", result.user.displayName);
+      }
+    }).catch((error) => {
+      console.error("Redirect error:", error);
+      if (document.getElementById('auth-status')) {
+        document.getElementById('auth-status').textContent = 'Auth error: ' + error.message;
+      }
+    });
 
     function signOutUser() {
       auth.signOut().then(() => {

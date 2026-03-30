@@ -560,8 +560,13 @@
                 <div id="profile-placeholder" style="width: 80px; height: 80px; border-radius: 50%; background: var(--saffron); display: flex; align-items: center; justify-content: center; font-size: 32px;">👤</div>
 
                 <div style="text-align: center; width: 100%;">
-                  <h2 id="user-name" style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem;">Sign in</h2>
-                  <p id="user-email-display" style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);">Your Orchade awaits</p>
+                  <h2 id="user-name" style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem;">Guest Player</h2>
+                  <p id="user-email-display" style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);">Persistence inactive</p>
+                  
+                  <div id="cloud-sync-cta" style="background: rgba(255,103,31,0.1); border: 1px dashed var(--saffron); padding: 1.2rem; border-radius: 12px; margin-top: 1rem; width: 100%;">
+                    <div style="font-family: var(--font-display); font-size: 0.75rem; color: var(--saffron); font-weight: 900; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">CLOUD BACKUP INACTIVE</div>
+                    <button onclick="signInWithGoogle()" class="btn-saffron-glow" style="width: 100%; padding: 10px; font-size: 0.8rem; letter-spacing: 1px; animation: none;">ENABLE CLOUD SYNC</button>
+                  </div>
                 </div>
 
                 <div id="orchade-stats" style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 1rem; border-top: 1px solid var(--border);">
@@ -1603,10 +1608,11 @@
         updateUserProfile(user);
         loadUserGameState(user.uid);
       } else {
-        // User is signed out
-        document.getElementById('auth-wall').style.display = 'flex';
-        document.getElementById('app').style.display = 'none';
-        document.getElementById('auth-status').textContent = 'Ready to sign in';
+        // User is signed out (Allow access, but keep wall for manual triggers)
+        document.getElementById('auth-wall').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
+        document.getElementById('auth-status').textContent = 'Running in guest mode';
+        initializeApp(); // Ensure everything loads
       }
     });
 
@@ -1659,6 +1665,7 @@
       }
 
       signoutBtn.style.display = 'block';
+      document.getElementById('cloud-sync-cta').style.display = 'none';
     }
 
     function loadUserGameState(uid) {
